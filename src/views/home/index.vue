@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue';
-import WaterfallFlow from './module/waterfallFlow.vue';
+import WaterfallFlow from './module/waterfall-flow.vue';
 
 // 分类
 const isActiveType = ref('All');
