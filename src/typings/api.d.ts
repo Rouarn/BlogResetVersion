@@ -84,4 +84,20 @@ declare namespace Api {
       home: import('@elegant-router/types').LastLevelRouteKey;
     }
   }
+
+  /**
+   * namespace Home
+   *
+   * backend api module: "Home"
+   */
+  namespace Work {
+    interface WorkItem {
+      id: string | number;
+      image: string;
+      title: string;
+      description: string;
+      height?: number;
+      width?: number;
+    }
+  }
 }
