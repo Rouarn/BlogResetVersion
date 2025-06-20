@@ -31,16 +31,26 @@ const handleWorkType = (type: string) => {
 };
 
 const workList = reactive<Api.Work.WorkItem[]>([
-  { id: 1, type: 'Branding', url: '/src/assets/imgs/picture/m-project1.jpg' },
   { id: 2, type: 'Graphic', url: '/src/assets/imgs/picture/project5.jpg' },
-  { id: 3, type: 'Branding', url: '/src/assets/imgs/picture/m-project2.jpg' },
+  { id: 1, type: 'Branding', url: '/src/assets/imgs/picture/m-project1.jpg' },
   { id: 4, type: 'Graphic', url: '/src/assets/imgs/picture/project2.jpg' },
+  { id: 3, type: 'Branding', url: '/src/assets/imgs/picture/m-project2.jpg' },
   { id: 5, type: 'Design', url: '/src/assets/imgs/picture/m-project3.jpg' },
   { id: 6, type: 'Video', url: '/src/assets/imgs/picture/project1.jpg' },
   { id: 7, type: 'image', url: '/src/assets/imgs/picture/project3.jpg' },
   { id: 8, type: 'Design', url: '/src/assets/imgs/picture/project2.jpg' },
   { id: 9, type: 'Video', url: '/src/assets/imgs/picture/project4.jpg' }
 ]);
+
+const handleMore = () => {
+  const newItems = [
+    { id: 10, type: 'Design', url: '/src/assets/imgs/picture/project5.jpg' },
+    { id: 11, type: 'Video', url: '/src/assets/imgs/picture/project2.jpg' },
+    { id: 12, type: 'image', url: '/src/assets/imgs/picture/project4.jpg' }
+  ];
+
+  workList.push(...newItems);
+};
 </script>
 
 <template>
@@ -56,14 +66,7 @@ const workList = reactive<Api.Work.WorkItem[]>([
       <NP class="mb-[1.25rem] text-[0.875rem] text-[#444] font-normal leading-[1.625rem] capitalize">
         We are Professional web developer and designer in this market.
       </NP>
-      <NButton
-        class="mt-6 touch-manipulation rounded-[0.125rem] bg-[#444] text-white uppercase transition-all duration-300 ease-[ease] hover:border hover:border-[#444] hover:text-black"
-        ghost
-        :bordered="false"
-        size="large"
-      >
-        About Us
-      </NButton>
+      <NButton class="primary-button" ghost :bordered="false" :focusable="false" size="large">About Us</NButton>
     </NSpace>
 
     <NSpace vertical :size="24" class="mt-25">
@@ -81,6 +84,13 @@ const workList = reactive<Api.Work.WorkItem[]>([
       </div>
 
       <WaterfallFlow :initial-items="workList" :is-active-type="isActiveType" />
+
+      <!-- 更多 -->
+      <div class="text-center">
+        <NButton class="primary-button" ghost :bordered="false" size="large" :focusable="false" @click="handleMore">
+          View More
+        </NButton>
+      </div>
     </NSpace>
   </NSpace>
 </template>

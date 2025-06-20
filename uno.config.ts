@@ -23,7 +23,9 @@ export default defineConfig<Theme>({
     }
   },
   shortcuts: {
-    'card-wrapper': 'rd-8px shadow-sm'
+    'card-wrapper': 'rd-8px shadow-sm',
+    'primary-button':
+      'mt-6 touch-manipulation rounded-[0.125rem] bg-[#444] text-white uppercase transition-all duration-300 ease-[ease] hover:border hover:border-[#444] hover:text-black'
   },
   transformers: [transformerDirectives(), transformerVariantGroup()],
   presets: [presetWind3({ dark: 'class' }), presetSoybeanAdmin()]

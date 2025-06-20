@@ -109,14 +109,26 @@ onBeforeUnmount(() => {
     <!-- 瀑布流容器 -->
     <div ref="containerRef" class="relative w-full">
       <TransitionGroup name="zoom-fade">
-        <div v-for="image in tableList" :key="image.id" ref="tableItemRef" class="transition-all duration-300">
+        <div
+          v-for="image in tableList"
+          :key="image.id"
+          ref="tableItemRef"
+          class="tableItem transition-all duration-300"
+        >
           <NImage
             :src="getPicURL(image.url)"
-            class="block h-auto w-full rounded-lg shadow-md transition-shadow hover:shadow-lg"
+            class="image block h-auto w-full rounded-lg shadow-md transition-shadow hover:shadow-lg"
             object-fit="cover"
             preview-disabled
             @load="handleResize()"
           />
+
+          <div class="mask">
+            <NP class="m-0 c-[var(--un-ring-offset-color)] uppercase">Web Design</NP>
+            <NH4 class="m-0 my-10px text-1.125rem c-[var(--un-ring-offset-color)] font-700 uppercase">
+              Brand Redesign Works
+            </NH4>
+          </div>
         </div>
       </TransitionGroup>
     </div>
@@ -125,7 +137,7 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .zoom-fade {
-  &-move, /* 对移动中的元素应用的过渡 */
+  &-move,
   &-enter-active,
   &-leave-active {
     transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
@@ -142,10 +154,52 @@ onBeforeUnmount(() => {
   }
 }
 
-/* 响应式调整 */
-@media (max-width: 640px) {
-  .gap {
-    gap: 12px;
+.tableItem {
+  overflow: hidden;
+  cursor: pointer;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 0;
+    transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    background-color: rgba($color: #000000, $alpha: 0.8);
+  }
+  .image {
+    transform: rotate(0) scale(1);
+    transition: all 0.3s ease-out 0s;
+  }
+  .mask {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 1;
+    transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translateY(100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  &:hover {
+    &::after {
+      opacity: 1;
+      z-index: 1;
+    }
+    & .image {
+      transform: rotate(-5deg) scale(1.2);
+    }
+    & .mask {
+      z-index: 2;
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 </style>
