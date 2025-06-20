@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import GlobalLogo from '../global-logo/index.vue';
+
 defineOptions({
   name: 'GlobalFooter'
 });
@@ -6,8 +8,8 @@ defineOptions({
 
 <template>
   <DarkModeContainer class="h-full flex-center flex-col py-90px">
-    <NP class="text-22px color-#232332 font-bold">XiaJI</NP>
-    <NSpace inline class="mb-20px">
+    <GlobalLogo custom-class="text-22px color-#232332 font-bold" />
+    <NSpace inline class="mb-20px mt-4">
       <NIcon class="icon">
         <icon-material-symbols:mail-rounded />
       </NIcon>

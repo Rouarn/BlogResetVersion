@@ -127,7 +127,7 @@ const blogs = reactive<Api.Blog.BlogItem[]>([
     <NSpace vertical :size="24" class="bg-#F4F7FC pb-90px pt-10">
       <div>
         <NH2 class="blogTitle mb-10 text-center text-28px font-700 uppercase">Latest Blog</NH2>
-        <NP class="mx-a w-2xl text-center text-14px text-#666 font-normal">
+        <NP class="mx-a text-center text-14px text-#666 font-normal lg:w-600px">
           Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sequi tempora veritatis nemo aut ea iusto eos est
           expedita, quas ab adipisci.
         </NP>

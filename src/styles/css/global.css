@@ -11,3 +11,10 @@ body,
 html {
   overflow-x: hidden;
 }
+
+/* 选中样式 */
+::selection {
+  background: #555;
+  color: #fff;
+  text-shadow: none;
+}

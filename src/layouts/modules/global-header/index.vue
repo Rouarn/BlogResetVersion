@@ -1,6 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { h, ref } from 'vue';
 import { type MenuOption } from 'naive-ui';
+import GlobalLogo from '../global-logo/index.vue';
+import GlobalSearch from '../global-search/index.vue';
+
+ defineProps<{
+  top: boolean;
+}>();
 
 const activeKey = ref('');
 const menuOptions: MenuOption[] = [
@@ -19,17 +25,9 @@ const menuOptions: MenuOption[] = [
     ]
   },
   {
-    label: '寻羊冒险记',
-    key: 'a-wild-sheep-chase'
-  },
-  {
     label: '舞，舞，舞',
     key: 'dance-dance-dance',
     children: [
-      {
-        label: '叙事者',
-        key: 'narrator'
-      },
       {
         label: '羊男',
         key: 'sheep-man'
@@ -59,14 +57,25 @@ const menuOptions: MenuOption[] = [
         key: 'the-past-increases-the-future-recedes'
       }
     ]
+  },
+  {
+    label: () => {
+      return h(GlobalSearch, {}, {});
+    },
+    key: 'a-wild-sheep-chase'
   }
 ];
 </script>
 
 <template>
-  <DarkModeContainer class="fixed-center z-10 h-78px flex-center shadow-sider">
+  <DarkModeContainer
+    class="fixed-center z-10 flex-center transition-all duration-300"
+    :class="[top ? 'h-64px shadow-sider' : 'bg-transparent! h-78px']"
+  >
     <NGrid :cols="3" class="max-w-1200px">
-      <NGi class="ml-2rem flex items-center justify-start text-22px color-#232332 font-bold">XiaJI</NGi>
+      <NGi class="ml-2rem flex items-center justify-start">
+        <GlobalLogo custom-class="justify-start w-full" />
+      </NGi>
       <NGi />
       <NGi>
         <NMenu v-model:value="activeKey" mode="horizontal" :options="menuOptions" responsive />
