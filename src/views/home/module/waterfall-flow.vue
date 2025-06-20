@@ -7,7 +7,7 @@ const props = defineProps<{
 }>();
 
 const columnCount = ref(3); // 默认3列
-const gap = ref(16); // 间距
+const gap = ref(30); // 间距
 const containerWidth = ref(0); // 容器宽度
 const columnHeights = ref<number[]>([]); // 每列高度
 
@@ -113,11 +113,11 @@ onBeforeUnmount(() => {
           v-for="image in tableList"
           :key="image.id"
           ref="tableItemRef"
-          class="tableItem transition-all duration-300"
+          class="tableItem rounded-lg shadow-md transition-all transition-shadow duration-300 hover:shadow-lg"
         >
           <NImage
             :src="getPicURL(image.url)"
-            class="image block h-auto w-full rounded-lg shadow-md transition-shadow hover:shadow-lg"
+            class="image block h-auto w-full"
             object-fit="cover"
             preview-disabled
             @load="handleResize()"
