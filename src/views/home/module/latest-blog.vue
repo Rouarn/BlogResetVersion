@@ -13,8 +13,13 @@ const props = withDefaults(defineProps<{ blogList?: Api.Blog.BlogItem[] }>(), {
         :key="item.id"
         class="blog-card overflow-hidden bg-white transition-transform duration-300 hover:shadow-lg hover:-translate-y-1"
       >
-        <div class="h-200px">
-          <NImage :src="item.cover" alt="" object-fit="cover" />
+        <div class="h-200px overflow-hidden">
+          <NImage
+            :src="item.cover"
+            alt=""
+            object-fit="cover"
+            class="transition-transform duration-300 hover:rotate-6 hover:scale-140"
+          />
         </div>
         <div class="p-6">
           <div class="mb-2 text-11px text-#666 font-600 uppercase">{{ item.date }}</div>

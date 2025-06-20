@@ -61,7 +61,7 @@ const blogs = reactive<Api.Blog.BlogItem[]>([
     description:
       'At tincidunt vulputate dis natoque parturient proine mperdiet. Quisque lig pede males us. Semper orc gue lorem ipsum',
     author: 'Soybean',
-    date: 'January 28, 2020'
+    date: 'January 26, 2020'
   },
   {
     id: 2,
@@ -70,7 +70,7 @@ const blogs = reactive<Api.Blog.BlogItem[]>([
     description:
       'At tincidunt vulputate dis natoque parturient proine mperdiet. Quisque lig pede males us. Semper orc gue lorem ipsum',
     author: 'Soybean',
-    date: '2021-01-01'
+    date: 'January 28, 2025'
   },
   {
     id: 3,
@@ -79,7 +79,7 @@ const blogs = reactive<Api.Blog.BlogItem[]>([
     description:
       'At tincidunt vulputate dis natoque parturient proine mperdiet. Quisque lig pede males us. Semper orc gue lorem ipsum',
     author: 'Soybean',
-    date: '2021-01-01'
+    date: 'August 29, 2025'
   }
 ]);
 </script>
@@ -101,7 +101,7 @@ const blogs = reactive<Api.Blog.BlogItem[]>([
     </NSpace>
 
     <NSpace vertical class="my-25">
-      <NSpace justify="center" wrap>
+      <NSpace justify="center" wrap class="mb-[2rem]">
         <NButton
           v-for="(item, index) in workType"
           :key="index"
@@ -124,7 +124,7 @@ const blogs = reactive<Api.Blog.BlogItem[]>([
       </div>
     </NSpace>
 
-    <NSpace vertical :size="24" class="bg-#F4F7FC pb-50px pt-10">
+    <NSpace vertical :size="24" class="bg-#F4F7FC pb-90px pt-10">
       <div>
         <NH2 class="blogTitle mb-10 text-center text-28px font-700 uppercase">Latest Blog</NH2>
         <NP class="mx-a w-2xl text-center text-14px text-#666 font-normal">
