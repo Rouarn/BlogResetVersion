@@ -20,9 +20,25 @@ const getPicURL = (url: string) => {
 const containerRef = ref<HTMLDivElement>();
 const tableItemRef = ref<HTMLDivElement[]>([]);
 
+// 根据屏幕宽度计算列数
+const calculateColumnCount = () => {
+  const width = window.innerWidth;
+  if (width < 640) {
+    // 小屏设备
+    return 1;
+  } else if (width < 1024) {
+    // 中等屏幕
+    return 2;
+  } // 大屏幕
+  return 3;
+};
+
 // 计算瀑布流位置
 const calculatePosition = () => {
   if (!tableItemRef.value.length) return;
+
+  // 更新列数
+  columnCount.value = calculateColumnCount();
 
   // 重置列高度
   columnHeights.value = Array.from({ length: columnCount.value }).fill(0) as number[];
@@ -88,7 +104,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="relative mx-auto max-w-1200px w-full">
+  <div class="relative mx-auto max-w-1200px w-full px-4 sm:px-6">
+    <!-- 添加水平内边距 -->
     <!-- 瀑布流容器 -->
     <div ref="containerRef" class="relative w-full">
       <TransitionGroup name="zoom-fade">
@@ -122,6 +139,13 @@ onBeforeUnmount(() => {
 
   &-leave-active {
     position: absolute;
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 640px) {
+  .gap {
+    gap: 12px;
   }
 }
 </style>
