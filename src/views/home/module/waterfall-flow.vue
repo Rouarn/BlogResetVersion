@@ -91,19 +91,37 @@ onBeforeUnmount(() => {
   <div class="relative mx-auto max-w-1200px w-full">
     <!-- 瀑布流容器 -->
     <div ref="containerRef" class="relative w-full">
-      <div v-for="(image, index) in tableList" :key="index" ref="tableItemRef" class="transition-all duration-300">
-        <NImage
-          :src="getPicURL(image.url)"
-          class="block h-auto w-full rounded-lg shadow-md transition-shadow hover:shadow-lg"
-          object-fit="cover"
-          preview-disabled
-          @load="handleResize()"
-        />
-      </div>
+      <TransitionGroup name="zoom-fade">
+        <div v-for="image in tableList" :key="image.id" ref="tableItemRef" class="transition-all duration-300">
+          <NImage
+            :src="getPicURL(image.url)"
+            class="block h-auto w-full rounded-lg shadow-md transition-shadow hover:shadow-lg"
+            object-fit="cover"
+            preview-disabled
+            @load="handleResize()"
+          />
+        </div>
+      </TransitionGroup>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-/* 可以添加自定义样式 */
+.zoom-fade {
+  &-move, /* 对移动中的元素应用的过渡 */
+  &-enter-active,
+  &-leave-active {
+    transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  &-enter-from,
+  &-leave-to {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  &-leave-active {
+    position: absolute;
+  }
+}
 </style>
