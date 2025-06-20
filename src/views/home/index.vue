@@ -31,42 +31,15 @@ const handleWorkType = (type: string) => {
 };
 
 const workList = reactive<Api.Work.WorkItem[]>([
-  {
-    id: 1,
-    image: 'https://picsum.photos/200/300',
-    title: 'string',
-    description: 'string'
-  },
-  {
-    id: 2,
-    image: 'https://picsum.photos/200/200',
-    title: 'string',
-    description: 'string'
-  },
-  {
-    id: 3,
-    image: 'https://picsum.photos/200/400',
-    title: 'string',
-    description: 'string'
-  },
-  {
-    id: 4,
-    image: 'https://picsum.photos/200/100',
-    title: 'string',
-    description: 'string'
-  },
-  {
-    id: 5,
-    image: 'https://picsum.photos/200/250',
-    title: 'string',
-    description: 'string'
-  },
-  {
-    id: 6,
-    image: 'https://picsum.photos/200/240',
-    title: 'string',
-    description: 'string'
-  }
+  { id: 1, type: 'Branding', url: '/src/assets/imgs/picture/m-project1.jpg' },
+  { id: 2, type: 'Graphic', url: '/src/assets/imgs/picture/project5.jpg' },
+  { id: 3, type: 'Branding', url: '/src/assets/imgs/picture/m-project2.jpg' },
+  { id: 4, type: 'Graphic', url: '/src/assets/imgs/picture/project2.jpg' },
+  { id: 5, type: 'Design', url: '/src/assets/imgs/picture/m-project3.jpg' },
+  { id: 6, type: 'Video', url: '/src/assets/imgs/picture/project1.jpg' },
+  { id: 7, type: 'image', url: '/src/assets/imgs/picture/project3.jpg' },
+  { id: 8, type: 'Design', url: '/src/assets/imgs/picture/project2.jpg' },
+  { id: 9, type: 'Video', url: '/src/assets/imgs/picture/project4.jpg' }
 ]);
 </script>
 
@@ -93,8 +66,8 @@ const workList = reactive<Api.Work.WorkItem[]>([
       </NButton>
     </NSpace>
 
-    <NSpace vertical :size="24" class="mb-15 mt-25">
-      <div class="text-center">
+    <NSpace vertical :size="24" class="mt-25">
+      <div class="mb-10 text-center">
         <NButton
           v-for="(item, index) in workType"
           :key="index"
@@ -107,7 +80,7 @@ const workList = reactive<Api.Work.WorkItem[]>([
         </NButton>
       </div>
 
-      <WaterfallFlow :initial-items="workList" />
+      <WaterfallFlow :initial-items="workList" :is-active-type="isActiveType" />
     </NSpace>
   </NSpace>
 </template>

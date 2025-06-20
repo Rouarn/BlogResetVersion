@@ -1,41 +1,109 @@
 <script lang="ts" setup>
-import { onMounted } from 'vue';
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+
+const props = defineProps<{
+  initialItems: Api.Work.WorkItem[];
+  isActiveType: string;
+}>();
+
+const columnCount = ref(3); // 默认3列
+const gap = ref(16); // 间距
+const containerWidth = ref(0); // 容器宽度
+const columnHeights = ref<number[]>([]); // 每列高度
+
+const tableList = ref<Api.Work.WorkItem[]>(props.initialItems);
+
+const getPicURL = (url: string) => {
+  return new URL(url, import.meta.url).href;
+};
+
+const containerRef = ref<HTMLDivElement>();
+const tableItemRef = ref<HTMLDivElement[]>([]);
+
+// 计算瀑布流位置
+const calculatePosition = () => {
+  if (!tableItemRef.value.length) return;
+
+  // 重置列高度
+  columnHeights.value = Array.from({ length: columnCount.value }).fill(0) as number[];
+
+  // 计算每项位置
+  tableItemRef.value.forEach((item, _index) => {
+    if (!item) return;
+
+    // 计算每项宽度 (减去间隙)
+    const itemWidth = (containerWidth.value - gap.value * (columnCount.value - 1)) / columnCount.value;
+
+    // 找到最短的列
+    const shortestColumnIndex = columnHeights.value.indexOf(Math.min(...columnHeights.value));
+
+    // 设置项位置
+    item.style.position = 'absolute';
+    item.style.width = `${itemWidth}px`;
+    item.style.left = `${shortestColumnIndex * (itemWidth + gap.value)}px`;
+    item.style.top = `${columnHeights.value[shortestColumnIndex]}px`;
+
+    // 更新列高度
+    columnHeights.value[shortestColumnIndex] += item.offsetHeight + gap.value;
+  });
+
+  // 设置容器高度
+  const container = tableItemRef.value[0]?.parentElement;
+  if (container) {
+    container.style.height = `${Math.max(...columnHeights.value)}px`;
+  }
+};
+
+// 响应式调整
+const handleResize = () => {
+  const container = containerRef.value;
+  if (container) {
+    containerWidth.value = container.offsetWidth;
+    calculatePosition();
+  }
+};
+
+watch(
+  () => props.isActiveType,
+  () => {
+    if (props.isActiveType === 'All') {
+      tableList.value = props.initialItems;
+    } else {
+      tableList.value = props.initialItems.filter(item => item.type === props.isActiveType);
+    }
+    nextTick(() => {
+      calculatePosition();
+    });
+  }
+);
 
 onMounted(() => {
-  // grid布局
-  const masonry = document.querySelector('.masonry_2') as HTMLElement;
-  const items = masonry.querySelectorAll('.masonry_2 .item') as NodeListOf<HTMLElement>;
-  items.forEach((item: HTMLElement) => {
-    // 模拟高度获取，若为图片可获取图片高度
-    const height = Math.floor(Math.random() * 300 + 50);
-    // 根据元素高度设置元素的需占行数
-    const rows = Math.ceil(height / 10);
-    (item as HTMLElement).style.gridRowStart = `span ${rows}`;
-  });
+  handleResize();
+  window.addEventListener('resize', handleResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
 });
 </script>
 
 <template>
-  <div class="masonry_2">
-    <div v-for="(item, index) in 20" :key="index" class="item">
-      {{ index }}
+  <div class="relative mx-auto max-w-1200px w-full">
+    <!-- 瀑布流容器 -->
+    <div ref="containerRef" class="relative w-full">
+      <div v-for="(image, index) in tableList" :key="index" ref="tableItemRef" class="transition-all duration-300">
+        <NImage
+          :src="getPicURL(image.url)"
+          class="block h-auto w-full rounded-lg shadow-md transition-shadow hover:shadow-lg"
+          object-fit="cover"
+          preview-disabled
+          @load="handleResize()"
+        />
+      </div>
     </div>
   </div>
 </template>
 
-<style scoped lang="scss">
-.masonry_2 {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  grid-auto-rows: 10px;
-  .item {
-    background: #ccc;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-}
+<style lang="scss" scoped>
+/* 可以添加自定义样式 */
 </style>

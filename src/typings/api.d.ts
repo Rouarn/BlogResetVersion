@@ -93,11 +93,8 @@ declare namespace Api {
   namespace Work {
     interface WorkItem {
       id: string | number;
-      image: string;
-      title: string;
-      description: string;
-      height?: number;
-      width?: number;
+      type: string;
+      url: string;
     }
   }
 }
