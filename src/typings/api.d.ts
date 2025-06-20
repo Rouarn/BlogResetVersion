@@ -97,4 +97,15 @@ declare namespace Api {
       url: string;
     }
   }
+
+  namespace Blog {
+    interface BlogItem {
+      id: string | number;
+      cover: string;
+      title: string;
+      description: string;
+      author: string;
+      date: string;
+    }
+  }
 }

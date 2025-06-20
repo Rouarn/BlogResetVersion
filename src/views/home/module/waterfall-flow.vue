@@ -113,7 +113,7 @@ onBeforeUnmount(() => {
           v-for="image in tableList"
           :key="image.id"
           ref="tableItemRef"
-          class="tableItem rounded-lg shadow-md transition-all transition-shadow duration-300 hover:shadow-lg"
+          class="tableItem transition-all duration-300 hover:shadow-lg"
         >
           <NImage
             :src="getPicURL(image.url)"
@@ -157,6 +157,7 @@ onBeforeUnmount(() => {
 .tableItem {
   overflow: hidden;
   cursor: pointer;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
   &::after {
     content: '';
     position: absolute;

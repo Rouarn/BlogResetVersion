@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue';
 import WaterfallFlow from './module/waterfall-flow.vue';
+import LatestBlog from './module/latest-blog.vue';
 
 // 分类
 const isActiveType = ref('All');
@@ -51,6 +52,36 @@ const handleMore = () => {
 
   workList.push(...newItems);
 };
+
+const blogs = reactive<Api.Blog.BlogItem[]>([
+  {
+    id: 1,
+    cover: '/src/assets/imgs/picture/1.jpg',
+    title: 'Tips for Delivering a Great Perfor mance in Your Next',
+    description:
+      'At tincidunt vulputate dis natoque parturient proine mperdiet. Quisque lig pede males us. Semper orc gue lorem ipsum',
+    author: 'Soybean',
+    date: 'January 28, 2020'
+  },
+  {
+    id: 2,
+    cover: '/src/assets/imgs/picture/4.jpg',
+    title: 'How To Be The Highest Marketer On Your Team And Skills',
+    description:
+      'At tincidunt vulputate dis natoque parturient proine mperdiet. Quisque lig pede males us. Semper orc gue lorem ipsum',
+    author: 'Soybean',
+    date: '2021-01-01'
+  },
+  {
+    id: 3,
+    cover: '/src/assets/imgs/picture/3.jpg',
+    title: '4 Myths Rand Fishkin Wants You to Question Launching ',
+    description:
+      'At tincidunt vulputate dis natoque parturient proine mperdiet. Quisque lig pede males us. Semper orc gue lorem ipsum',
+    author: 'Soybean',
+    date: '2021-01-01'
+  }
+]);
 </script>
 
 <template>
@@ -69,8 +100,8 @@ const handleMore = () => {
       <NButton class="primary-button" ghost :bordered="false" :focusable="false" size="large">About Us</NButton>
     </NSpace>
 
-    <NSpace vertical :size="24" class="mt-25">
-      <div class="mb-10 text-center">
+    <NSpace vertical class="my-25">
+      <NSpace justify="center" wrap>
         <NButton
           v-for="(item, index) in workType"
           :key="index"
@@ -81,7 +112,7 @@ const handleMore = () => {
         >
           {{ item.name }}
         </NButton>
-      </div>
+      </NSpace>
 
       <WaterfallFlow :initial-items="workList" :is-active-type="isActiveType" />
 
@@ -91,6 +122,17 @@ const handleMore = () => {
           View More
         </NButton>
       </div>
+    </NSpace>
+
+    <NSpace vertical :size="24" class="bg-#F4F7FC pb-50px pt-10">
+      <div>
+        <NH2 class="blogTitle mb-10 text-center text-28px font-700 uppercase">Latest Blog</NH2>
+        <NP class="mx-a w-2xl text-center text-14px text-#666 font-normal">
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sequi tempora veritatis nemo aut ea iusto eos est
+          expedita, quas ab adipisci.
+        </NP>
+      </div>
+      <LatestBlog :blog-list="blogs" />
     </NSpace>
   </NSpace>
 </template>
@@ -107,5 +149,22 @@ const handleMore = () => {
 :deep(.n-button:not(.n-button--disabled):focus),
 :deep(.n-button__content:hover) {
   color: #111 !important;
+}
+
+.blogTitle {
+  position: relative;
+  &::after {
+    background: #444444 none repeat scroll 0 0;
+    bottom: -15px;
+    content: '';
+    display: block;
+    font-size: 20px;
+    height: 2px;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    width: 50px;
+  }
 }
 </style>
