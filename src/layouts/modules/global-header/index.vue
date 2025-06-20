@@ -1,12 +1,19 @@
 <script setup lang="ts">
-import { h, ref } from 'vue';
+import { computed, h, ref } from 'vue';
 import { type MenuOption } from 'naive-ui';
+import { useAppStore } from '@/store/modules/app';
 import GlobalLogo from '../global-logo/index.vue';
 import GlobalSearch from '../global-search/index.vue';
+import ThemeButton from './components/theme-button.vue';
+import UserAvatar from './components/user-avatar.vue';
 
- defineProps<{
+defineProps<{
   top: boolean;
 }>();
+
+const appStore = useAppStore();
+
+const isMobile = computed(() => appStore.isMobile);
 
 const activeKey = ref('');
 const menuOptions: MenuOption[] = [
@@ -28,10 +35,6 @@ const menuOptions: MenuOption[] = [
     label: '舞，舞，舞',
     key: 'dance-dance-dance',
     children: [
-      {
-        label: '羊男',
-        key: 'sheep-man'
-      },
       {
         label: '饮品',
         key: 'beverage',
@@ -60,11 +63,25 @@ const menuOptions: MenuOption[] = [
   },
   {
     label: () => {
-      return h(GlobalSearch, {}, {});
+      return h(GlobalSearch);
     },
     key: 'a-wild-sheep-chase'
+  },
+  {
+    label: () => {
+      return h(ThemeButton);
+    },
+    key: 'sheep-man'
+  },
+  {
+    label: () => {
+      return h(UserAvatar);
+    },
+    key: 'a-trip-to-the-mountains'
   }
 ];
+
+const isVisible = ref(false);
 </script>
 
 <template>
@@ -72,15 +89,24 @@ const menuOptions: MenuOption[] = [
     class="fixed-center z-10 flex-center transition-all duration-300"
     :class="[top ? 'h-64px shadow-sider' : 'bg-transparent! h-78px']"
   >
-    <NGrid :cols="3" class="max-w-1200px">
+    <NGrid :cols="7" class="max-w-1200px">
       <NGi class="ml-2rem flex items-center justify-start">
         <GlobalLogo custom-class="justify-start w-full" />
       </NGi>
-      <NGi />
-      <NGi>
-        <NMenu v-model:value="activeKey" mode="horizontal" :options="menuOptions" responsive />
+      <NGi span="2"></NGi>
+      <NGi :class="[isMobile ? 'flex-center justify-end mr-2rem' : '']" span="4">
+        <NMenu v-if="!isMobile" v-model:value="activeKey" mode="horizontal" :options="menuOptions" responsive />
+        <NIcon v-if="isMobile" size="20" @click="isVisible = !isVisible">
+          <icon-material-symbols:menu />
+        </NIcon>
       </NGi>
     </NGrid>
+
+    <NDrawer v-model:show="isVisible" width="80%" placement="right">
+      <NDrawerContent title="">
+        <NMenu v-model:value="activeKey" mode="vertical" :options="menuOptions" :class="{ isMobile: isMobile }" />
+      </NDrawerContent>
+    </NDrawer>
   </DarkModeContainer>
 </template>
 
@@ -110,6 +136,14 @@ const menuOptions: MenuOption[] = [
   .n-menu-item-content-header {
     &:hover {
       color: #666666 !important;
+    }
+  }
+}
+
+.isMobile {
+  :deep(.n-menu-item) {
+    &::before {
+      display: none;
     }
   }
 }
