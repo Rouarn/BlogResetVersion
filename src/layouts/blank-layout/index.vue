@@ -15,6 +15,7 @@ defineOptions({
     <!-- <GlobalBreadcrumb /> -->
     <GlobalContent :show-padding="false" />
     <GlobalFooter />
+    <NBackTop :right="100" />
   </div>
 </template>
 
