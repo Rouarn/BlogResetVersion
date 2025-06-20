@@ -63,7 +63,7 @@ const menuOptions: MenuOption[] = [
   },
   {
     label: () => {
-      return h(GlobalSearch);
+      return h(GlobalSearch, { class: 'pa-0!' });
     },
     key: 'a-wild-sheep-chase'
   },
@@ -89,12 +89,12 @@ const isVisible = ref(false);
     class="fixed-center z-10 flex-center transition-all duration-300"
     :class="[top ? 'h-64px shadow-sider' : 'bg-transparent! h-78px']"
   >
-    <NGrid :cols="7" class="max-w-1200px">
+    <NGrid :cols="isMobile ? 2 : 8" class="max-w-1200px">
       <NGi class="ml-2rem flex items-center justify-start">
         <GlobalLogo custom-class="justify-start w-full" />
       </NGi>
-      <NGi span="2"></NGi>
-      <NGi :class="[isMobile ? 'flex-center justify-end mr-2rem' : '']" span="4">
+      <NGi :span="isMobile ? 0 : 3"></NGi>
+      <NGi :class="[isMobile ? 'flex-center justify-end mr-2rem' : '']" :span="isMobile ? 1 : 4">
         <NMenu v-if="!isMobile" v-model:value="activeKey" mode="horizontal" :options="menuOptions" responsive />
         <NIcon v-if="isMobile" size="20" @click="isVisible = !isVisible">
           <icon-material-symbols:menu />

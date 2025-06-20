@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue';
+// import IframePage from '@/views/_builtin/iframe-page/[url].vue';
 import WaterfallFlow from './module/waterfall-flow.vue';
 import LatestBlog from './module/latest-blog.vue';
 
@@ -87,17 +88,32 @@ const blogs = reactive<Api.Blog.BlogItem[]>([
 <template>
   <NSpace vertical>
     <NSpace
-      class="home-area relative z-0 h-screen bg-cover bg-fixed bg-center bg-no-repeat px-3"
+      class="home-area relative z-0 h-screen overflow-hidden bg-cover bg-fixed bg-center bg-no-repeat px-3"
       align="center"
       justify="center"
       vertical
       :size="0"
+      :wrap-item="false"
     >
-      <NH2 class="mb-[1.25rem] text-[2.625rem] font-bold tracking-[0.125rem]">Here Is my short video info.</NH2>
-      <NP class="mb-[1.25rem] text-[0.875rem] text-[#444] font-normal leading-[1.625rem] capitalize">
+      <NH2 class="z-3 mb-[1.25rem] text-[2.625rem] font-bold tracking-[0.125rem]">Here Is my short video info.</NH2>
+      <NP class="z-3 mb-[1.25rem] text-[0.875rem] text-[#444] font-normal leading-[1.625rem] capitalize">
         We are Professional web developer and designer in this market.
       </NP>
-      <NButton class="primary-button" ghost :bordered="false" :focusable="false" size="large">About Us</NButton>
+      <NButton class="z-3 primary-button" ghost :bordered="false" :focusable="false" size="large">About Us</NButton>
+      <!--
+ <IframePage
+        url="https://www.bilibili.com/video/BV19441187Ds"
+        class="pointer-events-none absolute left-0 top-0 z-0 h-screen w-full"
+      />
+-->
+      <video
+        class="pointer-events-none absolute left-0 top-0 z-0 h-screen w-full object-cover object-left-bottom"
+        autoplay
+        muted
+        loop
+      >
+        <source src="/video/bg.mp4" type="video/mp4" />
+      </video>
     </NSpace>
 
     <NSpace vertical class="my-25">
