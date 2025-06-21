@@ -9,7 +9,7 @@ const { bool: show, toggle } = useBoolean();
 </script>
 
 <template>
-  <ButtonIcon :tooltip-content="$t('common.search')" @click="toggle">
+  <ButtonIcon :tooltip-content="$t('common.search')" v-bind="$attrs" @click="toggle">
     <icon-uil-search />
   </ButtonIcon>
   <SearchModal v-model:show="show" />

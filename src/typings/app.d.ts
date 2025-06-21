@@ -122,6 +122,10 @@ declare namespace App {
           [K in keyof ThemeSettingToken]?: Partial<ThemeSettingToken[K]>;
         };
       };
+
+      background: {
+        showVideo: boolean;
+      };
     }
 
     interface OtherColor {

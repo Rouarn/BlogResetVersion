@@ -48,7 +48,7 @@ export const generatedRoutes: GeneratedRoute[] = [
       i18nKey: 'route.home',
       icon: 'mdi:monitor-dashboard',
       order: 1,
-      constant: true,
+      constant: true
     }
   },
   {

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, h, ref } from 'vue';
+import { computed, h, reactive, ref } from 'vue';
 import { type MenuOption } from 'naive-ui';
 import { useAppStore } from '@/store/modules/app';
+import { useThemeStore } from '@/store/modules/theme';
 import GlobalLogo from '../global-logo/index.vue';
 import GlobalSearch from '../global-search/index.vue';
 import ThemeButton from './components/theme-button.vue';
@@ -12,11 +13,13 @@ defineProps<{
 }>();
 
 const appStore = useAppStore();
+const themeStore = useThemeStore();
 
 const isMobile = computed(() => appStore.isMobile);
+const showVideo = computed(() => themeStore.background.showVideo);
 
 const activeKey = ref('');
-const menuOptions: MenuOption[] = [
+const menuOptions = reactive<MenuOption[]>([
   {
     label: '首页',
     key: 'hear-the-wind-sing'
@@ -63,23 +66,23 @@ const menuOptions: MenuOption[] = [
   },
   {
     label: () => {
-      return h(GlobalSearch, { class: 'pa-0!' });
+      return h(GlobalSearch, { class: { 'c-#FFFFFF': showVideo } });
     },
     key: 'a-wild-sheep-chase'
   },
   {
     label: () => {
-      return h(ThemeButton);
+      return h(ThemeButton, { class: { 'c-#FFFFFF': showVideo } });
     },
     key: 'sheep-man'
   },
   {
     label: () => {
-      return h(UserAvatar);
+      return h(UserAvatar, { class: { 'c-#FFFFFF': showVideo } });
     },
     key: 'a-trip-to-the-mountains'
   }
-];
+]);
 
 const isVisible = ref(false);
 </script>
@@ -91,10 +94,13 @@ const isVisible = ref(false);
   >
     <NGrid :cols="isMobile ? 2 : 8" class="max-w-1200px">
       <NGi class="ml-2rem flex items-center justify-start">
-        <GlobalLogo custom-class="justify-start w-full" />
+        <GlobalLogo :custom-class="`justify-start w-full ${showVideo ? 'text-white' : ''}`" />
       </NGi>
       <NGi :span="isMobile ? 0 : 3"></NGi>
-      <NGi :class="[isMobile ? 'flex-center justify-end mr-2rem' : '']" :span="isMobile ? 1 : 4">
+      <NGi
+        :class="[isMobile ? 'flex-center justify-end mr-2rem' : '', { isVideoBg: showVideo }]"
+        :span="isMobile ? 1 : 4"
+      >
         <NMenu v-if="!isMobile" v-model:value="activeKey" mode="horizontal" :options="menuOptions" responsive />
         <NIcon v-if="isMobile" size="20" @click="isVisible = !isVisible">
           <icon-material-symbols:menu />
@@ -145,6 +151,12 @@ const isVisible = ref(false);
     &::before {
       display: none;
     }
+  }
+}
+
+.isVideoBg {
+  :deep(.n-menu-item-content-header) {
+    color: white !important;
   }
 }
 </style>

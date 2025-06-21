@@ -1,8 +1,13 @@
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 // import IframePage from '@/views/_builtin/iframe-page/[url].vue';
+import { useThemeStore } from '@/store/modules/theme';
 import WaterfallFlow from './module/waterfall-flow.vue';
 import LatestBlog from './module/latest-blog.vue';
+
+const themeStore = useThemeStore();
+
+const showVideo = computed(() => themeStore.background.showVideo);
 
 // 分类
 const isActiveType = ref('All');
@@ -95,11 +100,28 @@ const blogs = reactive<Api.Blog.BlogItem[]>([
       :size="0"
       :wrap-item="false"
     >
-      <NH2 class="z-3 mb-[1.25rem] text-[2.625rem] font-bold tracking-[0.125rem]">Here Is my short video info.</NH2>
-      <NP class="z-3 mb-[1.25rem] text-[0.875rem] text-[#444] font-normal leading-[1.625rem] capitalize">
+      <NH2
+        class="z-3 mb-[1.25rem] text-[2.625rem] font-bold tracking-[0.125rem]"
+        :class="[showVideo ? 'c-#FFFFFF' : '']"
+      >
+        Here Is my short video info.
+      </NH2>
+      <NP
+        class="z-3 mb-[1.25rem] text-[0.875rem] text-[#444] font-normal leading-[1.625rem] capitalize"
+        :class="[showVideo ? 'c-#FFFFFF' : '']"
+      >
         We are Professional web developer and designer in this market.
       </NP>
-      <NButton class="z-3 primary-button" ghost :bordered="false" :focusable="false" size="large">About Us</NButton>
+      <NButton
+        class="z-3"
+        :class="[showVideo ? 'c-#FFFFFF' : 'primary-button']"
+        ghost
+        :bordered="false"
+        :focusable="false"
+        size="large"
+      >
+        About Us
+      </NButton>
       <!--
  <IframePage
         url="https://www.bilibili.com/video/BV19441187Ds"
@@ -107,6 +129,7 @@ const blogs = reactive<Api.Blog.BlogItem[]>([
       />
 -->
       <video
+        v-if="themeStore.background.showVideo"
         class="pointer-events-none absolute left-0 top-0 z-0 h-screen w-full object-cover object-left-bottom"
         autoplay
         muted
