@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { computed, reactive, ref } from 'vue';
-// import IframePage from '@/views/_builtin/iframe-page/[url].vue';
 import { useThemeStore } from '@/store/modules/theme';
 import WaterfallFlow from './module/waterfall-flow.vue';
 import LatestBlog from './module/latest-blog.vue';
