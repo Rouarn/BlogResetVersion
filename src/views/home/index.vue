@@ -3,6 +3,7 @@ import { computed, reactive, ref } from 'vue'
 import LatestBlog from './module/latest-blog.vue'
 import WaterfallFlow from './module/waterfall-flow.vue'
 import { useThemeStore } from '@/stores/modules/theme'
+import { useRouterPush } from '@/hooks/common/router'
 
 defineOptions({
   name: 'BaseHome',
@@ -18,6 +19,7 @@ definePage({
 })
 
 const themeStore = useThemeStore()
+const { routerPushByKey } = useRouterPush()
 
 const showVideo = computed(() => themeStore.background.showVideo)
 
@@ -118,7 +120,15 @@ const blogs = reactive<Api.Home.BlogItem[]>([
       >
         We are Professional web developer and designer in this market.
       </NP>
-      <NButton class="z-3" :class="[showVideo ? 'c-#FFFFFF' : 'primary-button']" ghost :bordered="false" :focusable="false" size="large">
+      <NButton
+        class="z-3"
+        :class="[showVideo ? 'c-#FFFFFF' : 'primary-button']"
+        ghost
+        :bordered="false"
+        :focusable="false"
+        size="large"
+        @click="routerPushByKey('/user-center/')"
+      >
         About Us
       </NButton>
 
