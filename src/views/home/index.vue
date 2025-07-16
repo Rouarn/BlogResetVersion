@@ -1,5 +1,13 @@
-<route lang="json5">
-{
+<script lang="ts" setup>
+import { computed, reactive, ref } from 'vue'
+import LatestBlog from './module/latest-blog.vue'
+import WaterfallFlow from './module/waterfall-flow.vue'
+import { useThemeStore } from '@/stores/modules/theme'
+
+defineOptions({
+  name: 'BaseHome',
+})
+definePage({
   meta: {
     layout: 'base-layout',
     title: '首页',
@@ -7,14 +15,7 @@
     order: 0,
     icon: 'material-symbols:home-app-logo',
   },
-}
-</route>
-
-<script lang="ts" setup>
-import { computed, reactive, ref } from 'vue'
-import LatestBlog from './module/latest-blog.vue'
-import WaterfallFlow from './module/waterfall-flow.vue'
-import { useThemeStore } from '@/stores/modules/theme'
+})
 
 const themeStore = useThemeStore()
 
