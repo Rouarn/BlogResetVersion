@@ -1,120 +1,114 @@
 <script lang="ts" setup>
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 const props = defineProps<{
-  initialItems: Api.Work.WorkItem[];
-  isActiveType: string;
-}>();
+  initialItems: Api.Home.WorkItem[]
+  isActiveType: string
+}>()
 
-const columnCount = ref(3); // 默认3列
-const gap = ref(30); // 间距
-const containerWidth = ref(0); // 容器宽度
-const columnHeights = ref<number[]>([]); // 每列高度
+const columnCount = ref(3) // 默认3列
+const gap = ref(30) // 间距
+const containerWidth = ref(0) // 容器宽度
+const columnHeights = ref<number[]>([]) // 每列高度
 
-const tableList = ref<Api.Work.WorkItem[]>(props.initialItems);
+const tableList = ref<Api.Home.WorkItem[]>(props.initialItems)
 
 const getPicURL = (url: string) => {
-  return new URL(url, import.meta.url).href;
-};
+  return new URL(url, import.meta.url).href
+}
 
-const containerRef = ref<HTMLDivElement>();
-const tableItemRef = ref<HTMLDivElement[]>([]);
+const containerRef = ref<HTMLDivElement>()
+const tableItemRef = ref<HTMLDivElement[]>([])
 
 // 根据屏幕宽度计算列数
 const calculateColumnCount = () => {
-  const width = window.innerWidth;
+  const width = window.innerWidth
   if (width < 640) {
     // 小屏设备
-    return 1;
+    return 1
   } else if (width < 1024) {
     // 中等屏幕
-    return 2;
+    return 2
   } // 大屏幕
-  return 3;
-};
+  return 3
+}
 
 // 计算瀑布流位置
 const calculatePosition = () => {
-  if (!tableItemRef.value.length) return;
+  if (!tableItemRef.value.length) return
 
   // 更新列数
-  columnCount.value = calculateColumnCount();
+  columnCount.value = calculateColumnCount()
 
   // 重置列高度
-  columnHeights.value = Array.from({ length: columnCount.value }).fill(0) as number[];
+  columnHeights.value = Array.from({ length: columnCount.value }).fill(0) as number[]
 
   // 计算每项位置
   tableItemRef.value.forEach((item, _index) => {
-    if (!item) return;
+    if (!item) return
 
     // 计算每项宽度 (减去间隙)
-    const itemWidth = (containerWidth.value - gap.value * (columnCount.value - 1)) / columnCount.value;
+    const itemWidth = (containerWidth.value - gap.value * (columnCount.value - 1)) / columnCount.value
 
     // 找到最短的列
-    const shortestColumnIndex = columnHeights.value.indexOf(Math.min(...columnHeights.value));
+    const shortestColumnIndex = columnHeights.value.indexOf(Math.min(...columnHeights.value))
 
     // 设置项位置
-    item.style.position = 'absolute';
-    item.style.width = `${itemWidth}px`;
-    item.style.left = `${shortestColumnIndex * (itemWidth + gap.value)}px`;
-    item.style.top = `${columnHeights.value[shortestColumnIndex]}px`;
+    item.style.position = 'absolute'
+    item.style.width = `${itemWidth}px`
+    item.style.left = `${shortestColumnIndex * (itemWidth + gap.value)}px`
+    item.style.top = `${columnHeights.value[shortestColumnIndex]}px`
 
     // 更新列高度
-    columnHeights.value[shortestColumnIndex] += item.offsetHeight + gap.value;
-  });
+    columnHeights.value[shortestColumnIndex] += item.offsetHeight + gap.value
+  })
 
   // 设置容器高度
-  const container = tableItemRef.value[0]?.parentElement;
+  const container = tableItemRef.value[0]?.parentElement
   if (container) {
-    container.style.height = `${Math.max(...columnHeights.value)}px`;
+    container.style.height = `${Math.max(...columnHeights.value)}px`
   }
-};
+}
 
 // 响应式调整
 const handleResize = () => {
-  const container = containerRef.value;
+  const container = containerRef.value
   if (container) {
-    containerWidth.value = container.offsetWidth;
-    calculatePosition();
+    containerWidth.value = container.offsetWidth
+    calculatePosition()
   }
-};
+}
 
 watch(
   () => props.isActiveType,
   () => {
     if (props.isActiveType === 'All') {
-      tableList.value = props.initialItems;
+      tableList.value = props.initialItems
     } else {
-      tableList.value = props.initialItems.filter(item => item.type === props.isActiveType);
+      tableList.value = props.initialItems.filter((item) => item.type === props.isActiveType)
     }
     nextTick(() => {
-      calculatePosition();
-    });
-  }
-);
+      calculatePosition()
+    })
+  },
+)
 
 onMounted(() => {
-  handleResize();
-  window.addEventListener('resize', handleResize);
-});
+  handleResize()
+  window.addEventListener('resize', handleResize)
+})
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleResize);
-});
+  window.removeEventListener('resize', handleResize)
+})
 </script>
 
 <template>
   <div class="relative mx-auto max-w-1200px w-full px-4 sm:px-6">
-    <!-- 添加水平内边距 -->
     <!-- 瀑布流容器 -->
     <div ref="containerRef" class="relative w-full">
       <TransitionGroup name="zoom-fade">
-        <div
-          v-for="image in tableList"
-          :key="image.id"
-          ref="tableItemRef"
-          class="tableItem transition-all duration-300 hover:shadow-lg"
-        >
+        <div v-for="image in tableList" :key="image.id" ref="tableItemRef" class="tableItem transition-all duration-300 hover:shadow-lg">
           <NImage
             :src="getPicURL(image.url)"
             class="image block h-auto w-full"
@@ -125,9 +119,7 @@ onBeforeUnmount(() => {
 
           <div class="mask">
             <NP class="m-0 c-[var(--un-ring-offset-color)] uppercase">Web Design</NP>
-            <NH4 class="m-0 my-10px text-1.125rem c-[var(--un-ring-offset-color)] font-700 uppercase">
-              Brand Redesign Works
-            </NH4>
+            <NH4 class="m-0 my-10px text-1.125rem c-[var(--un-ring-offset-color)] font-700 uppercase"> Brand Redesign Works </NH4>
           </div>
         </div>
       </TransitionGroup>

@@ -1,35 +1,36 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { themeSchemaRecord } from '@/constants/app';
-import { useThemeStore } from '@/store/modules/theme';
-import { $t } from '@/locales';
-import SettingItem from '../components/setting-item.vue';
+import SettingItem from '../components/setting-item.vue'
+import { useThemeStore } from '@/stores/modules/theme'
+import { $t } from '@/locales'
 
 defineOptions({
-  name: 'DarkMode'
-});
+  name: 'DarkMode',
+})
 
-const themeStore = useThemeStore();
+const themeStore = useThemeStore()
 
 const icons: Record<UnionKey.ThemeScheme, string> = {
   light: 'material-symbols:sunny',
   dark: 'material-symbols:nightlight-rounded',
-  auto: 'material-symbols:hdr-auto'
-};
+  auto: 'material-symbols:hdr-auto',
+}
+const themeSchemaRecord: Record<UnionKey.ThemeScheme, App.I18n.I18nKey> = {
+  light: 'theme.themeSchema.light',
+  dark: 'theme.themeSchema.dark',
+  auto: 'theme.themeSchema.auto',
+}
 
 function handleSegmentChange(value: string | number) {
-  themeStore.setThemeScheme(value as UnionKey.ThemeScheme);
+  themeStore.setThemeScheme(value as UnionKey.ThemeScheme)
 }
 
 function handleGrayscaleChange(value: boolean) {
-  themeStore.setGrayscale(value);
+  themeStore.setGrayscale(value)
 }
 
 function handleColourWeaknessChange(value: boolean) {
-  themeStore.setColourWeakness(value);
+  themeStore.setColourWeakness(value)
 }
-
-const showSiderInverted = computed(() => !themeStore.darkMode && themeStore.layout.mode.includes('vertical'));
 </script>
 
 <template>
@@ -49,11 +50,6 @@ const showSiderInverted = computed(() => !themeStore.darkMode && themeStore.layo
         </NTab>
       </NTabs>
     </div>
-    <Transition name="sider-inverted">
-      <SettingItem v-if="showSiderInverted" :label="$t('theme.sider.inverted')">
-        <NSwitch v-model:value="themeStore.sider.inverted" />
-      </SettingItem>
-    </Transition>
     <SettingItem :label="$t('theme.grayscale')">
       <NSwitch :value="themeStore.grayscale" @update:value="handleGrayscaleChange" />
     </SettingItem>

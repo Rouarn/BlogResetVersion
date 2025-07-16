@@ -1,31 +1,33 @@
-import { createApp } from 'vue';
-import './plugins/assets';
-import { setupAppVersionNotification, setupDayjs, setupIconifyOffline, setupLoading, setupNProgress } from './plugins';
-import { setupStore } from './store';
-import { setupRouter } from './router';
-import { setupI18n } from './locales';
-import App from './App.vue';
+import { createApp } from 'vue'
+import App from './App.vue'
+import './plugins/assets'
+import { setupI18n } from './locales'
+import { setupAppVersionNotification, setupDayjs, setupDirectives, setupIconifyOffline, setupLoading, setupNProgress } from './plugins'
+import router from './router'
+import { setupStore } from './stores'
 
-async function setupApp() {
-  setupLoading();
+function setupApp() {
+  setupLoading()
 
-  setupNProgress();
+  setupNProgress()
 
-  setupIconifyOffline();
+  setupIconifyOffline()
 
-  setupDayjs();
+  setupDayjs()
 
-  const app = createApp(App);
+  const app = createApp(App)
 
-  setupStore(app);
+  setupDirectives(app)
 
-  await setupRouter(app);
+  setupStore(app)
 
-  setupI18n(app);
+  setupI18n(app)
 
-  setupAppVersionNotification();
+  app.use(router)
 
-  app.mount('#app');
+  setupAppVersionNotification()
+
+  app.mount('#app')
 }
 
-setupApp();
+setupApp()

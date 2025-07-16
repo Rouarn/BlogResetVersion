@@ -1,9 +1,9 @@
-import { extend } from 'dayjs';
-import localeData from 'dayjs/plugin/localeData';
-import { setDayjsLocale } from '../locales/dayjs';
+import { setDayjsLocale } from '../locales/dayjs'
+import { extend } from 'dayjs'
+import localeData from 'dayjs/plugin/localeData'
 
 export function setupDayjs() {
-  extend(localeData);
+  extend(localeData)
 
-  setDayjsLocale();
+  setDayjsLocale()
 }

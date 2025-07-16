@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import GlobalLogo from '../global-logo/index.vue';
+import GlobalLogo from '../global-logo/index.vue'
 
 defineOptions({
-  name: 'GlobalFooter'
-});
+  name: 'GlobalFooter',
+})
 </script>
 
 <template>

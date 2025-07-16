@@ -1,162 +1,48 @@
 <script setup lang="ts">
-import { computed, h, reactive, ref } from 'vue';
-import { type MenuOption } from 'naive-ui';
-import { useAppStore } from '@/store/modules/app';
-import { useThemeStore } from '@/store/modules/theme';
-import GlobalLogo from '../global-logo/index.vue';
-import GlobalSearch from '../global-search/index.vue';
-import ThemeButton from './components/theme-button.vue';
-import UserAvatar from './components/user-avatar.vue';
+import GlobalLogo from '../global-logo/index.vue'
+import GlobalMenu from '../global-menu/index.vue'
+import GlobalSearch from '../global-search/index.vue'
+import ThemeButton from './components/theme-button.vue'
+import UserAvatar from './components/user-avatar.vue'
+import ThemeSchemaSwitch from '@/components/common/theme-schema-switch.vue'
+import { useAppStore } from '@/stores/modules/app'
+import { useThemeStore } from '@/stores/modules/theme'
+import { useFullscreen } from '@vueuse/core'
 
-defineProps<{
-  top: boolean;
-}>();
+defineOptions({
+  name: 'GlobalHeader',
+})
 
-const appStore = useAppStore();
-const themeStore = useThemeStore();
-
-const isMobile = computed(() => appStore.isMobile);
-const showVideo = computed(() => themeStore.background.showVideo);
-
-const activeKey = ref('');
-const menuOptions = reactive<MenuOption[]>([
-  {
-    label: '首页',
-    key: 'hear-the-wind-sing'
-  },
-  {
-    label: '且听风吟',
-    key: 'pinball-1973',
-    children: [
-      {
-        label: '且听风吟',
-        key: 'rat'
-      }
-    ]
-  },
-  {
-    label: '舞，舞，舞',
-    key: 'dance-dance-dance',
-    children: [
-      {
-        label: '饮品',
-        key: 'beverage',
-        children: [
-          {
-            label: '威士忌',
-            key: 'whisky'
-          }
-        ]
-      },
-      {
-        label: '食物',
-        key: 'food',
-        children: [
-          {
-            label: '三明治',
-            key: 'sandwich'
-          }
-        ]
-      },
-      {
-        label: '过去增多，未来减少',
-        key: 'the-past-increases-the-future-recedes'
-      }
-    ]
-  },
-  {
-    label: () => {
-      return h(GlobalSearch, { class: { 'c-#FFFFFF': showVideo } });
-    },
-    key: 'a-wild-sheep-chase'
-  },
-  {
-    label: () => {
-      return h(ThemeButton, { class: { 'c-#FFFFFF': showVideo } });
-    },
-    key: 'sheep-man'
-  },
-  {
-    label: () => {
-      return h(UserAvatar, { class: { 'c-#FFFFFF': showVideo } });
-    },
-    key: 'a-trip-to-the-mountains'
-  }
-]);
-
-const isVisible = ref(false);
+const appStore = useAppStore()
+const themeStore = useThemeStore()
+const { isFullscreen, toggle } = useFullscreen()
 </script>
 
 <template>
-  <DarkModeContainer
-    class="fixed-center z-10 flex-center transition-all duration-300"
-    :class="[top ? 'h-64px shadow-sider' : 'bg-transparent! h-78px']"
-  >
-    <NGrid :cols="isMobile ? 2 : 8" class="max-w-1200px">
-      <NGi class="ml-2rem flex items-center justify-start">
-        <GlobalLogo :custom-class="`justify-start w-full ${showVideo ? 'text-white' : ''}`" />
-      </NGi>
-      <NGi :span="isMobile ? 0 : 3"></NGi>
-      <NGi
-        :class="[isMobile ? 'flex-center justify-end mr-2rem' : '', { isVideoBg: showVideo }]"
-        :span="isMobile ? 1 : 4"
-      >
-        <NMenu v-if="!isMobile" v-model:value="activeKey" mode="horizontal" :options="menuOptions" responsive />
-        <NIcon v-if="isMobile" size="20" @click="isVisible = !isVisible">
-          <icon-material-symbols:menu />
-        </NIcon>
-      </NGi>
-    </NGrid>
+  <header class="w-full bg-white dark:bg-#18181c border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+    <div class="max-w-screen-xl mx-auto px-4 h-16 flex items-center justify-between">
+      <!-- 左侧：Logo和系统名称 -->
+      <GlobalLogo class="h-full" v-if="!appStore.isMobile" />
 
-    <NDrawer v-model:show="isVisible" width="80%" placement="right">
-      <NDrawerContent title="">
-        <NMenu v-model:value="activeKey" mode="vertical" :options="menuOptions" :class="{ isMobile: isMobile }" />
-      </NDrawerContent>
-    </NDrawer>
-  </DarkModeContainer>
+      <!-- 中间：导航菜单 -->
+      <GlobalMenu />
+
+      <!-- 右侧：操作区 -->
+      <div class="flex items-center space-x-2">
+        <!-- 搜索按钮 -->
+        <GlobalSearch />
+        <!-- 全屏切换 -->
+        <FullScreen v-if="!appStore.isMobile" :full="isFullscreen" @click="toggle" />
+        <!-- 语言切换 -->
+        <LangSwitch :lang="appStore.locale" :lang-options="appStore.localeOptions" @change-lang="appStore.changeLocale" />
+        <!-- 主题切换 -->
+        <ThemeSchemaSwitch :theme-schema="themeStore.themeScheme" :is-dark="themeStore.darkMode" @switch="themeStore.toggleThemeScheme" />
+        <ThemeButton />
+        <!-- 用户头像 -->
+        <UserAvatar />
+      </div>
+    </div>
+  </header>
 </template>
 
-<style lang="scss" scoped>
-:deep(.n-menu-item) {
-  position: relative;
-
-  &::before {
-    opacity: 0;
-    width: 0;
-    background: #666666 none repeat scroll 0 0;
-    bottom: 0;
-    content: '';
-    height: 1px;
-    left: 0;
-    margin: auto;
-    position: absolute;
-    right: 0;
-    transition: all 0.3s ease 0s;
-  }
-
-  &:hover::before {
-    opacity: 1;
-    width: 15px;
-  }
-
-  .n-menu-item-content-header {
-    &:hover {
-      color: #666666 !important;
-    }
-  }
-}
-
-.isMobile {
-  :deep(.n-menu-item) {
-    &::before {
-      display: none;
-    }
-  }
-}
-
-.isVideoBg {
-  :deep(.n-menu-item-content-header) {
-    color: white !important;
-  }
-}
-</style>
+<style lang="scss" scoped></style>

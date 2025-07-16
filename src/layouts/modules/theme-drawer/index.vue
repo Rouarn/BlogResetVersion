@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { useAppStore } from '@/store/modules/app';
-import { $t } from '@/locales';
-import DarkMode from './modules/dark-mode.vue';
-import ThemeColor from './modules/theme-color.vue';
-import ConfigOperation from './modules/config-operation.vue';
-import BgSetting from './modules/bg-setting.vue';
+import BgSetting from './modules/bg-setting.vue'
+import DarkMode from './modules/dark-mode.vue'
+import ThemeColor from './modules/theme-color.vue'
+import { useAppStore } from '@/stores/modules/app'
+import { $t } from '@/locales'
 
 defineOptions({
-  name: 'ThemeDrawer'
-});
+  name: 'ThemeDrawer',
+})
 
-const appStore = useAppStore();
+const appStore = useAppStore()
 </script>
 
 <template>
@@ -19,9 +18,6 @@ const appStore = useAppStore();
       <DarkMode />
       <ThemeColor />
       <BgSetting />
-      <template #footer>
-        <ConfigOperation />
-      </template>
     </NDrawerContent>
   </NDrawer>
 </template>

@@ -1,55 +1,53 @@
-import type { HttpProxy, ProxyOptions } from 'vite';
-import { bgRed, bgYellow, green, lightBlue } from 'kolorist';
-import { consola } from 'consola';
-import { createServiceConfig } from '../../src/utils/service';
+import type { Env } from '@/typings/vite-env'
+import { consola } from 'consola'
+import { bgRed, bgYellow, green, lightBlue } from 'kolorist'
+import type { ProxyOptions } from 'vite'
+
+type ProxyTargetList = Record<string, ProxyOptions>
 
 /**
- * Set http proxy
- *
- * @param env - The current env
- * @param enable - If enable http proxy
+ * 创建代理，用于解析 .env.development 代理配置
+ * @param viteEnv  环境变量
+ * @param enable   是否开启代理
  */
-export function createViteProxy(env: Env.ImportMeta, enable: boolean) {
-  const isEnableHttpProxy = enable && env.VITE_HTTP_PROXY === 'Y';
+export function createViteProxy(viteEnv: Env.ImportMeta, enable: boolean) {
+  const isEnableHttpProxy = enable && viteEnv.VITE_HTTP_PROXY === 'Y'
 
-  if (!isEnableHttpProxy) return undefined;
+  if (!isEnableHttpProxy) return undefined
 
-  const isEnableProxyLog = env.VITE_PROXY_LOG === 'Y';
+  const isEnableProxyLog = viteEnv.VITE_PROXY_LOG === 'Y'
 
-  const { baseURL, proxyPattern, other } = createServiceConfig(env);
+  const proxyConfig = viteEnv.VITE_PROXY ? JSON.parse(viteEnv.VITE_PROXY) : []
 
-  const proxy: Record<string, ProxyOptions> = createProxyItem({ baseURL, proxyPattern }, isEnableProxyLog);
+  const ret: ProxyTargetList = {}
+  for (const [prefix, target] of proxyConfig) {
+    const httpsRE = /^https:\/\//
+    const isHttps = httpsRE.test(target)
 
-  other.forEach(item => {
-    Object.assign(proxy, createProxyItem(item, isEnableProxyLog));
-  });
+    // https://github.com/http-party/node-http-proxy#options
+    ret[prefix] = {
+      target: target,
+      changeOrigin: true,
+      // ws: true,
+      configure: (_proxy) => {
+        _proxy.on('proxyReq', (_proxyReq, req, _res) => {
+          if (!isEnableProxyLog) return
 
-  return proxy;
-}
+          const requestUrl = `${lightBlue('[proxy url]')}: ${bgYellow(` ${req.method} `)} ${green(`${prefix}${req.url}`)}`
 
-function createProxyItem(item: App.Service.ServiceConfigItem, enableLog: boolean) {
-  const proxy: Record<string, ProxyOptions> = {};
+          const proxyUrl = `${lightBlue('[real request url]')}: ${green(`${target}${req.url}`)}`
 
-  proxy[item.proxyPattern] = {
-    target: item.baseURL,
-    changeOrigin: true,
-    configure: (_proxy: HttpProxy.Server, options: ProxyOptions) => {
-      _proxy.on('proxyReq', (_proxyReq, req, _res) => {
-        if (!enableLog) return;
-
-        const requestUrl = `${lightBlue('[proxy url]')}: ${bgYellow(` ${req.method} `)} ${green(`${item.proxyPattern}${req.url}`)}`;
-
-        const proxyUrl = `${lightBlue('[real request url]')}: ${green(`${options.target}${req.url}`)}`;
-
-        consola.log(`${requestUrl}\n${proxyUrl}`);
-      });
-      _proxy.on('error', (_err, req, _res) => {
-        if (!enableLog) return;
-        consola.log(bgRed(`Error: ${req.method} `), green(`${options.target}${req.url}`));
-      });
-    },
-    rewrite: path => path.replace(new RegExp(`^${item.proxyPattern}`), '')
-  };
-
-  return proxy;
+          consola.log(`${requestUrl}\n${proxyUrl}`)
+        })
+        _proxy.on('error', (_err, req, _res) => {
+          if (!isEnableProxyLog) return
+          consola.log(bgRed(`Error: ${req.method} `), green(`${target}${req.url}`))
+        })
+      },
+      rewrite: (path) => path.replace(new RegExp(`^${prefix}`), ''),
+      // https is require secure=false
+      ...(isHttps ? { secure: false } : {}),
+    }
+  }
+  return ret
 }

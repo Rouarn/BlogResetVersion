@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { useThemeStore } from '@/store/modules/theme';
-import SettingItem from '../components/setting-item.vue';
+import SettingItem from '../components/setting-item.vue'
+import { useThemeStore } from '@/stores/modules/theme'
 
-const themeStore = useThemeStore();
+const themeStore = useThemeStore()
 </script>
 
 <template>

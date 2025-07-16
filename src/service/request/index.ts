@@ -1,166 +1,124 @@
-import type { AxiosResponse } from 'axios';
-import { BACKEND_ERROR_CODE, createFlatRequest, createRequest } from '@sa/axios';
-import { useAuthStore } from '@/store/modules/auth';
-import { localStg } from '@/utils/storage';
-import { getServiceBaseURL } from '@/utils/service';
-import { $t } from '@/locales';
-import { getAuthorization, handleExpiredRequest, showErrorMsg } from './shared';
-import type { RequestInstanceState } from './type';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import router from '@/router'
+import { useAuthStore } from '@/stores/modules/auth'
+import { AxiosCanceler } from './axiosCancel'
+import { checkStatus } from './checkStatus'
+import { GlobalConfig, ResultEnum } from '@/enum'
+import type { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import axios from 'axios'
 
-const isHttpProxy = import.meta.env.DEV && import.meta.env.VITE_HTTP_PROXY === 'Y';
-const { baseURL, otherBaseURL } = getServiceBaseURL(import.meta.env, isHttpProxy);
+export interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
+  loading?: boolean
+  cancel?: boolean
+}
 
-export const request = createFlatRequest<App.Service.Response, RequestInstanceState>(
-  {
-    baseURL,
-    headers: {
-      apifoxToken: ''
-    }
-  },
-  {
-    async onRequest(config) {
-      const Authorization = getAuthorization();
-      Object.assign(config.headers, { Authorization });
+const config = {
+  // 默认地址请求地址，可在 .env.** 文件中修改
+  baseURL: import.meta.env.VITE_SERVICE_BASE_URL as string,
+  // 设置超时时间
+  timeout: ResultEnum.TIMEOUT as number,
+  // 跨域时候允许携带凭证
+  withCredentials: true,
+}
 
-      return config;
-    },
-    isBackendSuccess(response) {
-      // when the backend response code is "0000"(default), it means the request is success
-      // to change this logic by yourself, you can modify the `VITE_SERVICE_SUCCESS_CODE` in `.env` file
-      return String(response.data.code) === import.meta.env.VITE_SERVICE_SUCCESS_CODE;
-    },
-    async onBackendFail(response, instance) {
-      const authStore = useAuthStore();
-      const responseCode = String(response.data.code);
+const axiosCanceler = new AxiosCanceler()
 
-      function handleLogout() {
-        authStore.resetStore();
-      }
+class RequestHttp {
+  service: AxiosInstance
+  public constructor(config: AxiosRequestConfig) {
+    // instantiation
+    this.service = axios.create(config)
 
-      function logoutAndCleanup() {
-        handleLogout();
-        window.removeEventListener('beforeunload', handleLogout);
-
-        request.state.errMsgStack = request.state.errMsgStack.filter(msg => msg !== response.data.msg);
-      }
-
-      // when the backend response code is in `logoutCodes`, it means the user will be logged out and redirected to login page
-      const logoutCodes = import.meta.env.VITE_SERVICE_LOGOUT_CODES?.split(',') || [];
-      if (logoutCodes.includes(responseCode)) {
-        handleLogout();
-        return null;
-      }
-
-      // when the backend response code is in `modalLogoutCodes`, it means the user will be logged out by displaying a modal
-      const modalLogoutCodes = import.meta.env.VITE_SERVICE_MODAL_LOGOUT_CODES?.split(',') || [];
-      if (modalLogoutCodes.includes(responseCode) && !request.state.errMsgStack?.includes(response.data.msg)) {
-        request.state.errMsgStack = [...(request.state.errMsgStack || []), response.data.msg];
-
-        // prevent the user from refreshing the page
-        window.addEventListener('beforeunload', handleLogout);
-
-        window.$dialog?.error({
-          title: $t('common.error'),
-          content: response.data.msg,
-          positiveText: $t('common.confirm'),
-          maskClosable: false,
-          closeOnEsc: false,
-          onPositiveClick() {
-            logoutAndCleanup();
-          },
-          onClose() {
-            logoutAndCleanup();
-          }
-        });
-
-        return null;
-      }
-
-      // when the backend response code is in `expiredTokenCodes`, it means the token is expired, and refresh token
-      // the api `refreshToken` can not return error code in `expiredTokenCodes`, otherwise it will be a dead loop, should return `logoutCodes` or `modalLogoutCodes`
-      const expiredTokenCodes = import.meta.env.VITE_SERVICE_EXPIRED_TOKEN_CODES?.split(',') || [];
-      if (expiredTokenCodes.includes(responseCode)) {
-        const success = await handleExpiredRequest(request.state);
-        if (success) {
-          const Authorization = getAuthorization();
-          Object.assign(response.config.headers, { Authorization });
-
-          return instance.request(response.config) as Promise<AxiosResponse>;
+    /**
+     * @description 请求拦截器
+     * 客户端发送请求 -> [请求拦截器] -> 服务器
+     * token校验(JWT) : 接受服务器返回的 token,存储到 vuex/pinia/本地储存当中
+     */
+    this.service.interceptors.request.use(
+      (config: CustomAxiosRequestConfig) => {
+        // const userStore = useAuthStore()
+        // 重复请求不需要取消，在 api 服务中通过指定的第三个参数: { cancel: false } 来控制
+        config.cancel ??= true
+        if (config.cancel) {
+          axiosCanceler.addPending(config)
         }
-      }
+        // 当前请求不需要显示 loading，在 api 服务中通过指定的第三个参数: { loading: false } 来控制
+        config.loading ??= true
+        if (config.loading) {
+          window.$loading?.open()
+        }
+        if (config.headers && typeof config.headers.set === 'function') {
+          // config.headers.set('x-access-token', userStore.token)
+          config.headers.set('apifoxToken', ``)
+        }
+        return config
+      },
+      (error: AxiosError) => {
+        return Promise.reject(error)
+      },
+    )
 
-      return null;
-    },
-    transformBackendResponse(response) {
-      return response.data.data;
-    },
-    onError(error) {
-      // when the request is fail, you can show error message
+    /**
+     * @description 响应拦截器
+     *  服务器换返回信息 -> [拦截统一处理] -> 客户端JS获取到信息
+     */
+    this.service.interceptors.response.use(
+      (response: AxiosResponse & { config: CustomAxiosRequestConfig }) => {
+        const { data, config } = response
 
-      let message = error.message;
-      let backendErrorCode = '';
-
-      // get backend error message and code
-      if (error.code === BACKEND_ERROR_CODE) {
-        message = error.response?.data?.msg || message;
-        backendErrorCode = String(error.response?.data?.code || '');
-      }
-
-      // the error message is displayed in the modal
-      const modalLogoutCodes = import.meta.env.VITE_SERVICE_MODAL_LOGOUT_CODES?.split(',') || [];
-      if (modalLogoutCodes.includes(backendErrorCode)) {
-        return;
-      }
-
-      // when the token is expired, refresh token and retry request, so no need to show error message
-      const expiredTokenCodes = import.meta.env.VITE_SERVICE_EXPIRED_TOKEN_CODES?.split(',') || [];
-      if (expiredTokenCodes.includes(backendErrorCode)) {
-        return;
-      }
-
-      showErrorMsg(request.state, message);
-    }
+        const userStore = useAuthStore()
+        axiosCanceler.removePending(config)
+        if (config.loading) {
+          window.$loading?.close()
+        }
+        // 登录失效
+        if (data.code == ResultEnum.OVERDUE) {
+          userStore.setToken('')
+          router.replace(GlobalConfig.LOGIN_URL)
+          window.$message?.error(data.msg)
+          return Promise.reject(data)
+        }
+        // 全局错误信息拦截（防止下载文件的时候返回数据流，没有 code 直接报错）
+        if (data.code && data.code !== ResultEnum.SUCCESS) {
+          window.$message?.error(data.msg)
+          return Promise.reject(data)
+        }
+        // 成功请求（在页面上除非特殊情况，否则不用处理失败逻辑）
+        return data
+      },
+      async (error: AxiosError) => {
+        const { response } = error
+        window.$loading?.close()
+        // 请求超时 && 网络错误单独判断，没有 response
+        if (error.message.indexOf('timeout') !== -1) window.$message?.error('请求超时！请您稍后重试')
+        if (error.message.indexOf('Network Error') !== -1) window.$message?.error('网络错误！请您稍后重试')
+        // 根据服务器响应的错误状态码，做不同的处理
+        if (response) checkStatus(response.status)
+        // 服务器结果都没有返回(可能服务器错误可能客户端断网)，断网处理:可以跳转到断网页面
+        if (!window.navigator.onLine) router.replace('/500')
+        return Promise.reject(error)
+      },
+    )
   }
-);
 
-export const demoRequest = createRequest<App.Service.DemoResponse>(
-  {
-    baseURL: otherBaseURL.demo
-  },
-  {
-    async onRequest(config) {
-      const { headers } = config;
-
-      // set token
-      const token = localStg.get('token');
-      const Authorization = token ? `Bearer ${token}` : null;
-      Object.assign(headers, { Authorization });
-
-      return config;
-    },
-    isBackendSuccess(response) {
-      // when the backend response code is "200", it means the request is success
-      // you can change this logic by yourself
-      return response.data.status === '200';
-    },
-    async onBackendFail(_response) {
-      // when the backend response code is not "200", it means the request is fail
-      // for example: the token is expired, refresh token and retry request
-    },
-    transformBackendResponse(response) {
-      return response.data.result;
-    },
-    onError(error) {
-      // when the request is fail, you can show error message
-
-      let message = error.message;
-
-      // show backend error message
-      if (error.code === BACKEND_ERROR_CODE) {
-        message = error.response?.data?.message || message;
-      }
-
-      window.$message?.error(message);
-    }
+  /**
+   * @description 常用请求方法封装
+   */
+  get<T>(url: string, params?: object, _object = {}): Promise<App.Service.Response<T>> {
+    return this.service.get(url, { params, ..._object })
   }
-);
+  post<T>(url: string, params?: object | string, _object = {}): Promise<App.Service.Response<T>> {
+    return this.service.post(url, params, _object)
+  }
+  put<T>(url: string, params?: object, _object = {}): Promise<App.Service.Response<T>> {
+    return this.service.put(url, params, _object)
+  }
+  delete<T>(url: string, params?: any, _object = {}): Promise<App.Service.Response<T>> {
+    return this.service.delete(url, { params, ..._object })
+  }
+  download(url: string, params?: object, _object = {}): Promise<BlobPart> {
+    return this.service.post(url, params, { ..._object, responseType: 'blob' })
+  }
+}
+
+export default new RequestHttp(config)

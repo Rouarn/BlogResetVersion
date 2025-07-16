@@ -1,92 +1,101 @@
+<route lang="json5">
+{
+  meta: {
+    layout: 'base-layout',
+    title: '首页',
+    i18nKey: 'route.home',
+    order: 0,
+    icon: 'material-symbols:home-app-logo',
+  },
+}
+</route>
+
 <script lang="ts" setup>
-import { computed, reactive, ref } from 'vue';
-import { useThemeStore } from '@/store/modules/theme';
-import WaterfallFlow from './module/waterfall-flow.vue';
-import LatestBlog from './module/latest-blog.vue';
+import { computed, reactive, ref } from 'vue'
+import LatestBlog from './module/latest-blog.vue'
+import WaterfallFlow from './module/waterfall-flow.vue'
+import { useThemeStore } from '@/stores/modules/theme'
 
-const themeStore = useThemeStore();
+const themeStore = useThemeStore()
 
-const showVideo = computed(() => themeStore.background.showVideo);
+const showVideo = computed(() => themeStore.background.showVideo)
 
 // 分类
-const isActiveType = ref('All');
+const isActiveType = ref('All')
 const workType = ref([
   {
     name: 'All',
-    value: 'All'
+    value: 'All',
   },
   {
     name: 'Branding',
-    value: 'Branding'
+    value: 'Branding',
   },
   {
     name: 'Graphic',
-    value: 'Graphic'
+    value: 'Graphic',
   },
   {
     name: 'Design',
-    value: 'Design'
+    value: 'Design',
   },
   {
     name: 'Video',
-    value: 'Video'
-  }
-]);
+    value: 'Video',
+  },
+])
 const handleWorkType = (type: string) => {
-  isActiveType.value = type;
-};
+  isActiveType.value = type
+}
 
-const workList = reactive<Api.Work.WorkItem[]>([
-  { id: 2, type: 'Graphic', url: '/src/assets/imgs/picture/project5.jpg' },
-  { id: 1, type: 'Branding', url: '/src/assets/imgs/picture/m-project1.jpg' },
-  { id: 4, type: 'Graphic', url: '/src/assets/imgs/picture/project2.jpg' },
-  { id: 3, type: 'Branding', url: '/src/assets/imgs/picture/m-project2.jpg' },
-  { id: 5, type: 'Design', url: '/src/assets/imgs/picture/m-project3.jpg' },
-  { id: 6, type: 'Video', url: '/src/assets/imgs/picture/project1.jpg' },
-  { id: 7, type: 'image', url: '/src/assets/imgs/picture/project3.jpg' },
-  { id: 8, type: 'Design', url: '/src/assets/imgs/picture/project2.jpg' },
-  { id: 9, type: 'Video', url: '/src/assets/imgs/picture/project4.jpg' }
-]);
+const workList = reactive<Api.Home.WorkItem[]>([
+  { id: 2, type: 'Graphic', url: '/picture/project5.jpg' },
+  { id: 1, type: 'Branding', url: '/picture/m-project1.jpg' },
+  { id: 4, type: 'Graphic', url: '/picture/project2.jpg' },
+  { id: 3, type: 'Branding', url: '/picture/m-project2.jpg' },
+  { id: 5, type: 'Design', url: '/picture/m-project3.jpg' },
+  { id: 6, type: 'Video', url: '/picture/project1.jpg' },
+  { id: 7, type: 'image', url: '/picture/project3.jpg' },
+  { id: 8, type: 'Design', url: '/picture/project2.jpg' },
+  { id: 9, type: 'Video', url: '/picture/project4.jpg' },
+])
 
 const handleMore = () => {
   const newItems = [
-    { id: 10, type: 'Design', url: '/src/assets/imgs/picture/project5.jpg' },
-    { id: 11, type: 'Video', url: '/src/assets/imgs/picture/project2.jpg' },
-    { id: 12, type: 'image', url: '/src/assets/imgs/picture/project4.jpg' }
-  ];
+    { id: 10, type: 'Design', url: '/picture/project5.jpg' },
+    { id: 11, type: 'Video', url: '/picture/project2.jpg' },
+    { id: 12, type: 'image', url: '/picture/project4.jpg' },
+  ]
 
-  workList.push(...newItems);
-};
+  workList.push(...newItems)
+}
 
-const blogs = reactive<Api.Blog.BlogItem[]>([
+const blogs = reactive<Api.Home.BlogItem[]>([
   {
     id: 1,
-    cover: '/src/assets/imgs/picture/1.jpg',
+    cover: '/picture/1.jpg',
     title: 'Tips for Delivering a Great Perfor mance in Your Next',
-    description:
-      'At tincidunt vulputate dis natoque parturient proine mperdiet. Quisque lig pede males us. Semper orc gue lorem ipsum',
+    description: 'At tincidunt vulputate dis natoque parturient proine mperdiet. Quisque lig pede males us. Semper orc gue lorem ipsum',
     author: 'Soybean',
-    date: 'January 26, 2020'
+    date: 'January 26, 2020',
   },
   {
     id: 2,
-    cover: '/src/assets/imgs/picture/4.jpg',
+    cover: '/picture/4.jpg',
     title: 'How To Be The Highest Marketer On Your Team And Skills',
-    description:
-      'At tincidunt vulputate dis natoque parturient proine mperdiet. Quisque lig pede males us. Semper orc gue lorem ipsum',
+    description: 'At tincidunt vulputate dis natoque parturient proine mperdiet. Quisque lig pede males us. Semper orc gue lorem ipsum',
     author: 'Soybean',
-    date: 'January 28, 2025'
+    date: 'January 28, 2025',
   },
   {
     id: 3,
-    cover: '/src/assets/imgs/picture/3.jpg',
+    cover: '/picture/3.jpg',
     title: '4 Myths Rand Fishkin Wants You to Question Launching ',
-    description:
-      'At tincidunt vulputate dis natoque parturient proine mperdiet. Quisque lig pede males us. Semper orc gue lorem ipsum',
+    description: 'At tincidunt vulputate dis natoque parturient proine mperdiet. Quisque lig pede males us. Semper orc gue lorem ipsum',
     author: 'Soybean',
-    date: 'August 29, 2025'
-  }
-]);
+    date: 'August 29, 2025',
+  },
+])
 </script>
 
 <template>
@@ -99,10 +108,7 @@ const blogs = reactive<Api.Blog.BlogItem[]>([
       :size="0"
       :wrap-item="false"
     >
-      <NH2
-        class="z-3 mb-[1.25rem] text-[2.625rem] font-bold tracking-[0.125rem]"
-        :class="[showVideo ? 'c-#FFFFFF' : '']"
-      >
+      <NH2 class="z-3 mb-[1.25rem] text-[2.625rem] font-bold tracking-[0.125rem]" :class="[showVideo ? 'c-#FFFFFF' : '']">
         Here Is my short video info.
       </NH2>
       <NP
@@ -111,22 +117,10 @@ const blogs = reactive<Api.Blog.BlogItem[]>([
       >
         We are Professional web developer and designer in this market.
       </NP>
-      <NButton
-        class="z-3"
-        :class="[showVideo ? 'c-#FFFFFF' : 'primary-button']"
-        ghost
-        :bordered="false"
-        :focusable="false"
-        size="large"
-      >
+      <NButton class="z-3" :class="[showVideo ? 'c-#FFFFFF' : 'primary-button']" ghost :bordered="false" :focusable="false" size="large">
         About Us
       </NButton>
-      <!--
- <IframePage
-        url="https://www.bilibili.com/video/BV19441187Ds"
-        class="pointer-events-none absolute left-0 top-0 z-0 h-screen w-full"
-      />
--->
+
       <video
         v-if="themeStore.background.showVideo"
         class="pointer-events-none absolute left-0 top-0 z-0 h-screen w-full object-cover object-left-bottom"
@@ -156,9 +150,7 @@ const blogs = reactive<Api.Blog.BlogItem[]>([
 
       <!-- 更多 -->
       <div class="text-center">
-        <NButton class="primary-button" ghost :bordered="false" size="large" :focusable="false" @click="handleMore">
-          View More
-        </NButton>
+        <NButton class="primary-button" ghost :bordered="false" size="large" :focusable="false" @click="handleMore"> View More </NButton>
       </div>
     </NSpace>
 
@@ -166,8 +158,8 @@ const blogs = reactive<Api.Blog.BlogItem[]>([
       <div>
         <NH2 class="blogTitle mb-10 text-center text-28px font-700 uppercase">Latest Blog</NH2>
         <NP class="mx-a text-center text-14px text-#666 font-normal lg:w-600px">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sequi tempora veritatis nemo aut ea iusto eos est
-          expedita, quas ab adipisci.
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sequi tempora veritatis nemo aut ea iusto eos est expedita, quas ab
+          adipisci.
         </NP>
       </div>
       <LatestBlog :blog-list="blogs" />
@@ -179,7 +171,7 @@ const blogs = reactive<Api.Blog.BlogItem[]>([
 .home-area {
   background-clip: initial;
   background-origin: initial;
-  background-image: url('@/assets/imgs/slider-2.jpg');
+  background-image: url('@/assets/images/slider-2.jpg');
   background-color: rgba(0, 0, 0, 0);
 }
 

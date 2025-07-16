@@ -1,56 +1,56 @@
-import { useRouter } from 'vue-router';
-import type { RouteLocationRaw } from 'vue-router';
-import type { RouteKey } from '@elegant-router/types';
-import { router as globalRouter } from '@/router';
+import { useRouter } from 'vue-router'
+import globalRouter from '@/router'
+import { GlobalConfig } from '@/enum'
+import type { RouteLocationRaw } from 'vue-router'
 
 /**
- * Router push
+ * 路由跳转
  *
- * Jump to the specified route, it can replace function router.push
+ * 跳转到指定的路由，可以代替router.push功能
  *
- * @param inSetup Whether is in vue script setup
+ * @param inSetup 是否在vue脚本设置中
  */
 export function useRouterPush(inSetup = true) {
-  const router = inSetup ? useRouter() : globalRouter;
-  const route = globalRouter.currentRoute;
+  const router = inSetup ? useRouter() : globalRouter
+  const route = globalRouter.currentRoute
 
-  const routerPush = router.push;
+  const routerPush = router.push
 
-  const routerBack = router.back;
+  const routerBack = router.back
 
-  async function routerPushByKey(key: RouteKey, options?: App.Global.RouterPushOptions) {
-    const { query, params } = options || {};
+  async function routerPushByKey(key: App.Global.RouteKey, options?: App.Global.RouterPushOptions) {
+    const { query, params } = options || {}
 
-    const routeLocation: RouteLocationRaw = {
-      name: key
-    };
+    const routeLocation: RouteLocationRaw & App.Global.RouterPushOptions = {
+      name: key,
+    }
 
     if (Object.keys(query || {}).length) {
-      routeLocation.query = query;
+      routeLocation.query = query
     }
 
     if (Object.keys(params || {}).length) {
-      routeLocation.params = params;
+      routeLocation.params = params
     }
 
-    return routerPush(routeLocation);
+    return routerPush(routeLocation)
   }
 
-  function routerPushByKeyWithMetaQuery(key: RouteKey) {
-    const allRoutes = router.getRoutes();
-    const meta = allRoutes.find(item => item.name === key)?.meta || null;
+  function routerPushByKeyWithMetaQuery(key: App.Global.RouteKey) {
+    const allRoutes = router.getRoutes()
+    const meta = allRoutes.find((item) => item.name === key)?.meta || null
 
-    const query: Record<string, string> = {};
+    const query: Record<string, string> = {}
 
-    meta?.query?.forEach(item => {
-      query[item.key] = item.value;
-    });
+    meta?.query?.forEach((item) => {
+      query[item.key] = item.value
+    })
 
-    return routerPushByKey(key, { query });
+    return routerPushByKey(key, { query })
   }
 
   async function toHome() {
-    return routerPushByKey('root');
+    return routerPushByKey(GlobalConfig.HOME_URL as unknown as App.Global.RouteKey)
   }
 
   /**
@@ -59,47 +59,31 @@ export function useRouterPush(inSetup = true) {
    * @param loginModule The login module
    * @param redirectUrl The redirect url, if not specified, it will be the current route fullPath
    */
-  async function toLogin(loginModule?: UnionKey.LoginModule, redirectUrl?: string) {
-    const module = loginModule || 'pwd-login';
+  async function toLogin(redirectUrl?: string) {
+    const options: App.Global.RouterPushOptions = {}
 
-    const options: App.Global.RouterPushOptions = {
-      params: {
-        module
-      }
-    };
-
-    const redirect = redirectUrl || route.value.fullPath;
+    const redirect = redirectUrl || route.value.fullPath
 
     options.query = {
-      redirect
-    };
+      redirect,
+    }
 
-    return routerPushByKey('login', options);
-  }
-
-  /**
-   * Toggle login module
-   *
-   * @param module
-   */
-  async function toggleLoginModule(module: UnionKey.LoginModule) {
-    const query = route.value.query as Record<string, string>;
-
-    return routerPushByKey('login', { query, params: { module } });
+    return routerPushByKey(GlobalConfig.LOGIN_URL as unknown as App.Global.RouteKey, options)
   }
 
   /**
    * Redirect from login
    *
-   * @param [needRedirect=true] Whether to redirect after login. Default is `true`
+   * @param [needRedirect=true]登录后是否重定向。默认为“true”
    */
   async function redirectFromLogin(needRedirect = true) {
-    const redirect = route.value.query?.redirect as string;
+    const redirect = route.value.query?.redirect as string
 
     if (needRedirect && redirect) {
-      await routerPush(redirect);
+      // 替换登录页为重定向页
+      await routerPush(redirect)
     } else {
-      await toHome();
+      await toHome()
     }
   }
 
@@ -109,7 +93,6 @@ export function useRouterPush(inSetup = true) {
     routerPushByKey,
     routerPushByKeyWithMetaQuery,
     toLogin,
-    toggleLoginModule,
-    redirectFromLogin
-  };
+    redirectFromLogin,
+  }
 }
