@@ -12,7 +12,7 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  showPadding: true,
+  showPadding: false,
 })
 
 const appStore = useAppStore()

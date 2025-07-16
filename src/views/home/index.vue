@@ -101,7 +101,7 @@ const blogs = reactive<Api.Home.BlogItem[]>([
 <template>
   <NSpace vertical>
     <NSpace
-      class="home-area relative z-0 h-screen overflow-hidden bg-cover bg-fixed bg-center bg-no-repeat px-3"
+      class="home-area relative z-0 h-screen overflow-hidden bg-cover bg-fixed bg-center bg-no-repeat"
       align="center"
       justify="center"
       vertical
@@ -123,7 +123,7 @@ const blogs = reactive<Api.Home.BlogItem[]>([
 
       <video
         v-if="themeStore.background.showVideo"
-        class="pointer-events-none absolute left-0 top-0 z-0 h-screen w-full object-cover object-left-bottom"
+        class="pointer-events-none absolute left-0 top-0 z-0 size-full object-none"
         autoplay
         muted
         loop
@@ -173,12 +173,6 @@ const blogs = reactive<Api.Home.BlogItem[]>([
   background-origin: initial;
   background-image: url('@/assets/images/slider-2.jpg');
   background-color: rgba(0, 0, 0, 0);
-}
-
-:deep(.n-button:not(.n-button--disabled):hover),
-:deep(.n-button:not(.n-button--disabled):focus),
-:deep(.n-button__content:hover) {
-  color: #111 !important;
 }
 
 .blogTitle {
