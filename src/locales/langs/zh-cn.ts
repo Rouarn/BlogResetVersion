@@ -1,0 +1,87 @@
+const local: App.I18n.Schema = {
+  system: {
+    title: 'Frontend Template',
+    updateTitle: '系统版本更新通知',
+    updateContent: '检测到系统有新版本发布，是否立即刷新页面？',
+    updateConfirm: '立即刷新',
+    updateCancel: '稍后再说',
+  },
+  common: {
+    cancel: '取消',
+    config: '配置',
+    confirm: '确认',
+    logout: '退出登录',
+    logoutConfirm: '确认退出登录吗？',
+    tip: '提示',
+    backToHome: '返回首页',
+    userCenter: '个人中心',
+    yesOrNo: { yes: '是', no: '否' },
+    search: '搜索',
+    keywordSearch: '请输入关键词搜索',
+    noData: '无数据',
+    switch: '切换',
+    close: '关闭',
+  },
+  theme: {
+    themeSchema: {
+      title: '主题模式',
+      light: '亮色模式',
+      dark: '暗黑模式',
+      auto: '跟随系统',
+    },
+    grayscale: '灰色模式',
+    colourWeakness: '色弱模式',
+    recommendColor: '应用推荐算法的颜色',
+    recommendColorDesc: '推荐颜色的算法参照',
+    themeColor: {
+      title: '主题颜色',
+      primary: '主色',
+      info: '信息色',
+      success: '成功色',
+      warning: '警告色',
+      error: '错误色',
+      followPrimary: '跟随主色',
+    },
+    themeDrawerTitle: '主题配置',
+  },
+  route: {
+    link: '链接',
+    about: '关于',
+    directives: '自定义指令',
+    home: '首页',
+  },
+  page: {
+    about: {
+      title: '关于',
+      introduction: `FrontendTemplate 是一个优雅且功能强大的前台管理模板，基于最新的前端技术栈，包括 Vue3, Vite7, TypeScript, Pinia 和 UnoCSS。它内置了丰富的主题配置和组件，代码规范严谨，实现了自动化的文件路由系统。为您提供了一站式的前台开发解决方案，无需额外配置，开箱即用。同样是一个快速学习前沿技术的最佳实践。`,
+      projectInfo: {
+        title: '项目信息',
+        version: '版本',
+        latestBuildTime: '最新构建时间',
+        githubLink: 'Github 地址',
+        previewLink: '预览地址',
+      },
+      prdDep: '生产依赖',
+      devDep: '开发依赖',
+    },
+    login: {
+      common: {
+        loginOrRegister: '登录 / 注册',
+      },
+    },
+  },
+  icon: {
+    themeConfig: '主题配置',
+    themeSchema: '主题模式',
+    lang: '切换语言',
+    fullscreen: '全屏',
+    fullscreenExit: '退出全屏',
+    reload: '刷新页面',
+    collapse: '折叠菜单',
+    expand: '展开菜单',
+    pin: '固定',
+    unpin: '取消固定',
+  },
+}
+
+export default local
