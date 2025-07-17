@@ -19,7 +19,7 @@ const { isFullscreen, toggle } = useFullscreen()
 </script>
 
 <template>
-  <DarkModeContainer class="h-full px-12px shadow-header sticky top-0 z-50">
+  <DarkModeContainer class="px-12px shadow-header sticky top-0 z-50">
     <div class="max-w-screen-xl mx-auto px-4 h-16 flex items-center justify-between">
       <!-- 左侧：Logo和系统名称 -->
       <GlobalLogo class="h-full" v-if="!appStore.isMobile" />

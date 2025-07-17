@@ -4,6 +4,7 @@ import LatestBlog from './module/latest-blog.vue'
 import WaterfallFlow from './module/waterfall-flow.vue'
 import { useThemeStore } from '@/stores/modules/theme'
 import { useRouterPush } from '@/hooks/common/router'
+import dayjs from 'dayjs'
 
 defineOptions({
   name: 'BaseHome',
@@ -99,6 +100,16 @@ const blogs = reactive<Api.Home.BlogItem[]>([
     date: 'August 29, 2025',
   },
 ])
+
+const timeProgress = ref(dayjs().format('YYYY-MM-DD HH:mm:ss'))
+
+const time = setInterval(() => {
+  timeProgress.value = dayjs().format('YYYY-MM-DD HH:mm:ss')
+}, 100)
+
+onUnmounted(() => {
+  clearInterval(time)
+})
 </script>
 
 <template>
@@ -111,14 +122,10 @@ const blogs = reactive<Api.Home.BlogItem[]>([
       :size="0"
       :wrap-item="false"
     >
-      <NH2 class="z-3 mb-[1.25rem] text-[2.625rem] font-bold tracking-[0.125rem]" :class="[showVideo ? 'c-#FFFFFF' : '']">
-        Here Is my short video info.
-      </NH2>
-      <NP
-        class="z-3 mb-[1.25rem] text-[0.875rem] text-[#444] font-normal leading-[1.625rem] capitalize"
-        :class="[showVideo ? 'c-#FFFFFF' : '']"
-      >
-        We are Professional web developer and designer in this market.
+      <NH2 class="z-3 text-[2.625rem] font-bold tracking-[0.125rem]" :class="[showVideo ? 'c-#FFFFFF' : '']"> Wo Yu Xia Ji </NH2>
+      <NP class="z-3 text-[0.875rem] text-[#444] font-normal leading-[1.625rem] capitalize" :class="[showVideo ? 'c-#FFFFFF' : '']">
+        <!-- 时间进度 -->
+        {{ timeProgress }}
       </NP>
       <NButton
         class="z-3"
