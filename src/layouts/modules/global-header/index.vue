@@ -19,7 +19,7 @@ const { isFullscreen, toggle } = useFullscreen()
 </script>
 
 <template>
-  <header class="w-full bg-white dark:bg-#18181c border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+  <DarkModeContainer class="h-full px-12px shadow-header sticky top-0 z-50">
     <div class="max-w-screen-xl mx-auto px-4 h-16 flex items-center justify-between">
       <!-- 左侧：Logo和系统名称 -->
       <GlobalLogo class="h-full" v-if="!appStore.isMobile" />
@@ -42,7 +42,7 @@ const { isFullscreen, toggle } = useFullscreen()
         <UserAvatar />
       </div>
     </div>
-  </header>
+  </DarkModeContainer>
 </template>
 
 <style lang="scss" scoped></style>

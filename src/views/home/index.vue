@@ -134,7 +134,7 @@ const blogs = reactive<Api.Home.BlogItem[]>([
 
       <video
         v-if="themeStore.background.showVideo"
-        class="pointer-events-none absolute left-0 top-0 z-0 size-full object-none"
+        class="pointer-events-none absolute left-0 top-0 z-0 size-full object-none scale-102"
         autoplay
         muted
         loop

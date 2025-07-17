@@ -4,11 +4,13 @@ import GlobalLogo from '../global-logo/index.vue'
 defineOptions({
   name: 'GlobalFooter',
 })
+
+const currentYear = new Date().getFullYear()
 </script>
 
 <template>
-  <DarkModeContainer class="h-full flex-center flex-col py-90px">
-    <GlobalLogo custom-class="text-22px color-#232332 font-bold" />
+  <footer class="h-full flex-center flex-col py-90px shadow-2xl">
+    <GlobalLogo />
     <NSpace inline class="mb-20px mt-4">
       <NIcon class="icon">
         <icon-material-symbols:mail-rounded />
@@ -30,8 +32,8 @@ defineOptions({
       <NP>Blog</NP>
       <NP>Contact</NP>
     </NSpace>
-    <NP class="text-#666">Copyright © 2022.Company name All rights reserved.</NP>
-  </DarkModeContainer>
+    <NP class="text-#666">Copyright © {{ currentYear }}.Company name All rights reserved.</NP>
+  </footer>
 </template>
 
 <style lang="scss" scoped>
