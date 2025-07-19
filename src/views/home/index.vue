@@ -53,15 +53,15 @@ const handleWorkType = (type: string) => {
 }
 
 const workList = reactive<Api.Home.WorkItem[]>([
-  { id: 2, type: 'Graphic', url: '/picture/project5.jpg' },
-  { id: 1, type: 'Branding', url: '/picture/m-project1.jpg' },
-  { id: 4, type: 'Graphic', url: '/picture/project2.jpg' },
-  { id: 3, type: 'Branding', url: '/picture/m-project2.jpg' },
-  { id: 5, type: 'Design', url: '/picture/m-project3.jpg' },
+  { id: 1, type: 'Graphic', url: '/picture/project5.jpg' },
+  { id: 2, type: 'Branding', url: '/picture/m-project1.jpg' },
+  { id: 3, type: 'Graphic', url: '/picture/project2.jpg' },
+  { id: 4, type: 'Branding', url: '/picture/m-project2.jpg' },
+  { id: 5, type: 'Video', url: '/picture/project4.jpg' },
   { id: 6, type: 'Video', url: '/picture/project1.jpg' },
   { id: 7, type: 'image', url: '/picture/project3.jpg' },
   { id: 8, type: 'Design', url: '/picture/project2.jpg' },
-  { id: 9, type: 'Video', url: '/picture/project4.jpg' },
+  { id: 9, type: 'Design', url: '/picture/m-project3.jpg' },
 ])
 
 const handleMore = () => {
