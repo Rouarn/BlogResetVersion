@@ -16,17 +16,6 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     menus.value = getGlobalMenusByRoutes(routes)
   }
 
-  /** Initialize route */
-  async function initRoute(routes: RouteRecordRaw[]) {
-    if (isInitConstantRoute.value) return
-
-    getGlobalMenus(routes)
-
-    getCacheRoutes(routes)
-
-    setIsInitConstantRoute(true)
-  }
-
   /** Cache routes */
   const cacheRoutes = ref<App.Global.RouteKey[]>([])
 
@@ -37,6 +26,17 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
    */
   function getCacheRoutes(routes: RouteRecordRaw[]) {
     cacheRoutes.value = getCacheRouteNames(routes)
+  }
+
+  /** Initialize route */
+  async function initRoute(routes: RouteRecordRaw[]) {
+    if (isInitConstantRoute.value) return
+
+    getGlobalMenus(routes)
+
+    getCacheRoutes(routes)
+
+    setIsInitConstantRoute(true)
   }
 
   return {
