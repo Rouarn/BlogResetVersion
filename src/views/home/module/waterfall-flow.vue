@@ -6,79 +6,14 @@ const props = defineProps<{
   isActiveType: string
 }>()
 
-const columnCount = ref(3) // 默认3列
-const gap = ref(30) // 间距
-const containerWidth = ref(0) // 容器宽度
-const columnHeights = ref<number[]>([]) // 每列高度
-
+const containerRef = ref<HTMLDivElement>()
 const tableList = ref<Api.Home.WorkItem[]>(props.initialItems)
 
 const getPicURL = (url: string) => {
   return new URL(url, import.meta.url).href
 }
 
-const containerRef = ref<HTMLDivElement>()
-const tableItemRef = ref<HTMLDivElement[]>([])
-
-// 根据屏幕宽度计算列数
-const calculateColumnCount = () => {
-  const width = window.innerWidth
-  if (width < 640) {
-    // 小屏设备
-    return 1
-  } else if (width < 1024) {
-    // 中等屏幕
-    return 2
-  } // 大屏幕
-  return 3
-}
-
-// 计算瀑布流位置
-const calculatePosition = () => {
-  if (!tableItemRef.value.length) return
-
-  // 更新列数
-  columnCount.value = calculateColumnCount()
-
-  // 重置列高度
-  columnHeights.value = Array.from({ length: columnCount.value }).fill(0) as number[]
-
-  // 计算每项位置
-  tableItemRef.value.forEach((item, _index) => {
-    if (!item) return
-
-    // 计算每项宽度 (减去间隙)
-    const itemWidth = (containerWidth.value - gap.value * (columnCount.value - 1)) / columnCount.value
-
-    // 找到最短的列
-    const shortestColumnIndex = columnHeights.value.indexOf(Math.min(...columnHeights.value))
-
-    // 设置项位置
-    item.style.position = 'absolute'
-    item.style.width = `${itemWidth}px`
-    item.style.left = `${shortestColumnIndex * (itemWidth + gap.value)}px`
-    item.style.top = `${columnHeights.value[shortestColumnIndex]}px`
-
-    // 更新列高度
-    columnHeights.value[shortestColumnIndex] += item.offsetHeight + gap.value
-  })
-
-  // 设置容器高度
-  const container = tableItemRef.value[0]?.parentElement
-  if (container) {
-    container.style.height = `${Math.max(...columnHeights.value)}px`
-  }
-}
-
-// 响应式调整
-const handleResize = () => {
-  const container = containerRef.value
-  if (container) {
-    containerWidth.value = container.offsetWidth
-    calculatePosition()
-  }
-}
-
+// 响应式调整 - 主要处理过滤逻辑
 watch(
   () => props.isActiveType,
   () => {
@@ -87,16 +22,27 @@ watch(
     } else {
       tableList.value = props.initialItems.filter((item) => item.type === props.isActiveType)
     }
+    // 使用nextTick确保DOM已更新
     nextTick(() => {
-      calculatePosition()
+      // CSS Columns会自动处理布局，无需额外JS
     })
   },
 )
 
 onMounted(() => {
-  handleResize()
+  // 初始设置
+  nextTick(() => {
+    // CSS Columns会自动处理布局
+  })
+
+  // 监听窗口大小变化 - 仅用于其他可能需要的响应式调整
   window.addEventListener('resize', handleResize)
 })
+
+const handleResize = () => {
+  // CSS Columns会自动根据容器宽度调整布局
+  // 这里可以添加其他响应式逻辑，如果需要的话
+}
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize)
@@ -105,18 +51,11 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="relative mx-auto max-w-1200px w-full px-4 sm:px-6">
-    <!-- 瀑布流容器 -->
-    <div ref="containerRef" class="relative w-full">
+    <!-- 瀑布流容器 - 使用CSS columns实现简单瀑布流 -->
+    <div ref="containerRef" class="relative w-full waterfall-columns">
       <TransitionGroup name="zoom-fade">
-        <div v-for="image in tableList" :key="image.id" ref="tableItemRef" class="tableItem transition-all duration-300 hover:shadow-lg">
-          <NImage
-            :src="getPicURL(image.url)"
-            class="image block h-auto w-full"
-            object-fit="cover"
-            preview-disabled
-            @load="handleResize()"
-          />
-
+        <div v-for="image in tableList" :key="image.id" class="tableItem transition-all duration-300 hover:shadow-lg">
+          <img :src="getPicURL(image.url)" class="image block h-auto w-full" @load="handleResize()" />
           <div class="mask">
             <NP class="m-0 c-[var(--un-ring-offset-color)] uppercase">Web Design</NP>
             <NH4 class="m-0 my-10px text-1.125rem c-[var(--un-ring-offset-color)] font-700 uppercase"> Brand Redesign Works </NH4>
@@ -128,21 +67,25 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss" scoped>
-.zoom-fade {
-  &-move,
-  &-enter-active,
-  &-leave-active {
-    transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-  }
+// CSS columns实现简单瀑布流
+.waterfall-columns {
+  --columns: 3;
+  --column-gap: 30px;
+  column-count: var(--columns);
+  column-gap: var(--column-gap);
+  row-gap: 30px;
+}
 
-  &-enter-from,
-  &-leave-to {
-    opacity: 0;
-    transform: scale(0.5);
+// 响应式调整列数
+@media (max-width: 1024px) {
+  .waterfall-columns {
+    column-count: 2;
   }
+}
 
-  &-leave-active {
-    position: absolute;
+@media (max-width: 640px) {
+  .waterfall-columns {
+    column-count: 1;
   }
 }
 
@@ -150,6 +93,10 @@ onBeforeUnmount(() => {
   overflow: hidden;
   cursor: pointer;
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+  margin-bottom: var(--column-gap); // 列之间的间隙
+  break-inside: avoid; // 防止元素在列中间被分割
+  position: relative; // 为mask定位提供上下文
+
   &::after {
     content: '';
     position: absolute;
@@ -165,12 +112,15 @@ onBeforeUnmount(() => {
   .image {
     transform: rotate(0) scale(1);
     transition: all 0.3s ease-out 0s;
+    width: 100%; // 确保图片填充整个项目
+    height: auto;
+    display: block; // 去除底部间隙
   }
   .mask {
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 100%;
+    padding: 20px; // 添加一些内边距
     z-index: 0;
     opacity: 1;
     transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
@@ -179,6 +129,7 @@ onBeforeUnmount(() => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    background: transparent; // 透明背景，让::after伪元素显示
   }
   &:hover {
     &::after {
