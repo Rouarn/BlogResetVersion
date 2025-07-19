@@ -23,6 +23,10 @@ const directive: Directive<HTMLElement, LongPressHandler> = {
     let pressTimer: number | null = null
     const pressDuration = 1000 // 长按时间阈值，单位毫秒
 
+    const handler = (e: MouseEvent | TouchEvent) => {
+      binding.value(e)
+    }
+
     const start = (e: MouseEvent | TouchEvent) => {
       // 如果是鼠标事件且不是左键点击，则忽略
       if ('button' in e && e.type === 'click' && e.button !== 0) {
@@ -41,10 +45,6 @@ const directive: Directive<HTMLElement, LongPressHandler> = {
         clearTimeout(pressTimer)
         pressTimer = null
       }
-    }
-
-    const handler = (e: MouseEvent | TouchEvent) => {
-      binding.value(e)
     }
 
     // 添加事件监听

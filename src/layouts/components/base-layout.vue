@@ -8,7 +8,10 @@ defineOptions({
   name: 'BaseLayout',
 })
 
-const handleBackTop = (_isTop: boolean) => {}
+const top = ref(true)
+const handleBackTop = (_isTop: boolean) => {
+  top.value = _isTop
+}
 </script>
 
 <template>

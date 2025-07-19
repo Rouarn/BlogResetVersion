@@ -9,6 +9,26 @@ export function setupAppErrorHandle(app: App) {
   }
 }
 
+async function getHtmlBuildTime(): Promise<string | null> {
+  const baseUrl = import.meta.env.VITE_BASE_URL || '/'
+
+  try {
+    const res = await fetch(`${baseUrl}index.html?time=${Date.now()}`)
+
+    if (!res.ok) {
+      console.error('getHtmlBuildTime error:', res.status, res.statusText)
+      return null
+    }
+
+    const html = await res.text()
+    const match = html.match(/<meta name="buildTime" content="(.*)">/)
+    return match?.[1] || null
+  } catch (error) {
+    console.error('getHtmlBuildTime error:', error)
+    return null
+  }
+}
+
 export function setupAppVersionNotification() {
   // Update check interval in milliseconds
   const UPDATE_CHECK_INTERVAL = 3 * 60 * 1000
@@ -84,25 +104,5 @@ export function setupAppVersionNotification() {
 
     // Start the update interval
     startUpdateInterval()
-  }
-}
-
-async function getHtmlBuildTime(): Promise<string | null> {
-  const baseUrl = import.meta.env.VITE_BASE_URL || '/'
-
-  try {
-    const res = await fetch(`${baseUrl}index.html?time=${Date.now()}`)
-
-    if (!res.ok) {
-      console.error('getHtmlBuildTime error:', res.status, res.statusText)
-      return null
-    }
-
-    const html = await res.text()
-    const match = html.match(/<meta name="buildTime" content="(.*)">/)
-    return match?.[1] || null
-  } catch (error) {
-    console.error('getHtmlBuildTime error:', error)
-    return null
   }
 }

@@ -20,10 +20,6 @@ const keyword = ref('')
 const activePath = ref('')
 const resultOptions = shallowRef<App.Global.Menu[]>([])
 
-const handleSearch = useDebounceFn(search, 300)
-
-const visible = defineModel<boolean>('show', { required: true })
-
 function search() {
   resultOptions.value = routeStore.searchMenus.filter((menu) => {
     const trimKeyword = keyword.value.toLocaleLowerCase().trim()
@@ -33,6 +29,10 @@ function search() {
   activePath.value = resultOptions.value[0]?.routePath ?? ''
 }
 
+const handleSearch = useDebounceFn(search, 300)
+
+const visible = defineModel<boolean>('show', { required: true })
+
 function handleClose() {
   // handle with setTimeout to prevent user from seeing some operations
   setTimeout(() => {
@@ -40,6 +40,10 @@ function handleClose() {
     resultOptions.value = []
     keyword.value = ''
   }, 200)
+}
+
+function getActivePathIndex() {
+  return resultOptions.value.findIndex((item) => item.routePath === activePath.value)
 }
 
 /** key up */
@@ -66,10 +70,6 @@ function handleDown() {
   const activeIndex = index === length - 1 ? 0 : index + 1
 
   activePath.value = resultOptions.value[activeIndex].routePath
-}
-
-function getActivePathIndex() {
-  return resultOptions.value.findIndex((item) => item.routePath === activePath.value)
 }
 
 /** key enter */

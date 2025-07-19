@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps<{
   initialItems: Api.Home.WorkItem[]
@@ -22,31 +22,13 @@ watch(
     } else {
       tableList.value = props.initialItems.filter((item) => item.type === props.isActiveType)
     }
-    // 使用nextTick确保DOM已更新
-    nextTick(() => {
-      // CSS Columns会自动处理布局，无需额外JS
-    })
   },
 )
-
-onMounted(() => {
-  // 初始设置
-  nextTick(() => {
-    // CSS Columns会自动处理布局
-  })
-
-  // 监听窗口大小变化 - 仅用于其他可能需要的响应式调整
-  window.addEventListener('resize', handleResize)
-})
 
 const handleResize = () => {
   // CSS Columns会自动根据容器宽度调整布局
   // 这里可以添加其他响应式逻辑，如果需要的话
 }
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleResize)
-})
 </script>
 
 <template>

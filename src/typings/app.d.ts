@@ -81,60 +81,6 @@ declare namespace App {
     }
   }
 
-  /** Global namespace */
-  namespace Global {
-    /** Route path */
-    type RouteKey = keyof import('vue-router/auto-routes').RouteNamedMap
-    /** Route path */
-    type RoutePath = string
-
-    /** The router push options */
-    type RouterPushOptions = {
-      query?: Record<string, string>
-      params?: Record<string, string>
-    }
-
-    /** Base menu item properties */
-    type BaseMenuItem = {
-      /** The menu key */
-      key: string
-      /** The menu label */
-      label: string
-      /** The menu i18n key */
-      i18nKey?: I18n.I18nKey | null
-      /** The menu order */
-      order?: number
-      /** The menu icon */
-      icon?: () => VNode
-      /** The menu parent */
-      parent?: string | null
-    }
-
-    /** Menu group properties */
-    type MenuGroup = {
-      /** The menu group */
-      group?: {
-        enabled: boolean | string
-        title?: string
-        icon?: string
-        i18nKey?: I18n.I18nKey | null
-        order?: number
-        parent?: string
-      } | null
-    }
-
-    /** Route-related properties */
-    type RouteProperties = {
-      /** The route key */
-      routeKey: RouteKey
-      /** The route path */
-      routePath: RoutePath
-    }
-
-    /** The global menu */
-    type Menu = BaseMenuItem & RouteProperties & MenuGroup & { children?: Menu[] }
-  }
-
   /**
    * I18n namespace
    *
@@ -246,6 +192,60 @@ declare namespace App {
       (key: I18nKey, named: Record<string, unknown>, plural: number): string
       (key: I18nKey, named: Record<string, unknown>, defaultMsg: string): string
     }
+  }
+
+  /** Global namespace */
+  namespace Global {
+    /** Route path */
+    type RouteKey = keyof import('vue-router/auto-routes').RouteNamedMap
+    /** Route path */
+    type RoutePath = string
+
+    /** The router push options */
+    type RouterPushOptions = {
+      query?: Record<string, string>
+      params?: Record<string, string>
+    }
+
+    /** Base menu item properties */
+    type BaseMenuItem = {
+      /** The menu key */
+      key: string
+      /** The menu label */
+      label: string
+      /** The menu i18n key */
+      i18nKey?: I18n.I18nKey | null
+      /** The menu order */
+      order?: number
+      /** The menu icon */
+      icon?: () => VNode
+      /** The menu parent */
+      parent?: string | null
+    }
+
+    /** Menu group properties */
+    type MenuGroup = {
+      /** The menu group */
+      group?: {
+        enabled: boolean | string
+        title?: string
+        icon?: string
+        i18nKey?: I18n.I18nKey | null
+        order?: number
+        parent?: string
+      } | null
+    }
+
+    /** Route-related properties */
+    type RouteProperties = {
+      /** The route key */
+      routeKey: RouteKey
+      /** The route path */
+      routePath: RoutePath
+    }
+
+    /** The global menu */
+    type Menu = BaseMenuItem & RouteProperties & MenuGroup & { children?: Menu[] }
   }
 
   /** Service namespace */

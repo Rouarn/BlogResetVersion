@@ -9,6 +9,16 @@ import type { Directive, DirectiveBinding } from 'vue'
 interface ElType extends HTMLElement {
   copyData: string | number
 }
+
+async function handleClick(this: ElType) {
+  try {
+    await navigator.clipboard.writeText(String(this.copyData))
+    window.$message?.success('复制成功')
+  } catch (err) {
+    console.error('复制操作不被支持或失败: ', err)
+  }
+}
+
 const copy: Directive = {
   mounted(el: ElType, binding: DirectiveBinding) {
     el.copyData = binding.value
@@ -20,15 +30,6 @@ const copy: Directive = {
   beforeUnmount(el: ElType) {
     el.removeEventListener('click', handleClick)
   },
-}
-
-async function handleClick(this: ElType) {
-  try {
-    await navigator.clipboard.writeText(String(this.copyData))
-    window.$message?.success('复制成功')
-  } catch (err) {
-    console.error('复制操作不被支持或失败: ', err)
-  }
 }
 
 export default copy

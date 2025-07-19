@@ -102,6 +102,35 @@ function routeToMenu(route: RouteLocationNormalizedLoaded | RouteRecordRaw): App
     icon: createMenuIcon(route.meta),
   }
 }
+/**
+ * Handle nested menu grouping
+ */
+function handleSubMenuGrouping(menus: App.Global.Menu[]): App.Global.Menu[] {
+  const rootMenus: App.Global.Menu[] = []
+  const menuMap = new Map<string, App.Global.Menu>()
+
+  // First pass: create map and identify parents
+  menus.forEach((menu) => {
+    menuMap.set(menu.key, menu)
+    if (!('parent' in menu) || !menu.parent) {
+      rootMenus.push(menu)
+    }
+  })
+
+  // Second pass: build hierarchy
+  menus.forEach((menu) => {
+    if ('parent' in menu && menu.parent) {
+      const parentKey = `group-${menu.parent}`
+      const parent = menuMap.get(parentKey)
+      if (parent) {
+        parent.children = parent.children || []
+        parent.children.push(menu)
+      }
+    }
+  })
+
+  return rootMenus
+}
 
 /**
  * Handle menu grouping logic
@@ -177,36 +206,6 @@ function handleMenuGrouping(menus: App.Global.Menu[]): App.Global.Menu[] {
   })
 
   return [...handleSubMenuGrouping(Array.from(groupMap.values())), ...ungroupedMenus]
-}
-
-/**
- * Handle nested menu grouping
- */
-function handleSubMenuGrouping(menus: App.Global.Menu[]): App.Global.Menu[] {
-  const rootMenus: App.Global.Menu[] = []
-  const menuMap = new Map<string, App.Global.Menu>()
-
-  // First pass: create map and identify parents
-  menus.forEach((menu) => {
-    menuMap.set(menu.key, menu)
-    if (!('parent' in menu) || !menu.parent) {
-      rootMenus.push(menu)
-    }
-  })
-
-  // Second pass: build hierarchy
-  menus.forEach((menu) => {
-    if ('parent' in menu && menu.parent) {
-      const parentKey = `group-${menu.parent}`
-      const parent = menuMap.get(parentKey)
-      if (parent) {
-        parent.children = parent.children || []
-        parent.children.push(menu)
-      }
-    }
-  })
-
-  return rootMenus
 }
 
 /**
