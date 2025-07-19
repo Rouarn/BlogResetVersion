@@ -31,8 +31,6 @@ declare module 'vue-router/auto-routes' {
     '/link/gitee/': RouteRecordInfo<'/link/gitee/', '/link/gitee', Record<never, never>, Record<never, never>>,
     '/link/github/': RouteRecordInfo<'/link/github/', '/link/github', Record<never, never>, Record<never, never>>,
     '/link/juejin/': RouteRecordInfo<'/link/juejin/', '/link/juejin', Record<never, never>, Record<never, never>>,
-    '/link/user/': RouteRecordInfo<'/link/user/', '/link/user', Record<never, never>, Record<never, never>>,
-    '/link/user-center/': RouteRecordInfo<'/link/user-center/', '/link/user-center', Record<never, never>, Record<never, never>>,
     '/user-center/': RouteRecordInfo<'/user-center/', '/user-center', Record<never, never>, Record<never, never>>,
   }
 }
