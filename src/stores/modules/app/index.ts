@@ -1,14 +1,16 @@
+import router from '@/router'
 import { localStg } from '@/utils/storage'
 import { useRouteStore } from '../route'
 import { SetupStoreId } from '@/enum'
 import useBoolean from '@/hooks/common/use-boolean'
-import { setLocale } from '@/locales'
-import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
+import { $t, setLocale } from '@/locales'
+import { setDayjsLocale } from '@/locales/dayjs'
+import { breakpointsTailwind, useBreakpoints, useTitle } from '@vueuse/core'
 import { defineStore } from 'pinia'
-import { routes } from 'vue-router/auto-routes'
 
 export const useAppStore = defineStore(SetupStoreId.App, () => {
   const routeStore = useRouteStore()
+  const scope = effectScope()
   const breakpoints = useBreakpoints(breakpointsTailwind)
   const { bool: reloadFlag, setBool: setReloadFlag } = useBoolean(true)
   const { bool: themeDrawerVisible, setTrue: openThemeDrawer, setFalse: closeThemeDrawer } = useBoolean()
@@ -35,7 +37,15 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
     locale.value = lang
     setLocale(lang)
     localStg.set('lang', lang)
-    routeStore.getGlobalMenus(routes)
+  }
+
+  /** Update document title by locale */
+  function updateDocumentTitleByLocale() {
+    const AppTitle = $t('system.title')
+    const { title, i18nKey } = router.currentRoute.value.meta
+    const subTitle = i18nKey ? $t(i18nKey) : (title ?? '')
+    const documentTitle = subTitle ? `${subTitle} - ${AppTitle}` : AppTitle
+    useTitle(documentTitle)
   }
 
   /**
@@ -52,6 +62,26 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
 
     setReloadFlag(true)
   }
+
+  // watch store
+  scope.run(() => {
+    // watch locale
+    watch(locale, () => {
+      // update document title by locale
+      updateDocumentTitleByLocale()
+
+      // update global menus by locale
+      routeStore.updateGlobalMenusByLocale()
+
+      // set dayjs locale
+      setDayjsLocale(locale.value)
+    })
+  })
+
+  /** On scope dispose */
+  onScopeDispose(() => {
+    scope.stop()
+  })
 
   return {
     isMobile,

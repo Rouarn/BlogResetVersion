@@ -263,3 +263,31 @@ export function transformMenuToSearchMenus(menus: App.Global.Menu[], treeMap: Ap
     return acc
   }, treeMap)
 }
+
+/**
+ * Update locale of global menus
+ *
+ * @param menus
+ */
+export function updateLocaleOfGlobalMenus(menus: App.Global.Menu[]) {
+  const result: App.Global.Menu[] = []
+
+  menus.forEach((menu) => {
+    const { i18nKey, label, children } = menu
+
+    const newLabel = i18nKey ? $t(i18nKey) : label
+
+    const newMenu: App.Global.Menu = {
+      ...menu,
+      label: newLabel,
+    }
+
+    if (children?.length) {
+      newMenu.children = updateLocaleOfGlobalMenus(children)
+    }
+
+    result.push(newMenu)
+  })
+
+  return result
+}
