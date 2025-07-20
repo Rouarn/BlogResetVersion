@@ -63,6 +63,10 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
     setReloadFlag(true)
   }
 
+  function init() {
+    setDayjsLocale(locale.value)
+  }
+
   // watch store
   scope.run(() => {
     // watch locale
@@ -82,6 +86,9 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
   onScopeDispose(() => {
     scope.stop()
   })
+
+  // init
+  init()
 
   return {
     isMobile,
