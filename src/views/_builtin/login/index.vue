@@ -1,13 +1,12 @@
-<route lang="json5">
-{
-  meta: {
-    title: '登录',
-  },
-}
-</route>
-
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/modules/auth'
+
+definePage({
+  meta: {
+    layout: 'base-layout',
+    title: '登录',
+  },
+})
 
 defineOptions({
   name: 'GlobalLogin',

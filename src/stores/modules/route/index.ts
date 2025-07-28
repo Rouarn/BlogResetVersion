@@ -1,4 +1,5 @@
-import { getCacheRouteNames, getGlobalMenusByRoutes, transformMenuToSearchMenus, updateLocaleOfGlobalMenus } from './shared'
+import { generateSimpleMenus, updateMenuLocale } from '@/utils/menu-auto-generator'
+import { getCacheRouteNames, transformMenuToSearchMenus } from './shared'
 import { SetupStoreId } from '@/enum'
 import useBoolean from '@/hooks/common/use-boolean'
 import { defineStore } from 'pinia'
@@ -11,14 +12,19 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   const menus = ref<App.Global.Menu[]>([])
   const searchMenus = computed(() => transformMenuToSearchMenus(menus.value))
 
-  /** Get global menus */
+  /**
+   * Get global menus
+   *
+   * @param routes Vue routes
+   */
   function getGlobalMenus(routes: RouteRecordRaw[]) {
-    menus.value = getGlobalMenusByRoutes(routes)
+    menus.value = generateSimpleMenus(routes)
+    console.log('menus.value: ', menus.value)
   }
 
   /** Update global menus by locale */
   function updateGlobalMenusByLocale() {
-    menus.value = updateLocaleOfGlobalMenus(menus.value)
+    menus.value = updateMenuLocale(menus.value)
   }
 
   /** Cache routes */

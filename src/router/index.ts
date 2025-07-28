@@ -80,7 +80,7 @@ router.beforeEach(async (to, from, next) => {
 
   // 3.初始化路由菜单 (提供给header菜单使用,路由使用的是基于文件自动生成的)
   if (!routeStore.isInitConstantRoute) {
-    await routeStore.initRoute(routes)
+    await routeStore.initRoute(layoutRoutes)
   }
 
   // 4.检查是否需要授权

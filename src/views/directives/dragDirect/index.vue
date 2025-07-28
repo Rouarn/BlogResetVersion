@@ -1,14 +1,3 @@
-<route lang="json5">
-{
-  meta: {
-    title: '拖拽指令',
-    group: {
-      enabled: 'route.directives',
-    },
-  },
-}
-</route>
-
 <template>
   <div class="card relative">
     <span class="text">拖拽指令 🍇🍇🍇🍓🍓🍓</span>
@@ -16,7 +5,14 @@
   </div>
 </template>
 
-<script setup lang="ts" name="dragDirect"></script>
+<script setup lang="ts" name="dragDirect">
+definePage({
+  meta: {
+    layout: 'base-layout',
+    title: '拖拽指令',
+  },
+})
+</script>
 
 <style scoped lang="scss">
 .drag-box {

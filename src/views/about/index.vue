@@ -1,17 +1,16 @@
-<route lang="json5">
-{
-  meta: {
-    title: '关于',
-    i18nKey: 'route.about',
-  },
-}
-</route>
-
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAppStore } from '@/stores/modules/app'
 import { $t } from '@/locales'
 import pkg from '~/package.json'
+
+definePage({
+  meta: {
+    layout: 'base-layout',
+    title: '关于',
+    i18nKey: 'route.about',
+  },
+})
 
 const appStore = useAppStore()
 

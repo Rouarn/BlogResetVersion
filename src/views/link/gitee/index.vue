@@ -1,14 +1,3 @@
-<route lang="json5">
-{
-  meta: {
-    title: 'Gitee',
-    group: {
-      enabled: 'route.link',
-    },
-  },
-}
-</route>
-
 <template>
   <div class="card">
     <span class="text">
@@ -18,6 +7,13 @@
   </div>
 </template>
 
-<script setup lang="ts" name="gitee"></script>
+<script setup lang="ts" name="gitee">
+definePage({
+  meta: {
+    layout: 'base-layout',
+    title: 'Gitee',
+  },
+})
+</script>
 
 <style scoped lang="scss"></style>

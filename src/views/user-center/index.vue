@@ -1,13 +1,13 @@
-<route lang="json5">
-{
+<script setup lang="ts">
+definePage({
   meta: {
+    layout: 'base-layout',
     title: 'User Center',
-    i18key: 'common.userCenter',
+    i18nKey: 'common.userCenter',
     hideInMenu: true,
   },
-}
-</route>
-<script setup lang="ts">
+})
+
 defineOptions({
   name: 'UserCenter',
 })

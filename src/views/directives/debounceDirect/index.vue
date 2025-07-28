@@ -1,14 +1,3 @@
-<route lang="json5">
-{
-  meta: {
-    title: '防抖指令',
-    group: {
-      enabled: 'route.directives',
-    },
-  },
-}
-</route>
-
 <template>
   <div class="card">
     <span class="text">防抖指令 🍇🍇🍇🍓🍓🍓</span>
@@ -17,6 +6,13 @@
 </template>
 
 <script setup lang="ts" name="debounceDirect">
+definePage({
+  meta: {
+    layout: 'base-layout',
+    title: '防抖指令',
+  },
+})
+
 const debounceClick = () => {
   window.$message?.success('我是防抖按钮触发的事件 🍍🍓🍌')
 }

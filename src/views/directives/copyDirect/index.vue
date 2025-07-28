@@ -1,17 +1,16 @@
-<route lang="json5">
-{
+<script setup lang="ts" name="copyDirect">
+import { ref } from 'vue'
+
+definePage({
   meta: {
+    layout: 'base-layout',
     title: '复制指令',
-    group: {
-      enabled: true,
-      title: '自定义指令',
-      icon: 'material-icon-theme:folder-vue-directives-open',
-      i18nKey: 'route.directives',
-      order: 2,
-    },
+    order: 1,
   },
-}
-</route>
+})
+
+const data = ref<string>('我是被复制的内容 🍒 🍉 🍊')
+</script>
 
 <template>
   <div class="card">
@@ -25,11 +24,5 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts" name="copyDirect">
-import { ref } from 'vue'
-
-const data = ref<string>('我是被复制的内容 🍒 🍉 🍊')
-</script>
 
 <style scoped lang="scss"></style>

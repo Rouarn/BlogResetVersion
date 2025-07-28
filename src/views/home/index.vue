@@ -1,5 +1,7 @@
-<route lang="json5">
-{
+<script setup lang="ts">
+import welcome from '@/assets/images/welcome.png'
+
+definePage({
   meta: {
     layout: 'base-layout',
     title: '首页',
@@ -7,11 +9,7 @@
     order: 0,
     icon: 'material-symbols:home-app-logo',
   },
-}
-</route>
-
-<script setup lang="ts">
-import welcome from '@/assets/images/welcome.png'
+})
 </script>
 
 <template>

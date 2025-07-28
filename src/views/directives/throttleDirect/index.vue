@@ -1,14 +1,3 @@
-<route lang="json5">
-{
-  meta: {
-    title: '节流指令',
-    group: {
-      enabled: 'route.directives',
-    },
-  },
-}
-</route>
-
 <template>
   <div class="card">
     <span class="text">节流指令 🍇🍇🍇🍓🍓🍓</span>
@@ -17,6 +6,13 @@
 </template>
 
 <script setup lang="ts" name="throttleDirect">
+definePage({
+  meta: {
+    layout: 'base-layout',
+    title: '节流指令',
+  },
+})
+
 const throttleClick = () => {
   window.$message?.success('我是节流按钮触发的事件 🍍🍓🍌')
 }

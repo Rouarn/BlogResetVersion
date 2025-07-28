@@ -1,14 +1,3 @@
-<route lang="json5">
-{
-  meta: {
-    title: '长按指令',
-    group: {
-      enabled: 'route.directives',
-    },
-  },
-}
-</route>
-
 <template>
   <div class="card">
     <span class="text">长按指令 🍇🍇🍇🍓🍓🍓</span>
@@ -17,6 +6,13 @@
 </template>
 
 <script setup lang="ts" name="longpressDirect">
+definePage({
+  meta: {
+    layout: 'base-layout',
+    title: '长按指令',
+  },
+})
+
 const longpress = () => {
   window.$message?.success('长按事件触发成功 🎉🎉🎉')
 }

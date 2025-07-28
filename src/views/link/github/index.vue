@@ -1,18 +1,3 @@
-<route lang="json5">
-{
-  meta: {
-    title: 'GitHub',
-    group: {
-      enabled: true,
-      title: '链接',
-      icon: 'material-symbols-light:attach-file',
-      i18nKey: 'route.link',
-      order: 1,
-    },
-  },
-}
-</route>
-
 <template>
   <div class="card">
     <span class="text">
@@ -22,6 +7,13 @@
   </div>
 </template>
 
-<script setup lang="ts" name="github"></script>
+<script setup lang="ts" name="github">
+definePage({
+  meta: {
+    layout: 'base-layout',
+    title: 'GitHub',
+  },
+})
+</script>
 
 <style scoped lang="scss"></style>
