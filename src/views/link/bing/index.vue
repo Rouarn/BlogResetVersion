@@ -9,7 +9,6 @@ import IframePage from '@/views/_builtin/iframe-page/[url].vue'
 
 definePage({
   meta: {
-    layout: 'base-layout',
     title: 'XiaJi',
     isAuth: true,
   },

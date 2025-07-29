@@ -8,7 +8,6 @@
 <script setup lang="ts" name="debounceDirect">
 definePage({
   meta: {
-    layout: 'base-layout',
     title: '防抖指令',
   },
 })

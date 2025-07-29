@@ -1,0 +1,267 @@
+[
+    {
+        "path": "/about",
+        "children": [
+            {
+                "path": "",
+                "children": [
+                    {
+                        "path": "",
+                        "name": "/about/",
+                        "meta": {
+                            "title": "关于",
+                            "i18nKey": "route.about"
+                        },
+                        "alias": []
+                    }
+                ]
+            }
+        ],
+        "meta": {
+            "isLayout": true
+        }
+    },
+    {
+        "path": "/directives",
+        "children": [
+            {
+                "path": "",
+                "children": [
+                    {
+                        "path": "copyDirect",
+                        "children": [
+                            {
+                                "path": "",
+                                "name": "/directives/copyDirect/",
+                                "meta": {
+                                    "title": "复制指令",
+                                    "order": 1
+                                },
+                                "alias": []
+                            }
+                        ]
+                    },
+                    {
+                        "path": "debounceDirect",
+                        "children": [
+                            {
+                                "path": "",
+                                "name": "/directives/debounceDirect/",
+                                "meta": {
+                                    "title": "防抖指令"
+                                },
+                                "alias": []
+                            }
+                        ]
+                    },
+                    {
+                        "path": "dragDirect",
+                        "children": [
+                            {
+                                "path": "",
+                                "name": "/directives/dragDirect/",
+                                "meta": {
+                                    "title": "拖拽指令"
+                                },
+                                "alias": []
+                            }
+                        ]
+                    },
+                    {
+                        "path": "longpressDirect",
+                        "children": [
+                            {
+                                "path": "",
+                                "name": "/directives/longpressDirect/",
+                                "meta": {
+                                    "title": "长按指令"
+                                },
+                                "alias": []
+                            }
+                        ]
+                    },
+                    {
+                        "path": "menuDemo",
+                        "children": [
+                            {
+                                "path": "",
+                                "name": "/directives/menuDemo/",
+                                "meta": {
+                                    "title": "菜单配置演示",
+                                    "icon": "material-symbols:menu-book",
+                                    "order": 3
+                                },
+                                "alias": []
+                            }
+                        ]
+                    },
+                    {
+                        "path": "throttleDirect",
+                        "children": [
+                            {
+                                "path": "",
+                                "name": "/directives/throttleDirect/",
+                                "meta": {
+                                    "title": "节流指令"
+                                },
+                                "alias": []
+                            }
+                        ]
+                    },
+                    {
+                        "path": "watermarkDirect",
+                        "children": [
+                            {
+                                "path": "",
+                                "name": "/directives/watermarkDirect/",
+                                "meta": {
+                                    "title": "水印指令"
+                                },
+                                "alias": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "meta": {
+            "isLayout": true
+        }
+    },
+    {
+        "path": "/home",
+        "children": [
+            {
+                "path": "",
+                "children": [
+                    {
+                        "path": "",
+                        "name": "/home/",
+                        "meta": {
+                            "title": "首页",
+                            "i18nKey": "route.home",
+                            "order": 0,
+                            "icon": "material-symbols:home-app-logo"
+                        },
+                        "alias": []
+                    }
+                ]
+            }
+        ],
+        "meta": {
+            "isLayout": true
+        }
+    },
+    {
+        "path": "/link",
+        "children": [
+            {
+                "path": "",
+                "children": [
+                    {
+                        "path": "bing",
+                        "children": [
+                            {
+                                "path": "",
+                                "name": "/link/bing/",
+                                "meta": {
+                                    "title": "XiaJi",
+                                    "isAuth": true
+                                },
+                                "alias": []
+                            }
+                        ]
+                    },
+                    {
+                        "path": "docs",
+                        "children": [
+                            {
+                                "path": "",
+                                "name": "/link/docs/",
+                                "meta": {
+                                    "title": "项目文档"
+                                },
+                                "alias": []
+                            }
+                        ]
+                    },
+                    {
+                        "path": "gitee",
+                        "children": [
+                            {
+                                "path": "",
+                                "children": [
+                                    {
+                                        "path": "",
+                                        "name": "/link/gitee/",
+                                        "meta": {
+                                            "layout": "base-layout",
+                                            "title": "Gitee"
+                                        },
+                                        "alias": []
+                                    }
+                                ],
+                                "meta": {
+                                    "isLayout": true
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "path": "github",
+                        "children": [
+                            {
+                                "path": "",
+                                "name": "/link/github/",
+                                "meta": {
+                                    "title": "GitHub"
+                                },
+                                "alias": []
+                            }
+                        ]
+                    },
+                    {
+                        "path": "juejin",
+                        "children": [
+                            {
+                                "path": "",
+                                "name": "/link/juejin/",
+                                "meta": {
+                                    "title": "掘金文档"
+                                },
+                                "alias": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "meta": {
+            "isLayout": true
+        }
+    },
+    {
+        "path": "/user-center",
+        "children": [
+            {
+                "path": "",
+                "children": [
+                    {
+                        "path": "",
+                        "name": "/user-center/",
+                        "meta": {
+                            "layout": "base-layout",
+                            "title": "User Center",
+                            "i18nKey": "common.userCenter",
+                            "hideInMenu": true
+                        },
+                        "alias": []
+                    }
+                ],
+                "meta": {
+                    "isLayout": true
+                }
+            }
+        ]
+    }
+]

@@ -8,7 +8,6 @@
 <script setup lang="ts" name="dragDirect">
 definePage({
   meta: {
-    layout: 'base-layout',
     title: '拖拽指令',
   },
 })

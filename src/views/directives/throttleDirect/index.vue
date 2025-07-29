@@ -8,7 +8,6 @@
 <script setup lang="ts" name="throttleDirect">
 definePage({
   meta: {
-    layout: 'base-layout',
     title: '节流指令',
   },
 })

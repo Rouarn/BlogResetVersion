@@ -3,7 +3,6 @@ import welcome from '@/assets/images/welcome.png'
 
 definePage({
   meta: {
-    layout: 'base-layout',
     title: '首页',
     i18nKey: 'route.home',
     order: 0,

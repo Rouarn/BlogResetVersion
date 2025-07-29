@@ -7,7 +7,6 @@
 <script setup lang="ts" name="watermarkDirect">
 definePage({
   meta: {
-    layout: 'base-layout',
     title: '水印指令',
   },
 })

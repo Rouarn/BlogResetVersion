@@ -6,7 +6,6 @@ import pkg from '~/package.json'
 
 definePage({
   meta: {
-    layout: 'base-layout',
     title: '关于',
     i18nKey: 'route.about',
   },

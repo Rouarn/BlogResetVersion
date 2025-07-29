@@ -3,7 +3,6 @@ import { ref } from 'vue'
 
 definePage({
   meta: {
-    layout: 'base-layout',
     title: '复制指令',
     order: 1,
   },

@@ -8,7 +8,6 @@
 <script setup lang="ts" name="longpressDirect">
 definePage({
   meta: {
-    layout: 'base-layout',
     title: '长按指令',
   },
 })

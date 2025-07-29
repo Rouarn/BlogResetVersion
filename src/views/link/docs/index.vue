@@ -7,7 +7,6 @@
 <script setup lang="ts" name="docs">
 definePage({
   meta: {
-    layout: 'base-layout',
     title: '项目文档',
   },
 })

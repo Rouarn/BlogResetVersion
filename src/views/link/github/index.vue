@@ -10,7 +10,6 @@
 <script setup lang="ts" name="github">
 definePage({
   meta: {
-    layout: 'base-layout',
     title: 'GitHub',
   },
 })

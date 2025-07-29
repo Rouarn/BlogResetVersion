@@ -11,7 +11,6 @@
 <script setup lang="ts" name="juejin">
 definePage({
   meta: {
-    layout: 'base-layout',
     title: '掘金文档',
   },
 })

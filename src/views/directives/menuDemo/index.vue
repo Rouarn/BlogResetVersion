@@ -173,7 +173,6 @@
 <script setup lang="ts" name="MenuDemo">
 definePage({
   meta: {
-    layout: 'base-layout',
     title: '菜单配置演示',
     icon: 'material-symbols:menu-book',
     order: 3,
