@@ -79,27 +79,57 @@
           <h3>📁 文件夹映射</h3>
           <div class="folder-mapping">
             <div class="mapping-item">
+              <code>home/</code>
+              <span class="arrow">→</span>
+              <span class="group-info">
+                <span class="group-title">首页</span>
+                <span class="group-icon">🏠</span>
+                <span class="group-type">单独菜单</span>
+              </span>
+            </div>
+            <div class="mapping-item">
               <code>directives/</code>
               <span class="arrow">→</span>
               <span class="group-info">
                 <span class="group-title">自定义指令</span>
                 <span class="group-icon">🎯</span>
+                <span class="group-type">自动分组</span>
               </span>
             </div>
             <div class="mapping-item">
-              <code>components/</code>
+              <code>link/</code>
               <span class="arrow">→</span>
               <span class="group-info">
-                <span class="group-title">组件示例</span>
-                <span class="group-icon">🧩</span>
+                <span class="group-title">外部链接</span>
+                <span class="group-icon">🔗</span>
+                <span class="group-type">自动分组</span>
               </span>
             </div>
             <div class="mapping-item">
-              <code>system/</code>
+              <code>about/</code>
               <span class="arrow">→</span>
               <span class="group-info">
-                <span class="group-title">系统管理</span>
-                <span class="group-icon">⚙️</span>
+                <span class="group-title">关于</span>
+                <span class="group-icon">ℹ️</span>
+                <span class="group-type">单独菜单</span>
+              </span>
+            </div>
+            <div class="mapping-item excluded">
+              <code>user-center/</code>
+              <span class="arrow">→</span>
+              <span class="group-info">
+                <span class="group-title">自动隐藏</span>
+                <span class="group-icon">🚫</span>
+                <span class="group-type">hideInMenu: true</span>
+              </span>
+            </div>
+            <div class="mapping-item excluded">
+              <code>_builtin/</code>
+              <span class="arrow">→</span>
+              <span class="group-info">
+                <span class="group-title">自动排除</span>
+                <span class="group-icon">❌</span>
+                <span class="group-type">_开头文件夹</span>
               </span>
             </div>
           </div>
@@ -108,10 +138,13 @@
         <div class="rule-card">
           <h3>🎯 智能判断</h3>
           <ul class="smart-rules">
-            <li>文件夹下 ≥2 个页面时自动分组</li>
-            <li>排除 <code>_builtin</code> 等特殊文件夹</li>
-            <li>支持嵌套分组和自定义配置</li>
-            <li>自动处理国际化和图标</li>
+            <li><strong>智能排序：</strong>'home' 菜单始终排在第一位</li>
+            <li><strong>自动分组：</strong>文件夹下 ≥2 个页面时自动分组</li>
+            <li><strong>单独菜单：</strong>只有1个页面的文件夹自动显示为独立菜单</li>
+            <li><strong>自动隐藏：</strong>自动识别路由中的 <code>hideInMenu: true</code> 属性</li>
+            <li><strong>自动排除：</strong><code>_</code> 开头的文件夹自动排除（如 <code>_builtin</code>）</li>
+            <li><strong>自定义排除：</strong>通过 <code>customExcludeFolders</code> 配置额外排除</li>
+            <li><strong>预设配置：</strong>常用文件夹已预设图标、标题和排序</li>
           </ul>
         </div>
       </div>
@@ -140,6 +173,44 @@
           <div class="step-content">
             <h3>测试验证</h3>
             <p>检查菜单分组是否正确生成</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 文件夹分类说明 -->
+    <div class="folder-types-section">
+      <h2>📂 文件夹分类说明</h2>
+      <div class="folder-types-grid">
+        <div class="folder-type-card single">
+          <h3>🏠 单独菜单</h3>
+          <p>只有1个页面的文件夹，自动显示为独立菜单项</p>
+          <div class="examples">
+            <span class="example">home (1个页面)</span>
+            <span class="example">about (1个页面)</span>
+          </div>
+        </div>
+        <div class="folder-type-card group">
+          <h3>📁 自动分组</h3>
+          <p>≥2个页面的文件夹，自动创建分组菜单</p>
+          <div class="examples">
+            <span class="example">directives (6个页面)</span>
+            <span class="example">link (5个页面)</span>
+          </div>
+        </div>
+        <div class="folder-type-card hidden">
+          <h3>🚫 自动隐藏</h3>
+          <p>路由中设置 hideInMenu: true，自动隐藏</p>
+          <div class="examples">
+            <span class="example">user-center</span>
+          </div>
+        </div>
+        <div class="folder-type-card exclude">
+          <h3>❌ 自动排除</h3>
+          <p>_开头的文件夹自动排除，支持自定义排除</p>
+          <div class="examples">
+            <span class="example">_builtin</span>
+            <span class="example">customExcludeFolders</span>
           </div>
         </div>
       </div>
@@ -179,8 +250,11 @@ definePage({
   },
 })
 
-// 这个页面本身就是自动菜单生成器的演示
-// 它会自动归类到 "自定义指令" 分组下
+// 🎯 这个页面本身就是智能菜单生成器的演示
+// 📁 它位于 src/views/menuDemo/ 文件夹下
+// 🔍 智能识别：由于只有1个页面，自动显示为独立菜单项
+// 📈 如果在同一文件夹下添加更多页面（≥2个），系统会自动创建分组
+// 🚀 无需任何手动配置，完全基于文件夹结构智能判断
 </script>
 
 <style scoped lang="scss">
@@ -357,6 +431,23 @@ definePage({
         .group-title {
           font-weight: 500;
         }
+
+        .group-type {
+          font-size: 0.8rem;
+          padding: 2px 8px;
+          border-radius: 12px;
+          background: #f0f0f0;
+          color: #666;
+        }
+      }
+    }
+
+    &.excluded {
+      opacity: 0.6;
+
+      .group-info .group-type {
+        background: #ffe0e0;
+        color: #d63031;
       }
     }
   }
@@ -427,6 +518,72 @@ definePage({
             border-radius: 3px;
           }
         }
+      }
+    }
+  }
+
+  .folder-types-section {
+    margin-bottom: 40px;
+
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+  }
+
+  .folder-types-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+
+  .folder-type-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #ddd;
+
+    &.single {
+      border-left-color: #51cf66;
+    }
+
+    &.group {
+      border-left-color: #339af0;
+    }
+
+    &.hidden {
+      border-left-color: #ffa502;
+    }
+
+    &.exclude {
+      border-left-color: #ff6b6b;
+    }
+
+    h3 {
+      margin: 0 0 12px 0;
+      font-size: 1.2rem;
+    }
+
+    p {
+      margin: 0 0 16px 0;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .examples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      .example {
+        background: #f8f9fa;
+        padding: 4px 12px;
+        border-radius: 16px;
+        font-size: 0.9rem;
+        font-family: 'Fira Code', monospace;
+        color: #495057;
       }
     }
   }

@@ -1,8 +1,8 @@
 [
     {
-        "key": "group-",
-        "label": "",
-        "order": 999,
+        "key": "group-directives",
+        "label": "自定义指令",
+        "order": 2,
         "children": [
             {
                 "key": "/directives/copyDirect/",
@@ -16,14 +16,6 @@
                 "label": "菜单配置演示",
                 "order": 3,
                 "routeKey": "/directives/menuDemo/",
-                "routePath": ""
-            },
-            {
-                "key": "/about/",
-                "label": "关于",
-                "i18nKey": "route.about",
-                "order": 999,
-                "routeKey": "/about/",
                 "routePath": ""
             },
             {
@@ -60,15 +52,14 @@
                 "order": 999,
                 "routeKey": "/directives/watermarkDirect/",
                 "routePath": ""
-            },
-            {
-                "key": "/home/",
-                "label": "首页",
-                "i18nKey": "route.home",
-                "order": 0,
-                "routeKey": "/home/",
-                "routePath": ""
-            },
+            }
+        ]
+    },
+    {
+        "key": "group-link",
+        "label": "外部链接",
+        "order": 3,
+        "children": [
             {
                 "key": "/link/bing/",
                 "label": "XiaJi",
@@ -105,5 +96,21 @@
                 "routePath": ""
             }
         ]
+    },
+    {
+        "key": "/about/",
+        "label": "关于",
+        "i18nKey": "route.about",
+        "order": 999,
+        "routeKey": "/about/",
+        "routePath": ""
+    },
+    {
+        "key": "/home/",
+        "label": "首页",
+        "i18nKey": "route.home",
+        "order": 0,
+        "routeKey": "/home/",
+        "routePath": ""
     }
 ]

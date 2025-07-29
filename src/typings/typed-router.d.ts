@@ -23,7 +23,6 @@ declare module 'vue-router/auto-routes' {
     '/directives/debounceDirect/': RouteRecordInfo<'/directives/debounceDirect/', '/directives/debounceDirect', Record<never, never>, Record<never, never>>,
     '/directives/dragDirect/': RouteRecordInfo<'/directives/dragDirect/', '/directives/dragDirect', Record<never, never>, Record<never, never>>,
     '/directives/longpressDirect/': RouteRecordInfo<'/directives/longpressDirect/', '/directives/longpressDirect', Record<never, never>, Record<never, never>>,
-    '/directives/menuDemo/': RouteRecordInfo<'/directives/menuDemo/', '/directives/menuDemo', Record<never, never>, Record<never, never>>,
     '/directives/throttleDirect/': RouteRecordInfo<'/directives/throttleDirect/', '/directives/throttleDirect', Record<never, never>, Record<never, never>>,
     '/directives/watermarkDirect/': RouteRecordInfo<'/directives/watermarkDirect/', '/directives/watermarkDirect', Record<never, never>, Record<never, never>>,
     '/home/': RouteRecordInfo<'/home/', '/home', Record<never, never>, Record<never, never>>,
@@ -32,6 +31,7 @@ declare module 'vue-router/auto-routes' {
     '/link/gitee/': RouteRecordInfo<'/link/gitee/', '/link/gitee', Record<never, never>, Record<never, never>>,
     '/link/github/': RouteRecordInfo<'/link/github/', '/link/github', Record<never, never>, Record<never, never>>,
     '/link/juejin/': RouteRecordInfo<'/link/juejin/', '/link/juejin', Record<never, never>, Record<never, never>>,
+    '/menuDemo/': RouteRecordInfo<'/menuDemo/', '/menuDemo', Record<never, never>, Record<never, never>>,
     '/user-center/': RouteRecordInfo<'/user-center/', '/user-center', Record<never, never>, Record<never, never>>,
   }
 }

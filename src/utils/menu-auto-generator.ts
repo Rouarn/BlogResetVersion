@@ -11,12 +11,8 @@ import type { RouteRecordRaw } from 'vue-router'
 const DEFAULT_CONFIG = {
   defaultIcon: 'material-symbols:folder',
   defaultOrder: 999,
-  /** 排除的文件夹（不显示在菜单中） */
-  excludeFolders: ['_builtin'],
-  /** 单独显示为一级菜单的文件夹（不分组） */
-  singleMenuFolders: ['home', 'about'],
-  /** 隐藏的文件夹（不显示在菜单中） */
-  hiddenFolders: ['user-center'],
+  /** 自定义排除的文件夹（不显示在菜单中），默认排除_开头的文件夹 */
+  customExcludeFolders: [] as string[],
 }
 
 /** 文件夹显示配置 */
@@ -68,16 +64,23 @@ function getFolderDisplayConfig(folder: string) {
 
 /**
  * 判断文件夹是否应该被排除
+ * 自动排除_开头的文件夹，同时支持自定义排除
  */
 function shouldExcludeFolder(folder: string): boolean {
-  return DEFAULT_CONFIG.excludeFolders.includes(folder) || DEFAULT_CONFIG.hiddenFolders.includes(folder)
+  // 排除_开头的文件夹
+  if (folder.startsWith('_')) {
+    return true
+  }
+  // 排除自定义配置的文件夹
+  return DEFAULT_CONFIG.customExcludeFolders.includes(folder)
 }
 
 /**
  * 判断文件夹是否应该显示为单独的一级菜单
+ * 自动判断：只有一个路由的文件夹显示为单独菜单
  */
-function isSingleMenuFolder(folder: string): boolean {
-  return DEFAULT_CONFIG.singleMenuFolders.includes(folder)
+function isSingleMenuFolder(_folder: string, routesInFolder: RouteRecordRaw[]): boolean {
+  return routesInFolder.length === 1
 }
 
 /**
@@ -90,7 +93,7 @@ function shouldGroupFolder(folder: string, routesInFolder: RouteRecordRaw[]): bo
   }
 
   // 单独菜单文件夹不分组
-  if (isSingleMenuFolder(folder)) {
+  if (isSingleMenuFolder(folder, routesInFolder)) {
     return false
   }
 
@@ -100,6 +103,7 @@ function shouldGroupFolder(folder: string, routesInFolder: RouteRecordRaw[]): bo
 
 /**
  * 递归提取所有有效路由（包括children中的路由）
+ * 自动识别hideInMenu属性，无需手动配置hiddenFolders
  */
 function extractAllValidRoutes(routes: RouteRecordRaw[]): RouteRecordRaw[] {
   const validRoutes: RouteRecordRaw[] = []
@@ -193,10 +197,10 @@ function createGroupMenu(folder: string, children: App.Global.Menu[]): App.Globa
   return {
     key: `group-${folder}`,
     label: config.title,
-    i18nKey: config.i18nKey,
+    i18nKey: config.i18nKey as App.I18n.I18nKey | null | undefined,
     order: config.order,
-    routeKey: undefined,
-    routePath: undefined,
+    routeKey: `group-${folder}` as App.Global.RouteKey,
+    routePath: `group-${folder}`,
     icon: createMenuIcon(config.icon, 20),
     children,
   }
@@ -245,7 +249,7 @@ export function generateSimpleMenus(routes: RouteRecordRaw[]): App.Global.Menu[]
     // 转换路由为菜单项
     const menuItems = routesInFolder.map(routeToMenu)
 
-    if (isSingleMenuFolder(folder)) {
+    if (isSingleMenuFolder(folder, routesInFolder)) {
       // 单独菜单：直接添加到根级别
       menus.push(...menuItems)
     } else if (shouldGroupFolder(folder, routesInFolder)) {
