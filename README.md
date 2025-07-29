@@ -183,7 +183,7 @@ const FOLDER_DISPLAY_CONFIG = {
 - **src/router**: Vue Router 配置
 - **src/stores**: 使用 Pinia 进行状态管理
 - **src/views**: 页面级组件（菜单自动生成的核心目录）
-- **src/utils/menu-auto-generator.ts**: 菜单自动生成器核心逻辑
+- **src/stores/modules/route/shared.ts**: 菜单自动生成器核心逻辑
 - **vite.config.ts**: Vite 配置文件
 - **tsconfig.json**: TypeScript 配置文件
 

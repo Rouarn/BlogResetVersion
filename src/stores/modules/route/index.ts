@@ -1,5 +1,4 @@
-import { generateSimpleMenus, updateMenuLocale } from '@/utils/menu-auto-generator'
-import { getCacheRouteNames, transformMenuToSearchMenus } from './shared'
+import { generateSimpleMenus, getCacheRouteNames, transformMenuToSearchMenus, updateMenuLocale } from './shared'
 import { SetupStoreId } from '@/enum'
 import useBoolean from '@/hooks/common/use-boolean'
 import { defineStore } from 'pinia'
