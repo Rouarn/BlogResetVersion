@@ -14,6 +14,8 @@ declare global {
     $notification?: import('naive-ui').NotificationProviderInst
     /** Theme instance */
     $loading?: import('@/plugins/loading').LoadingProviderInst
+    /** 原始console */
+    $originalConsole?: Console
   }
 
   /** Build time of the project */

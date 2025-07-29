@@ -27,6 +27,7 @@ declare module 'vue-router/auto-routes' {
     '/directives/watermark-direct/': RouteRecordInfo<'/directives/watermark-direct/', '/directives/watermark-direct', Record<never, never>, Record<never, never>>,
     '/docs/fullscreen-demo/': RouteRecordInfo<'/docs/fullscreen-demo/', '/docs/fullscreen-demo', Record<never, never>, Record<never, never>>,
     '/docs/menu-demo/': RouteRecordInfo<'/docs/menu-demo/', '/docs/menu-demo', Record<never, never>, Record<never, never>>,
+    '/docs/test-console/': RouteRecordInfo<'/docs/test-console/', '/docs/test-console', Record<never, never>, Record<never, never>>,
     '/home/': RouteRecordInfo<'/home/', '/home', Record<never, never>, Record<never, never>>,
     '/link/bing/': RouteRecordInfo<'/link/bing/', '/link/bing', Record<never, never>, Record<never, never>>,
     '/link/docs/': RouteRecordInfo<'/link/docs/', '/link/docs', Record<never, never>, Record<never, never>>,
