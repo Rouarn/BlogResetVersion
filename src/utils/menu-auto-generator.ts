@@ -204,10 +204,18 @@ function createGroupMenu(folder: string, children: App.Global.Menu[]): App.Globa
 
 /**
  * 排序菜单项
+ * home菜单永远在最前面，其他菜单按order排序
  */
 function sortMenuItems(menuItems: App.Global.Menu[]): App.Global.Menu[] {
   return menuItems
-    .sort((a, b) => (a.order || DEFAULT_CONFIG.defaultOrder) - (b.order || DEFAULT_CONFIG.defaultOrder))
+    .sort((a, b) => {
+      // home菜单永远在最前面
+      if (a.key === '/home/' && b.key !== '/home/') return -1
+      if (b.key === '/home/' && a.key !== '/home/') return 1
+
+      // 其他菜单按order排序，数字越小越靠前
+      return (a.order || DEFAULT_CONFIG.defaultOrder) - (b.order || DEFAULT_CONFIG.defaultOrder)
+    })
     .map((item) => ({
       ...item,
       children: item.children ? sortMenuItems(item.children) : undefined,
