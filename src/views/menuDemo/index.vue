@@ -19,9 +19,9 @@
     title: '页面标题',
     group: {
       enabled: true,
-      title: '自定义指令',
-      icon: 'material-icon-theme:folder-vue-directives-open',
-      i18nKey: 'route.directives',
+      title: '菜单演示',
+      icon: 'material-symbols:folder',
+      i18nKey: 'route.menuDemo',
       order: 2,
       parent: null
     },
@@ -49,15 +49,13 @@
           <span class="complexity-badge low">复杂度: 低</span>
         </div>
         <div class="code-block">
-          <pre><code>&lt;route lang="json5"&gt;
-{
+          <pre><code>definePage({
   meta: {
-    title: '页面标题',
-    // 🎉 无需配置 group，自动根据文件夹结构生成
+    title: '菜单演示',
     order: 1,
+    i18nKey: 'route.menuDemo'
   },
-}
-&lt;/route&gt;</code></pre>
+})</code></pre>
         </div>
         <div class="benefits-list">
           <h3>优势特点：</h3>

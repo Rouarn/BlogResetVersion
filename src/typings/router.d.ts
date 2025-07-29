@@ -64,7 +64,5 @@ declare module 'vue-router' {
      * @default 'base-layout'
      */
     layout?: 'base-layout' | 'blank-layout'
-    /** 分组 */
-    group?: App.Global.MenuGroup['group'] | null
   }
 }

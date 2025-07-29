@@ -40,13 +40,6 @@ const routerMode = {
  * @param meta.layout => 路由布局 可选值有 base-layout 和 blank-layout
  * @default 'base-layout'
  * 分组中的多个路由最少需要 '一个' 路由声明 (i18nKey | title)
- * 其他路由可以只声明 enabled 把它的值设为对应的 (i18nKey | title) 需要和前面 "一个" 设置的的对应
- * @param meta.group => 菜单分组
- * @param meta.group.enabled => 是否启用分组
- * @param meta.group.title => 分组标题
- * @param meta.group.icon => 分组图标
- * @param meta.group.i18nKey => 分组国际化键 (设置后 title 字段将被忽略)
- * @param meta.group.order => 分组排序
  *
  * */
 const router = createRouter({
