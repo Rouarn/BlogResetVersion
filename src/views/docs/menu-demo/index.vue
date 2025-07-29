@@ -49,13 +49,19 @@
           <span class="complexity-badge low">复杂度: 低</span>
         </div>
         <div class="code-block">
-          <pre><code>definePage({
+          <pre>
+            <code>
+&lt;script setup lang="ts"&gt;
+definePage({
   meta: {
     title: '菜单演示',
     order: 1,
     i18nKey: 'route.menuDemo'
   },
-})</code></pre>
+})
+&lt;/script&gt;
+            </code>
+          </pre>
         </div>
         <div class="benefits-list">
           <h3>优势特点：</h3>

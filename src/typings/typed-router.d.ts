@@ -19,19 +19,20 @@ declare module 'vue-router/auto-routes' {
    */
   export interface RouteNamedMap {
     '/about/': RouteRecordInfo<'/about/', '/about', Record<never, never>, Record<never, never>>,
-    '/directives/copyDirect/': RouteRecordInfo<'/directives/copyDirect/', '/directives/copyDirect', Record<never, never>, Record<never, never>>,
-    '/directives/debounceDirect/': RouteRecordInfo<'/directives/debounceDirect/', '/directives/debounceDirect', Record<never, never>, Record<never, never>>,
-    '/directives/dragDirect/': RouteRecordInfo<'/directives/dragDirect/', '/directives/dragDirect', Record<never, never>, Record<never, never>>,
-    '/directives/longpressDirect/': RouteRecordInfo<'/directives/longpressDirect/', '/directives/longpressDirect', Record<never, never>, Record<never, never>>,
-    '/directives/throttleDirect/': RouteRecordInfo<'/directives/throttleDirect/', '/directives/throttleDirect', Record<never, never>, Record<never, never>>,
-    '/directives/watermarkDirect/': RouteRecordInfo<'/directives/watermarkDirect/', '/directives/watermarkDirect', Record<never, never>, Record<never, never>>,
+    '/directives/copy-direct/': RouteRecordInfo<'/directives/copy-direct/', '/directives/copy-direct', Record<never, never>, Record<never, never>>,
+    '/directives/debounce-direct/': RouteRecordInfo<'/directives/debounce-direct/', '/directives/debounce-direct', Record<never, never>, Record<never, never>>,
+    '/directives/drag-direct/': RouteRecordInfo<'/directives/drag-direct/', '/directives/drag-direct', Record<never, never>, Record<never, never>>,
+    '/directives/longpress-direct/': RouteRecordInfo<'/directives/longpress-direct/', '/directives/longpress-direct', Record<never, never>, Record<never, never>>,
+    '/directives/throttle-direct/': RouteRecordInfo<'/directives/throttle-direct/', '/directives/throttle-direct', Record<never, never>, Record<never, never>>,
+    '/directives/watermark-direct/': RouteRecordInfo<'/directives/watermark-direct/', '/directives/watermark-direct', Record<never, never>, Record<never, never>>,
+    '/docs/fullscreen-demo/': RouteRecordInfo<'/docs/fullscreen-demo/', '/docs/fullscreen-demo', Record<never, never>, Record<never, never>>,
+    '/docs/menu-demo/': RouteRecordInfo<'/docs/menu-demo/', '/docs/menu-demo', Record<never, never>, Record<never, never>>,
     '/home/': RouteRecordInfo<'/home/', '/home', Record<never, never>, Record<never, never>>,
     '/link/bing/': RouteRecordInfo<'/link/bing/', '/link/bing', Record<never, never>, Record<never, never>>,
     '/link/docs/': RouteRecordInfo<'/link/docs/', '/link/docs', Record<never, never>, Record<never, never>>,
     '/link/gitee/': RouteRecordInfo<'/link/gitee/', '/link/gitee', Record<never, never>, Record<never, never>>,
     '/link/github/': RouteRecordInfo<'/link/github/', '/link/github', Record<never, never>, Record<never, never>>,
     '/link/juejin/': RouteRecordInfo<'/link/juejin/', '/link/juejin', Record<never, never>, Record<never, never>>,
-    '/menuDemo/': RouteRecordInfo<'/menuDemo/', '/menuDemo', Record<never, never>, Record<never, never>>,
     '/user-center/': RouteRecordInfo<'/user-center/', '/user-center', Record<never, never>, Record<never, never>>,
   }
 }

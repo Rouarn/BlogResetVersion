@@ -1,6 +1,7 @@
 import { useRouter } from 'vue-router'
 import globalRouter from '@/router'
 import { GlobalConfig } from '@/enum'
+import { useFullscreen } from '@vueuse/core'
 import type { RouteLocationRaw } from 'vue-router'
 
 /**
@@ -45,6 +46,15 @@ export function useRouterPush(inSetup = true) {
     meta?.query?.forEach((item) => {
       query[item.key] = item.value
     })
+
+    // 处理全屏功能
+    if (meta?.isFull) {
+      const { enter } = useFullscreen()
+      // 延迟执行全屏，确保路由跳转完成后再进入全屏
+      setTimeout(() => {
+        enter()
+      }, 100)
+    }
 
     return routerPushByKey(key, { query })
   }

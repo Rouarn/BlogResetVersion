@@ -15,7 +15,10 @@ const DEFAULT_CONFIG = {
   customExcludeFolders: [] as string[],
 }
 
-/** 文件夹显示配置 */
+/**
+ * 文件夹显示配置
+ * 没有d'y的话，默认使用默认配置
+ *  */
 const FOLDER_DISPLAY_CONFIG: Record<string, { title: string; icon: string; order: number; i18nKey?: string }> = {
   home: {
     title: '首页',
@@ -38,6 +41,11 @@ const FOLDER_DISPLAY_CONFIG: Record<string, { title: string; icon: string; order
     title: '外部链接',
     icon: 'material-symbols:link',
     order: 3,
+  },
+  docs: {
+    title: '文档',
+    icon: 'material-symbols:book',
+    order: 4,
   },
 }
 
@@ -147,12 +155,13 @@ function groupRoutesByFolder(routes: RouteRecordRaw[]): Record<string, RouteReco
 /**
  * 创建菜单图标
  */
-function createMenuIcon(iconName?: string, fontSize = 16) {
+function createMenuIcon(iconName?: string, fontSize = 16, isLocalIcon = false) {
   const { SvgIconVNode } = useSvgIcon()
 
   if (iconName) {
     return SvgIconVNode({
-      icon: iconName,
+      icon: isLocalIcon ? undefined : iconName,
+      localIcon: isLocalIcon ? iconName : undefined,
       fontSize,
     })
   }
@@ -165,9 +174,9 @@ function createMenuIcon(iconName?: string, fontSize = 16) {
  */
 function routeToMenu(route: RouteRecordRaw): App.Global.Menu {
   const { name, path, meta } = route
-  const { title, i18nKey, order = DEFAULT_CONFIG.defaultOrder, icon } = meta || {}
+  const { title, i18nKey, order = DEFAULT_CONFIG.defaultOrder, icon, localIcon, iconFontSize } = meta || {}
 
-  // 生成菜单标签
+  // 生成菜单标签 - 优先使用i18nKey
   let label = '未知菜单'
   if (i18nKey && $te(i18nKey)) {
     label = $t(i18nKey)
@@ -177,6 +186,14 @@ function routeToMenu(route: RouteRecordRaw): App.Global.Menu {
     label = name as string
   }
 
+  // 处理图标 - 优先使用localIcon
+  let menuIcon
+  if (localIcon) {
+    menuIcon = createMenuIcon(localIcon, iconFontSize, true)
+  } else if (icon) {
+    menuIcon = createMenuIcon(icon, iconFontSize, false)
+  }
+
   return {
     key: name as string,
     label,
@@ -184,7 +201,7 @@ function routeToMenu(route: RouteRecordRaw): App.Global.Menu {
     order: Number(order),
     routeKey: name as App.Global.RouteKey,
     routePath: path as App.Global.RoutePath,
-    icon: createMenuIcon(icon),
+    icon: menuIcon,
   }
 }
 
