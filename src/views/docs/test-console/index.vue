@@ -30,6 +30,7 @@
 definePage({
   meta: {
     title: 'Console替换功能测试',
+    icon: 'mdi:console',
   },
 })
 function testConsoleLog() {

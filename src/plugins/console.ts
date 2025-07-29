@@ -42,7 +42,7 @@ function getCallerInfo(): string {
         const [, filePath, lineNum] = match
         // 拼成可以点击的链接 http://xxx:xxxx
         const clickableLink = `${filePath}:${lineNum}`
-        return `[${clickableLink}] `
+        return `${clickableLink}`
       }
     }
   }
@@ -78,9 +78,9 @@ function createConsoleReplacement(
         loggerMethod(...args)
       }
       // 在开发环境中保留原始输出，保持浏览器控制台的可点击跳转功能
-      if (import.meta.env.DEV) {
-        originalMethod(...args)
-      }
+      // if (import.meta.env.DEV) {
+      //   originalMethod(...args)
+      // }
     } finally {
       isLogging.value = false
     }
