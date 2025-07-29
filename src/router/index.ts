@@ -4,7 +4,7 @@ import { useAuthStore } from '@/stores/modules/auth'
 import { useRouteStore } from '@/stores/modules/route'
 import { GlobalConfig } from '@/enum'
 import { $t } from '@/locales'
-import { useTitle } from '@vueuse/core'
+import { useFullscreen, useTitle } from '@vueuse/core'
 import { setupLayouts } from 'virtual:generated-layouts'
 import { handleHotUpdate, routes } from 'vue-router/auto-routes'
 
@@ -91,6 +91,16 @@ router.beforeEach(async (to, from, next) => {
     return next()
   }
 
+  // 6.检查是否需要全屏
+  const { isFullscreen, enter, exit } = useFullscreen()
+  nextTick(() => {
+    if (to.meta.isFull) {
+      enter()
+    } else if (!to.meta.isFull && isFullscreen.value) {
+      exit()
+    }
+  })
+
   // 7.正常访问页面
   next()
 })
@@ -100,7 +110,7 @@ router.beforeEach(async (to, from, next) => {
  * */
 router.onError((error) => {
   window.NProgress?.done?.()
-  console.warn('路由错误', error.message)
+  console.log('error: ', error.message)
 })
 
 /**
