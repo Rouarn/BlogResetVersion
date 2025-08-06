@@ -17,9 +17,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
    * @param routes Vue routes
    */
   function getGlobalMenus(routes: RouteRecordRaw[]) {
-    console.log('routes: ', routes)
     menus.value = generateSimpleMenus(routes)
-    console.log('menus.value: ', menus.value)
   }
 
   /** Update global menus by locale */

@@ -28,7 +28,7 @@ export function setupVitePlugins(viteEnv: Env.ImportMeta, buildTime: string): Pl
     setupVuePlugin(),
     setupVueJsxPlugin(),
     setupLayoutsPlugin(),
-    setupVueDevToolsPlugin(VITE_DEVTOOLS_LAUNCH_EDITOR || ''),
+    setupVueDevToolsPlugin(String(VITE_DEVTOOLS_LAUNCH_EDITOR)),
     setupUnocssPlugin(VITE_ICON_PREFIX, localIconPath, collectionName),
     setupProgressPlugin(),
     setupAutoImportPlugin(),

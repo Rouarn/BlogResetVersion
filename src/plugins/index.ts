@@ -1,5 +1,4 @@
 export * from './app'
-export * from './console'
 export * from './dayjs'
 export * from './directive'
 export * from './iconify'
