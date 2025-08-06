@@ -13,7 +13,7 @@ export default defineConfig<PresetUnoTheme>({
   },
   shortcuts: {
     'card-wrapper': 'rd-8px shadow-sm',
-    card: 'h-83vh flex flex-col items-center',
+    card: 'h-82vh flex flex-col items-center',
   },
   transformers: [transformerDirectives(), transformerVariantGroup()],
   presets: [
