@@ -15,13 +15,13 @@ const handleBackTop = (_isTop: boolean) => {
 </script>
 
 <template>
-  <NFlex vertical class="size-full" :size="0">
+  <div class="min-h-full">
     <GlobalHeader />
     <GlobalContent />
     <GlobalFooter />
     <ThemeDrawer />
     <NBackTop :right="100" class="z-3" @update:show="handleBackTop" />
-  </NFlex>
+  </div>
 </template>
 
 <style scoped></style>

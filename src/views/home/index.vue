@@ -12,7 +12,7 @@ definePage({
 </script>
 
 <template>
-  <NSpace justify="center" align="center" class="bg-layout">
+  <NSpace justify="center" align="center" class="mt-10 w-[90%]">
     <NImage :src="welcome" preview-disabled class="max-w-[1200px] mx-auto" />
   </NSpace>
 </template>
