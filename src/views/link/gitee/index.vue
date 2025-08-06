@@ -10,7 +10,6 @@
 <script setup lang="ts" name="gitee">
 definePage({
   meta: {
-    layout: 'base-layout',
     title: 'Gitee',
   },
 })
