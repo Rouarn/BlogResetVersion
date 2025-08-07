@@ -130,6 +130,12 @@ declare namespace App {
           followPrimary: string
         } & Theme.ThemeColor
         themeDrawerTitle: string
+        configOperation: {
+          copyConfig: string
+          copySuccessMsg: string
+          resetConfig: string
+          resetSuccessMsg: string
+        }
       }
       route: {
         link: string

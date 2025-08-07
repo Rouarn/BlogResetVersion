@@ -43,6 +43,12 @@ const local: App.I18n.Schema = {
       followPrimary: 'Follow Primary',
     },
     themeDrawerTitle: 'Theme Configuration',
+    configOperation: {
+      copyConfig: 'Copy Config',
+      copySuccessMsg: 'Copy Success, Please replace the variable "themeSettings" in "src/theme/settings.ts"',
+      resetConfig: 'Reset Config',
+      resetSuccessMsg: 'Reset Success',
+    },
   },
   route: {
     link: 'Link',

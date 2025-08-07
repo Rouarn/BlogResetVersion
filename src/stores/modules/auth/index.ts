@@ -2,6 +2,7 @@ import { computed, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchLogin } from '@/service/api/login'
 import { localStg } from '@/utils/storage'
+import { useThemeStore } from '../theme'
 import { clearAuthStorage, getToken } from './shared'
 import { SetupStoreId } from '@/enum'
 import { useRouterPush } from '@/hooks/common/router'
@@ -10,6 +11,8 @@ import { defineStore } from 'pinia'
 const initialState = { token: '', userInfo: { userId: '', userName: '夏季' } }
 
 export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
+  const themeStore = useThemeStore()
+
   const route = useRoute()
   const { toLogin, redirectFromLogin } = useRouterPush(false)
 
@@ -59,6 +62,8 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   /** Reset auth store */
   async function resetStore() {
     $reset()
+
+    themeStore.resetStore()
 
     clearAuthStorage()
 

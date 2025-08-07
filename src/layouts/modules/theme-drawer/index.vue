@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ConfigOperation from './modules/config-operation.vue'
 import DarkMode from './modules/dark-mode.vue'
 import ThemeColor from './modules/theme-color.vue'
 import { useAppStore } from '@/stores/modules/app'
@@ -16,6 +17,9 @@ const appStore = useAppStore()
     <NDrawerContent :title="$t('theme.themeDrawerTitle')" :native-scrollbar="false" closable>
       <DarkMode />
       <ThemeColor />
+      <template #footer>
+        <ConfigOperation />
+      </template>
     </NDrawerContent>
   </NDrawer>
 </template>

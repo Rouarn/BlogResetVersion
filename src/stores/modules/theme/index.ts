@@ -106,6 +106,20 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
   const naiveTheme = computed(() => getNaiveTheme(themeColors.value))
 
   /**
+   * Settings json
+   *
+   * It is for copy settings
+   */
+  const settingsJson = computed(() => JSON.stringify(settings.value))
+
+  /** Reset store */
+  function resetStore() {
+    const themeStore = useThemeStore()
+
+    themeStore.$reset()
+  }
+
+  /**
    * Toggle css dark mode
    *
    * @param darkMode Is dark mode
@@ -167,10 +181,12 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
     darkMode,
     themeColors,
     naiveTheme,
+    settingsJson,
     setThemeScheme,
     toggleThemeScheme,
     updateThemeColors,
     setGrayscale,
     setColourWeakness,
+    resetStore,
   }
 })
