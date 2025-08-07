@@ -8,6 +8,7 @@ definePage({
   meta: {
     title: '关于',
     i18nKey: 'route.about',
+    icon: 'material-symbols:info',
   },
 })
 

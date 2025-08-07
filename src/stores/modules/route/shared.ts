@@ -17,21 +17,9 @@ const DEFAULT_CONFIG = {
 
 /**
  * 文件夹显示配置
- * 没有d'y的话，默认使用默认配置
+ * 没有定义的话，默认使用默认配置
  *  */
 const FOLDER_DISPLAY_CONFIG: Record<string, { title: string; icon: string; order: number; i18nKey?: string }> = {
-  home: {
-    title: '首页',
-    icon: 'material-symbols:home-app-logo',
-    order: 1,
-    i18nKey: 'route.home',
-  },
-  about: {
-    title: '关于',
-    icon: 'material-symbols:info',
-    order: 999,
-    i18nKey: 'route.about',
-  },
   directives: {
     title: '自定义指令',
     icon: 'material-icon-theme:folder-vue-directives-open',
@@ -44,7 +32,7 @@ const FOLDER_DISPLAY_CONFIG: Record<string, { title: string; icon: string; order
   },
   docs: {
     title: '文档',
-    icon: 'material-symbols:book',
+    icon: 'material-icon-theme:folder-docs-open',
     order: 4,
   },
 }
