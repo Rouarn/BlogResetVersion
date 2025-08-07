@@ -14,8 +14,8 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
   const breakpoints = useBreakpoints(breakpointsTailwind)
   const { bool: reloadFlag, setBool: setReloadFlag } = useBoolean(true)
   const { bool: themeDrawerVisible, setTrue: openThemeDrawer, setFalse: closeThemeDrawer } = useBoolean()
-
   const { bool: contentXScrollable, setBool: setContentXScrollable } = useBoolean()
+  const { bool: hideHeader, setBool: setHideHeader } = useBoolean(false)
 
   /** Is mobile layout */
   const isMobile = breakpoints.smaller('sm')
@@ -102,5 +102,7 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
     closeThemeDrawer,
     contentXScrollable,
     setContentXScrollable,
+    hideHeader,
+    setHideHeader,
   }
 })

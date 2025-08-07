@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useFullscreen } from '@vueuse/core'
 
 definePage({
@@ -11,97 +12,154 @@ definePage({
 })
 
 const { isFullscreen, exit, toggle } = useFullscreen()
+const animationActive = ref(false)
+const currentTime = ref(new Date())
+const timeInterval = ref<ReturnType<typeof setInterval> | null>(null)
 
+// 处理退出全屏
 function handleExitFullscreen() {
   if (isFullscreen.value) {
     exit()
   }
 }
+
+// 触发动画效果
+function triggerAnimation() {
+  animationActive.value = true
+  setTimeout(() => {
+    animationActive.value = false
+  }, 1000)
+}
+
+// 更新当前时间
+function updateTime() {
+  currentTime.value = new Date()
+}
+
+onMounted(() => {
+  // 每秒更新一次时间
+  timeInterval.value = setInterval(updateTime, 1000)
+})
+
+// 组件卸载时清除定时器
+onUnmounted(() => {
+  if (timeInterval.value) {
+    clearInterval(timeInterval.value)
+  }
+})
 </script>
 
 <template>
-  <div class="fullscreen-demo h-full bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-    <div class="container mx-auto px-4 py-8 h-full flex flex-col">
+  <div
+    class="fullscreen-demo h-full bg-gradient-to-br from-blue-600 to-purple-700 text-white transition-all duration-500"
+    :class="{ 'pulse-animation': animationActive }"
+  >
+    <div class="container mx-auto px-4 py-8 h-full flex flex-col relative">
+      <!-- 装饰元素 -->
+      <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div class="floating-circle bg-white opacity-10 w-64 h-64 rounded-full absolute -top-20 -left-20"></div>
+        <div class="floating-circle-slow bg-white opacity-5 w-96 h-96 rounded-full absolute top-1/3 -right-48"></div>
+        <div class="floating-circle-reverse bg-white opacity-10 w-40 h-40 rounded-full absolute bottom-20 left-1/4"></div>
+      </div>
+
       <!-- 头部信息 -->
-      <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold mb-4">🖥️ 全屏演示页面</h1>
-        <p class="text-xl opacity-90">这是一个演示全屏功能的页面，当您从菜单点击进入时会自动进入全屏模式</p>
+      <div class="text-center mb-8 relative z-10">
+        <div class="inline-block animate-bounce-slow mb-4">
+          <div class="text-5xl">🖥️</div>
+        </div>
+        <h1 class="text-4xl font-bold mb-4 glow-text">全屏演示页面</h1>
+        <p class="text-xl opacity-90 max-w-2xl mx-auto">这是一个演示全屏功能的页面，当您从菜单点击进入时会自动进入全屏模式</p>
+
+        <!-- 当前时间显示 -->
+        <div class="mt-4 text-sm bg-white bg-opacity-10 inline-block px-4 py-2 rounded-full">
+          {{ currentTime.toLocaleTimeString() }} - {{ currentTime.toLocaleDateString() }}
+        </div>
       </div>
 
       <!-- 状态显示 -->
-      <div class="bg-white bg-opacity-20 rounded-lg p-6 mb-8">
-        <h2 class="text-2xl font-semibold mb-4">📊 当前状态</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="bg-white bg-opacity-10 rounded p-4">
+      <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-6 mb-8 shadow-glow">
+        <h2 class="text-2xl font-semibold mb-4 flex items-center"><span class="mr-2">📊</span> 当前状态</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div
+            class="bg-white bg-opacity-10 rounded-lg p-5 transition-all duration-300 hover:bg-opacity-20 hover:transform hover:scale-105"
+            @click="triggerAnimation"
+          >
             <div class="text-sm opacity-75">全屏状态</div>
-            <div class="text-2xl font-bold">
-              {{ isFullscreen ? '✅ 已全屏' : '❌ 未全屏' }}
+            <div class="text-2xl font-bold flex items-center space-x-2 mt-1">
+              <div class="w-3 h-3 rounded-full" :class="isFullscreen ? 'bg-green-400 animate-pulse' : 'bg-red-400'"></div>
+              <span>{{ isFullscreen ? '已全屏' : '未全屏' }}</span>
             </div>
           </div>
-          <div class="bg-white bg-opacity-10 rounded p-4">
+          <div class="bg-white bg-opacity-10 rounded-lg p-5 transition-all duration-300 hover:bg-opacity-20">
             <div class="text-sm opacity-75">页面配置</div>
-            <div class="text-lg">
-              <code class="bg-black bg-opacity-30 px-2 py-1 rounded">isFull: true</code>
+            <div class="text-lg mt-1">
+              <code class="bg-black bg-opacity-30 px-3 py-1 rounded-md">isFull: true</code>
             </div>
           </div>
         </div>
       </div>
 
       <!-- 功能说明 -->
-      <div class="bg-white bg-opacity-20 rounded-lg p-6 mb-8 flex-1">
-        <h2 class="text-2xl font-semibold mb-4">🚀 功能说明</h2>
-        <div class="space-y-4">
-          <div class="flex items-start space-x-3">
-            <span class="text-2xl">1️⃣</span>
-            <div>
-              <h3 class="font-semibold">自动全屏</h3>
+      <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-6 mb-8 flex-1 shadow-glow">
+        <h2 class="text-2xl font-semibold mb-6 flex items-center"><span class="mr-2">🚀</span> 功能说明</h2>
+        <div class="space-y-6">
+          <div class="feature-card">
+            <div class="feature-number">1</div>
+            <div class="feature-content">
+              <h3 class="font-semibold text-xl">自动全屏</h3>
               <p class="opacity-90">当路由的 meta.isFull 设置为 true 时，从菜单点击进入会自动触发全屏</p>
             </div>
           </div>
-          <div class="flex items-start space-x-3">
-            <span class="text-2xl">2️⃣</span>
-            <div>
-              <h3 class="font-semibold">路由配置</h3>
+
+          <div class="feature-card">
+            <div class="feature-number">2</div>
+            <div class="feature-content">
+              <h3 class="font-semibold text-xl">路由配置</h3>
               <p class="opacity-90">在页面的 definePage 中设置 meta.isFull: true</p>
+              <div class="mt-2 bg-black bg-opacity-30 p-3 rounded-md">
+                <pre class="text-sm text-left"><code>definePage({
+  meta: {
+    title: '全屏演示',
+    isFull: true,
+    icon: 'material-symbols:fullscreen',
+  },
+})</code></pre>
+              </div>
             </div>
           </div>
-          <div class="flex items-start space-x-3">
-            <span class="text-2xl">3️⃣</span>
-            <div>
-              <h3 class="font-semibold">适用场景</h3>
+
+          <div class="feature-card">
+            <div class="feature-number">3</div>
+            <div class="feature-content">
+              <h3 class="font-semibold text-xl">适用场景</h3>
               <p class="opacity-90">数据大屏、演示页面、图表展示等需要全屏显示的场景</p>
+              <div class="grid grid-cols-3 gap-3 mt-3">
+                <div class="scene-tag">数据大屏</div>
+                <div class="scene-tag">演示页面</div>
+                <div class="scene-tag">图表展示</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- 操作按钮 -->
-      <div class="text-center space-x-4">
-        <NButton
-          v-if="isFullscreen"
-          type="warning"
-          size="large"
-          @click="handleExitFullscreen"
-          class="bg-white bg-opacity-20 border-white text-white hover:bg-opacity-30"
-        >
-          🚪 退出全屏
+      <div class="text-center space-x-4 relative z-10">
+        <NButton v-if="isFullscreen" type="warning" size="large" @click="handleExitFullscreen" class="fullscreen-btn exit-btn">
+          <span class="mr-2">🚪</span> 退出全屏
         </NButton>
-        <NButton
-          v-else
-          type="primary"
-          size="large"
-          @click="toggle"
-          class="bg-white bg-opacity-20 border-white text-white hover:bg-opacity-30"
-        >
-          🖥️ 进入全屏
+        <NButton v-else type="primary" size="large" @click="toggle" class="fullscreen-btn enter-btn">
+          <span class="mr-2">🖥️</span> 进入全屏
         </NButton>
       </div>
 
       <!-- 提示信息 -->
-      <div class="text-center mt-6 opacity-75">
+      <div class="text-center mt-6 opacity-75 relative z-10">
         <p class="text-sm">
-          💡 提示：您也可以按 <kbd class="bg-black bg-opacity-30 px-2 py-1 rounded">F11</kbd> 或
-          <kbd class="bg-black bg-opacity-30 px-2 py-1 rounded">Esc</kbd> 来切换全屏状态
+          💡 提示：您也可以按
+          <kbd class="bg-black bg-opacity-30 px-2 py-1 rounded">F11</kbd> 或
+          <kbd class="bg-black bg-opacity-30 px-2 py-1 rounded">Esc</kbd>
+          来切换全屏状态
         </p>
       </div>
     </div>
@@ -111,10 +169,151 @@ function handleExitFullscreen() {
 <style scoped>
 .fullscreen-demo {
   min-height: 100vh;
+  position: relative;
 }
 
 kbd {
   font-family: monospace;
   font-size: 0.875rem;
+}
+
+.glow-text {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.shadow-glow {
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.feature-card {
+  display: flex;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.feature-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 1.25rem;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.feature-content {
+  flex: 1;
+}
+
+.scene-tag {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+.scene-tag:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+.fullscreen-btn {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: white;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  padding: 0.5rem 1.5rem;
+}
+
+.enter-btn:hover {
+  background-color: rgba(79, 70, 229, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.exit-btn:hover {
+  background-color: rgba(239, 68, 68, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pulse-animation {
+  animation: pulse 1s;
+}
+
+@keyframes pulse {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.floating-circle {
+  animation: float 8s infinite ease-in-out;
+}
+
+.floating-circle-slow {
+  animation: float 12s infinite ease-in-out;
+}
+
+.floating-circle-reverse {
+  animation: float-reverse 10s infinite ease-in-out;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  50% {
+    transform: translateY(-20px) translateX(20px);
+  }
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+}
+
+@keyframes float-reverse {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  50% {
+    transform: translateY(20px) translateX(-20px);
+  }
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce 3s infinite;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 </style>

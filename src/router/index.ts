@@ -1,5 +1,6 @@
 import { createMemoryHistory, createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 import { errorRouter, staticRouter } from '@/router/modules/static-router'
+import { useAppStore } from '@/stores/modules/app'
 import { useAuthStore } from '@/stores/modules/auth'
 import { useRouteStore } from '@/stores/modules/route'
 import { GlobalConfig } from '@/enum'
@@ -91,16 +92,6 @@ router.beforeEach(async (to, from, next) => {
     return next()
   }
 
-  // 6.检查是否需要全屏
-  const { isFullscreen, enter, exit } = useFullscreen()
-  nextTick(() => {
-    if (to.meta.isFull) {
-      enter()
-    } else if (!to.meta.isFull && isFullscreen.value) {
-      exit()
-    }
-  })
-
   // 7.正常访问页面
   next()
 })
@@ -116,8 +107,25 @@ router.onError((error) => {
 /**
  * @description 路由跳转结束
  * */
-router.afterEach(() => {
+router.afterEach((to) => {
   window.NProgress?.done?.()
+
+  // 6.检查是否需要全屏
+  const { isFullscreen, enter, exit } = useFullscreen()
+
+  nextTick(() => {
+    const appStore = useAppStore()
+
+    if (to.meta.isFull) {
+      enter()
+      appStore.setHideHeader(true)
+    } else if (isFullscreen.value) {
+      exit()
+      appStore.setHideHeader(false)
+    } else {
+      appStore.setHideHeader(false)
+    }
+  })
 })
 
 export default router
