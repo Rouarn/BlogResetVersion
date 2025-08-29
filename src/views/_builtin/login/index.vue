@@ -21,7 +21,7 @@ async function handleLogin() {
     window.$message?.error('请输入用户名和密码')
     return
   }
-  await authStore.login('admin', '123456')
+  await authStore.login(userName.value, password.value)
   isSuccess.value = authStore.isLogin
 }
 </script>

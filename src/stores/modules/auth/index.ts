@@ -1,6 +1,6 @@
 import { computed, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { fetchLogin } from '@/service/api/login'
+import { fetchLogin, fetchUserInfo } from '@/service/api/login'
 import { localStg } from '@/utils/storage'
 import { useThemeStore } from '../theme'
 import { clearAuthStorage, getToken } from './shared'
@@ -44,6 +44,8 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   async function login(userName: string, password: string, redirect = true) {
     const { data } = await fetchLogin(userName, password)
     setToken(data.token)
+    const { data: userInfoData } = await fetchUserInfo()
+    setUserInfo(userInfoData)
 
     await redirectFromLogin(redirect)
 
