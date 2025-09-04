@@ -43,7 +43,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
    */
   async function login(userName: string, password: string, redirect = true) {
     const { data } = await fetchLogin(userName, password)
-    setToken(data.token)
+    setToken(data.accessToken)
     const { data: userInfoData } = await fetchUserInfo()
     setUserInfo(userInfoData)
 
