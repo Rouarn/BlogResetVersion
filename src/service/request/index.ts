@@ -385,21 +385,13 @@ class RequestHttp {
    * @param config 自定义配置
    */
   upload<T = unknown>(url: string, formData: FormData, config: Partial<CustomAxiosRequestConfig> = {}): Promise<App.Service.Response<T>> {
-    const requestConfig: CustomAxiosRequestConfig = {
+    const requestConfig = {
       ...config,
       method: 'POST',
       url,
       data: formData,
       isUpload: true,
-    }
-
-    // 单独处理 headers
-    if (config.headers || requestConfig.isUpload) {
-      requestConfig.headers = {
-        ...(config.headers || {}),
-        'Content-Type': 'multipart/form-data',
-      }
-    }
+    } as CustomAxiosRequestConfig
 
     return this.service.request(requestConfig)
   }
@@ -411,14 +403,14 @@ class RequestHttp {
    * @param config 自定义配置
    */
   download(url: string, params?: object, config: Partial<CustomAxiosRequestConfig> = {}): Promise<AxiosResponse<Blob>> {
-    const requestConfig: CustomAxiosRequestConfig = {
+    const requestConfig = {
       ...config,
       method: 'POST',
       url,
       data: params,
       isDownload: true,
       responseType: 'blob',
-    }
+    } as CustomAxiosRequestConfig
 
     return this.service.request(requestConfig)
   }
