@@ -13,7 +13,7 @@ export function fetchLogin(userName: string, password: string) {
   // })
   return Promise.resolve({
     code: 200,
-    data: { token: '123456', userName, password },
+    data: { accessToken: '123456', userName, password },
   })
 }
 
@@ -25,9 +25,8 @@ export function fetchUserInfo() {
   return Promise.resolve({
     code: 200,
     data: {
+      userId: '123456',
       userName: 'admin',
-      avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-      roles: ['admin'],
     },
   })
 }

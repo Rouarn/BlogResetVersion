@@ -35,4 +35,92 @@ declare module 'vue-router/auto-routes' {
     '/link/juejin/': RouteRecordInfo<'/link/juejin/', '/link/juejin', Record<never, never>, Record<never, never>>,
     '/user-center/': RouteRecordInfo<'/user-center/', '/user-center', Record<never, never>, Record<never, never>>,
   }
+
+  /**
+   * Route file to route info map by unplugin-vue-router.
+   * Used by the volar plugin to automatically type useRoute()
+   *
+   * Each key is a file path relative to the project root with 2 properties:
+   * - routes: union of route names of the possible routes when in this page (passed to useRoute<...>())
+   * - views: names of nested views (can be passed to <RouterView name="...">)
+   *
+   * @internal
+   */
+  export interface _RouteFileInfoMap {
+    'src/views/about/index.vue': {
+      routes: '/about/'
+      views: never
+    }
+    'src/views/directives/copy-direct/index.vue': {
+      routes: '/directives/copy-direct/'
+      views: never
+    }
+    'src/views/directives/debounce-direct/index.vue': {
+      routes: '/directives/debounce-direct/'
+      views: never
+    }
+    'src/views/directives/drag-direct/index.vue': {
+      routes: '/directives/drag-direct/'
+      views: never
+    }
+    'src/views/directives/longpress-direct/index.vue': {
+      routes: '/directives/longpress-direct/'
+      views: never
+    }
+    'src/views/directives/throttle-direct/index.vue': {
+      routes: '/directives/throttle-direct/'
+      views: never
+    }
+    'src/views/directives/watermark-direct/index.vue': {
+      routes: '/directives/watermark-direct/'
+      views: never
+    }
+    'src/views/docs/fullscreen-demo/index.vue': {
+      routes: '/docs/fullscreen-demo/'
+      views: never
+    }
+    'src/views/docs/menu-demo/index.vue': {
+      routes: '/docs/menu-demo/'
+      views: never
+    }
+    'src/views/home/index.vue': {
+      routes: '/home/'
+      views: never
+    }
+    'src/views/link/bing/index.vue': {
+      routes: '/link/bing/'
+      views: never
+    }
+    'src/views/link/docs/index.vue': {
+      routes: '/link/docs/'
+      views: never
+    }
+    'src/views/link/gitee/index.vue': {
+      routes: '/link/gitee/'
+      views: never
+    }
+    'src/views/link/github/index.vue': {
+      routes: '/link/github/'
+      views: never
+    }
+    'src/views/link/juejin/index.vue': {
+      routes: '/link/juejin/'
+      views: never
+    }
+    'src/views/user-center/index.vue': {
+      routes: '/user-center/'
+      views: never
+    }
+  }
+
+  /**
+   * Get a union of possible route names in a certain route component file.
+   * Used by the volar plugin to automatically type useRoute()
+   *
+   * @internal
+   */
+  export type _RouteNamesForFilePath<FilePath extends string> =
+    _RouteFileInfoMap extends Record<FilePath, infer Info>
+      ? Info['routes']
+      : keyof RouteNamedMap
 }
