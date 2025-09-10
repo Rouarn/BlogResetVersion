@@ -1,14 +1,13 @@
 import http from '@/service/request'
-import { PORT1 } from '@/service/request/servicePort'
+import { AUTH_API_PREFIX } from '@/service/request/servicePort'
 
 /**
- * Login
- *
- * @param userName User name
- * @param password Password
+ * 用户登录
+ * @param userName 用户名
+ * @param password 密码
  */
 export function fetchLogin(userName: string, password: string) {
-  return http.post<Api.Auth.LoginToken>(PORT1 + '/auth/login', {
+  return http.post<Api.Auth.LoginToken>(`${AUTH_API_PREFIX}/login`, {
     userName,
     password,
   })
@@ -18,6 +17,9 @@ export function fetchLogin(userName: string, password: string) {
   // })
 }
 
+/**
+ * 获取用户信息
+ */
 export function fetchUserInfo() {
-  return http.get<Api.Auth.UserInfo>(PORT1 + '/auth/getUserInfo')
+  return http.get<Api.Auth.UserInfo>(`${AUTH_API_PREFIX}/getUserInfo`)
 }
