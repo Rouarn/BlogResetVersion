@@ -86,7 +86,7 @@
     "vite-plugin-progress": "^0.0.7",
     "vite-plugin-svg-icons": "2.0.1",
     "vite-plugin-vue-devtools": "^8.0.1",
-    "vite-plugin-vue-layouts": "^0.11.0",
+    "vite-plugin-vue-layouts-next": "^1.0.0",
     "vue-tsc": "^3.0.6"
   },
   "lint-staged": {
