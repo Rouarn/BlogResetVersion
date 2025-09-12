@@ -1,3 +1,4 @@
+import { fetchGetUserRoutes } from '@/service/api'
 import { generateSimpleMenus, getCacheRouteNames, transformMenuToSearchMenus, updateMenuLocale } from './shared'
 import { SetupStoreId } from '@/enum'
 import useBoolean from '@/hooks/common/use-boolean'
@@ -6,6 +7,9 @@ import type { RouteRecordRaw } from 'vue-router'
 
 export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   const { bool: isInitConstantRoute, setBool: setIsInitConstantRoute } = useBoolean()
+
+  /** route mode */
+  const authRouteMode = ref(import.meta.env.VITE_AUTH_ROUTE_MODE)
 
   /** Global menus */
   const menus = ref<App.Global.Menu[]>([])
@@ -41,7 +45,18 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   async function initRoute(routes: RouteRecordRaw[]) {
     if (isInitConstantRoute.value) return
 
-    getGlobalMenus(routes)
+    if (authRouteMode.value === 'static') {
+      getGlobalMenus(routes)
+    } else {
+      const { data, error } = await fetchGetUserRoutes()
+
+      if (!error) {
+        getGlobalMenus(data.routes)
+      } else {
+        // if fetch constant routes failed, use static constant routes
+        getGlobalMenus(routes)
+      }
+    }
 
     getCacheRoutes(routes)
 

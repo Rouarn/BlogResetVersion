@@ -45,6 +45,13 @@ declare namespace Env {
      * @link https://docs.iconify.design/api/providers.html
      */
     readonly VITE_ICONIFY_URL?: string
+    /**
+     * The auth route mode
+     *
+     * - Static: the auth routes is generated in front-end
+     * - Dynamic: the auth routes is generated in back-end
+     */
+    readonly VITE_AUTH_ROUTE_MODE: 'static' | 'dynamic'
   }
 }
 

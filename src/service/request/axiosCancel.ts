@@ -1,148 +1,72 @@
-/**
- * Axios 请求取消管理器
- * 管理所有正在进行的 HTTP 请求，支持取消重复请求和批量取消
- */
-
 import type { CustomAxiosRequestConfig } from './index'
-import qs from 'qs'
+import type { Canceler } from 'axios'
+import axios from 'axios'
 
-/** 存储正在进行的请求 */
-const pendingRequestMap = new Map<string, AbortController>()
-
-/** 请求取消的错误类型 */
-export const REQUEST_CANCEL_ERROR = 'REQUEST_CANCEL_ERROR'
+export const REQUEST_CANCEL_ERROR = '__REQUEST_CANCEL__'
 
 /**
- * 序列化参数，确保对象属性顺序一致
- * @param obj 需要序列化的对象
- * @returns 序列化后的字符串
- */
-const sortedStringify = (obj: unknown): string => {
-  if (!obj || typeof obj !== 'object') {
-    return String(obj ?? '')
-  }
-
-  return qs.stringify(obj, {
-    arrayFormat: 'repeat',
-    sort: (a, b) => a.localeCompare(b),
-    skipNulls: true,
-    strictNullHandling: true,
-  })
-}
-
-/**
- * 生成请求的唯一标识符
- * @param config Axios 请求配置
- * @returns 请求的唯一标识符
- */
-export const generateRequestKey = (config: CustomAxiosRequestConfig): string => {
-  const { method = 'GET', url = '', data, params } = config
-
-  return [method.toUpperCase(), url, sortedStringify(data), sortedStringify(params)].join('&')
-}
-
-/**
- * @deprecated 使用 generateRequestKey 替代
- */
-export const getPendingUrl = generateRequestKey
-
-/**
- * Axios 请求取消管理器
+ * 用于管理和取消重复请求
  */
 export class AxiosCanceler {
+  private pendingMap: Map<string, Canceler> = new Map()
+
   /**
-   * 添加请求到等待队列
-   * @param config Axios 请求配置
+   * 生成唯一 key
    */
-  addPending(config: CustomAxiosRequestConfig): void {
-    // 在添加新请求前，先移除相同的请求
+  private getKey(config: CustomAxiosRequestConfig): string {
+    const { url, method, params, data } = config
+    return [method, url, JSON.stringify(params ?? {}), JSON.stringify(data ?? {})].join('&')
+  }
+
+  /**
+   * 添加请求
+   */
+  public addPending(config: CustomAxiosRequestConfig): void {
     this.removePending(config)
 
-    const requestKey = generateRequestKey(config)
-    const controller = new AbortController()
-
-    // 设置取消信号
-    config.signal = controller.signal
-
-    // 存储请求控制器
-    pendingRequestMap.set(requestKey, controller)
-
-    // 开发环境下记录日志
-    if (import.meta.env.DEV) {
-      console.debug(`[Request Added] ${requestKey}`)
-    }
-  }
-
-  /**
-   * 从等待队列中移除请求
-   * @param config Axios 请求配置
-   */
-  removePending(config: CustomAxiosRequestConfig): void {
-    const requestKey = generateRequestKey(config)
-    const controller = pendingRequestMap.get(requestKey)
-
-    if (controller) {
-      // 取消请求
-      controller.abort(REQUEST_CANCEL_ERROR)
-
-      // 从 Map 中删除
-      pendingRequestMap.delete(requestKey)
-
-      // 开发环境下记录日志
-      if (import.meta.env.DEV) {
-        console.debug(`[Request Removed] ${requestKey}`)
-      }
-    }
-  }
-
-  /**
-   * 清空所有等待中的请求
-   * @param reason 取消原因（可选）
-   */
-  removeAllPending(reason?: string): void {
-    const cancelReason = reason || REQUEST_CANCEL_ERROR
-
-    pendingRequestMap.forEach((controller, requestKey) => {
-      if (controller) {
-        controller.abort(cancelReason)
-
-        // 开发环境下记录日志
-        if (import.meta.env.DEV) {
-          console.debug(`[Request Cancelled] ${requestKey} - Reason: ${cancelReason}`)
+    const key = this.getKey(config)
+    config.cancelToken =
+      config.cancelToken ||
+      new axios.CancelToken((cancel) => {
+        if (!this.pendingMap.has(key)) {
+          this.pendingMap.set(key, cancel)
         }
-      }
-    })
+      })
+  }
 
-    pendingRequestMap.clear()
+  /**
+   * 移除请求
+   */
+  public removePending(config: CustomAxiosRequestConfig): void {
+    const key = this.getKey(config)
 
-    if (import.meta.env.DEV) {
-      console.debug('[All Requests Cleared]')
+    if (this.pendingMap.has(key)) {
+      const cancel = this.pendingMap.get(key)
+      cancel?.(`${REQUEST_CANCEL_ERROR}: ${key}`)
+      this.pendingMap.delete(key)
     }
   }
 
   /**
-   * 获取当前等待中的请求数量
-   * @returns 等待中的请求数量
+   * 取消所有请求
    */
-  getPendingCount(): number {
-    return pendingRequestMap.size
+  public removeAllPending(reason?: string): void {
+    this.pendingMap.forEach((cancel) => cancel?.(reason || REQUEST_CANCEL_ERROR))
+    this.pendingMap.clear()
   }
 
   /**
-   * 检查请求是否在等待队列中
-   * @param config Axios 请求配置
-   * @returns 是否在等待队列中
+   * 是否存在某个请求
    */
-  isPending(config: CustomAxiosRequestConfig): boolean {
-    const requestKey = generateRequestKey(config)
-    return pendingRequestMap.has(requestKey)
+  public isPending(config: CustomAxiosRequestConfig): boolean {
+    const key = this.getKey(config)
+    return this.pendingMap.has(key)
   }
 
   /**
-   * 获取所有等待中的请求标识
-   * @returns 等待中的请求标识数组
+   * 获取 pending 请求数量
    */
-  getPendingKeys(): string[] {
-    return Array.from(pendingRequestMap.keys())
+  public getPendingCount(): number {
+    return this.pendingMap.size
   }
 }

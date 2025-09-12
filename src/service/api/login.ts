@@ -1,5 +1,5 @@
-// import http from '@/service/request'
-// import { AUTH_API_PREFIX } from '@/service/request/servicePort'
+import { request } from '@/service/request'
+import servicePort from '@/service/request/servicePort'
 
 /**
  * 用户登录
@@ -7,26 +7,28 @@
  * @param password 密码
  */
 export function fetchLogin(userName: string, password: string) {
-  // return http.post<Api.Auth.LoginToken>(`${AUTH_API_PREFIX}/login`, {
-  //   userName,
-  //   password,
-  // })
-  return Promise.resolve({
-    code: 200,
-    data: { accessToken: '123456', userName, password },
+  return request.post<Api.Auth.LoginToken>(`${servicePort.auth}/login`, {
+    userName,
+    password,
   })
+  // 开发环境模拟数据（生产环境请移除）
+  // return Promise.resolve({
+  //   data: { accessToken: '123456', userName, password },
+  //   error: false
+  // })
 }
 
 /**
  * 获取用户信息
  */
 export function fetchUserInfo() {
-  // return http.get<Api.Auth.UserInfo>(`${AUTH_API_PREFIX}/getUserInfo`)
-  return Promise.resolve({
-    code: 200,
-    data: {
-      userId: '123456',
-      userName: 'admin',
-    },
-  })
+  return request.get<Api.Auth.UserInfo>(`${servicePort.auth}/getUserInfo`)
+  // 开发环境模拟数据（生产环境请移除）
+  // return Promise.resolve({
+  //   data: {
+  //     userId: '123456',
+  //     userName: 'admin',
+  //   },
+  //   error: false
+  // })
 }
