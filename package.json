@@ -9,7 +9,7 @@
     "email": "woyuxiaji@foxmail.com",
     "url": "https://github.com/Rouarn"
   },
-  "license": "MIT",
+  "license": "UNLICENSED",
   "homepage": "https://github.com/Rouarn/frontend-template",
   "scripts": {
     "dev": "vite --mode development",

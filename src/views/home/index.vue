@@ -185,7 +185,7 @@ const handleViewDocs = () => {
           <div class="mt-2 text-lg text-gray-600 dark:text-gray-300">生产依赖</div>
         </div>
         <div class="text-center">
-          <div class="text-4xl font-bold text-primary">MIT</div>
+          <div class="text-4xl font-bold text-primary">{{ pkg.license }}</div>
           <div class="mt-2 text-lg text-gray-600 dark:text-gray-300">开源协议</div>
         </div>
       </div>
