@@ -52,11 +52,15 @@ const local: App.I18n.Schema = {
     },
   },
   route: {
-    link: '链接',
+    home: '首页',
     about: '关于',
     directives: '自定义指令',
-    docs: '文档',
-    home: '首页',
+    copyDirect: '复制指令',
+    dragDirect: '拖拽指令',
+    longpressDirect: '长按指令',
+    throttleDirect: '节流指令',
+    debounceDirect: '防抖指令',
+    watermarkDirect: '水印指令',
   },
   page: {
     about: {

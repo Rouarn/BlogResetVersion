@@ -9,6 +9,7 @@
 definePage({
   meta: {
     title: '长按指令',
+    i18nKey: 'route.longpressDirect',
   },
 })
 

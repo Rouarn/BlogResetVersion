@@ -9,6 +9,7 @@
 definePage({
   meta: {
     title: '拖拽指令',
+    i18nKey: 'route.dragDirect',
   },
 })
 </script>

@@ -9,6 +9,7 @@
 definePage({
   meta: {
     title: '防抖指令',
+    i18nKey: 'route.debounceDirect',
   },
 })
 

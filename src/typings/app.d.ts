@@ -135,11 +135,15 @@ declare namespace App {
         }
       }
       route: {
-        link: string
+        home: string
         about: string
         directives: string
-        docs: string
-        home: string
+        copyDirect: string
+        dragDirect: string
+        longpressDirect: string
+        throttleDirect: string
+        debounceDirect: string
+        watermarkDirect: string
       }
       page: {
         about: {

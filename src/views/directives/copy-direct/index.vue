@@ -4,6 +4,7 @@ import { ref } from 'vue'
 definePage({
   meta: {
     title: '复制指令',
+    i18nKey: 'route.copyDirect',
     order: 1,
   },
 })

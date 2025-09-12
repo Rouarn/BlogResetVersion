@@ -8,7 +8,27 @@ import { SetupStoreId } from '@/enum'
 import { useRouterPush } from '@/hooks/common/router'
 import { defineStore } from 'pinia'
 
-const initialState = { token: '', userInfo: { userId: '', userName: '夏季' } }
+const initialState = {
+  token: '',
+  userInfo: {
+    userId: '',
+    userName: '夏季',
+    nickname: '用户',
+    avatar: '',
+    gender: '2' as const,
+    mobile: '',
+    email: '',
+    bio: '',
+    birthday: '',
+    city: '',
+    profession: '',
+    roles: 'user' as const,
+    lastLoginAt: '',
+    lastLoginIp: '',
+    loginAttempts: 0,
+    status: '1' as const,
+  },
+}
 
 export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   const themeStore = useThemeStore()
@@ -79,6 +99,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     isLogin,
     login,
     setToken,
+    setUserInfo,
     resetStore,
   }
 })

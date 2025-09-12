@@ -25,14 +25,7 @@ declare module 'vue-router/auto-routes' {
     '/directives/longpress-direct/': RouteRecordInfo<'/directives/longpress-direct/', '/directives/longpress-direct', Record<never, never>, Record<never, never>>,
     '/directives/throttle-direct/': RouteRecordInfo<'/directives/throttle-direct/', '/directives/throttle-direct', Record<never, never>, Record<never, never>>,
     '/directives/watermark-direct/': RouteRecordInfo<'/directives/watermark-direct/', '/directives/watermark-direct', Record<never, never>, Record<never, never>>,
-    '/docs/fullscreen-demo/': RouteRecordInfo<'/docs/fullscreen-demo/', '/docs/fullscreen-demo', Record<never, never>, Record<never, never>>,
-    '/docs/menu-demo/': RouteRecordInfo<'/docs/menu-demo/', '/docs/menu-demo', Record<never, never>, Record<never, never>>,
     '/home/': RouteRecordInfo<'/home/', '/home', Record<never, never>, Record<never, never>>,
-    '/link/bing/': RouteRecordInfo<'/link/bing/', '/link/bing', Record<never, never>, Record<never, never>>,
-    '/link/docs/': RouteRecordInfo<'/link/docs/', '/link/docs', Record<never, never>, Record<never, never>>,
-    '/link/gitee/': RouteRecordInfo<'/link/gitee/', '/link/gitee', Record<never, never>, Record<never, never>>,
-    '/link/github/': RouteRecordInfo<'/link/github/', '/link/github', Record<never, never>, Record<never, never>>,
-    '/link/juejin/': RouteRecordInfo<'/link/juejin/', '/link/juejin', Record<never, never>, Record<never, never>>,
     '/user-center/': RouteRecordInfo<'/user-center/', '/user-center', Record<never, never>, Record<never, never>>,
   }
 
@@ -75,36 +68,8 @@ declare module 'vue-router/auto-routes' {
       routes: '/directives/watermark-direct/'
       views: never
     }
-    'src/views/docs/fullscreen-demo/index.vue': {
-      routes: '/docs/fullscreen-demo/'
-      views: never
-    }
-    'src/views/docs/menu-demo/index.vue': {
-      routes: '/docs/menu-demo/'
-      views: never
-    }
     'src/views/home/index.vue': {
       routes: '/home/'
-      views: never
-    }
-    'src/views/link/bing/index.vue': {
-      routes: '/link/bing/'
-      views: never
-    }
-    'src/views/link/docs/index.vue': {
-      routes: '/link/docs/'
-      views: never
-    }
-    'src/views/link/gitee/index.vue': {
-      routes: '/link/gitee/'
-      views: never
-    }
-    'src/views/link/github/index.vue': {
-      routes: '/link/github/'
-      views: never
-    }
-    'src/views/link/juejin/index.vue': {
-      routes: '/link/juejin/'
       views: never
     }
     'src/views/user-center/index.vue': {

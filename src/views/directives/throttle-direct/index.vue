@@ -9,6 +9,7 @@
 definePage({
   meta: {
     title: '节流指令',
+    i18nKey: 'route.throttleDirect',
   },
 })
 

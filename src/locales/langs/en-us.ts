@@ -51,11 +51,15 @@ const local: App.I18n.Schema = {
     },
   },
   route: {
-    link: 'Link',
+    home: 'Home',
     about: 'About',
     directives: 'Directives',
-    docs: 'Docs',
-    home: 'Home',
+    copyDirect: 'Copy Directive',
+    dragDirect: 'Drag Directive',
+    longpressDirect: 'Longpress Directive',
+    throttleDirect: 'Throttle Directive',
+    debounceDirect: 'Debounce Directive',
+    watermarkDirect: 'Watermark Directive',
   },
   page: {
     about: {

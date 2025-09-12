@@ -8,6 +8,7 @@
 definePage({
   meta: {
     title: '水印指令',
+    i18nKey: 'route.watermarkDirect',
   },
 })
 </script>
