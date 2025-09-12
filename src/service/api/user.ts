@@ -34,7 +34,7 @@ export function uploadAvatar(file: File) {
 /**
  * 获取用户登录历史
  */
-export function fetchLoginHistory(params?: { page?: number; pageSize?: number }) {
+export function fetchLoginHistory(params?: { current?: number; size?: number }) {
   return http.get<{
     list: Array<{
       id: string
