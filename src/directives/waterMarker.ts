@@ -9,6 +9,7 @@ interface WaterMarkerOptions {
   text: string
   font?: string
   textColor?: string
+  rotate?: number
 }
 
 const addWaterMarker = (
@@ -16,6 +17,7 @@ const addWaterMarker = (
   parentNode: HTMLElement,
   font: string = '16px Microsoft JhengHei',
   textColor: string = 'rgba(180, 180, 180, 0.3)',
+  rotate: number = -20,
 ): void => {
   const canvas: HTMLCanvasElement = document.createElement('canvas')
   parentNode.appendChild(canvas)
@@ -26,7 +28,7 @@ const addWaterMarker = (
   const ctx = canvas.getContext('2d')
   if (!ctx) return
 
-  ctx.rotate((-20 * Math.PI) / 180)
+  ctx.rotate((rotate * Math.PI) / 180)
   ctx.font = font
   ctx.fillStyle = textColor
   ctx.textAlign = 'left'
@@ -38,8 +40,18 @@ const addWaterMarker = (
 
 const waterMarker: Directive<HTMLElement, WaterMarkerOptions> = {
   mounted(el, binding: DirectiveBinding<WaterMarkerOptions>) {
-    const { text, font, textColor } = binding.value
-    addWaterMarker(text, el, font, textColor)
+    const { text, font, textColor, rotate } = binding.value
+    addWaterMarker(text, el, font, textColor, rotate)
+  },
+  updated(el, binding: DirectiveBinding<WaterMarkerOptions>) {
+    const { text, font, textColor, rotate } = binding.value
+    // 清除旧的canvas元素
+    const oldCanvas = el.querySelector('canvas')
+    if (oldCanvas) {
+      oldCanvas.remove()
+    }
+    // 重新创建水印
+    addWaterMarker(text, el, font, textColor, rotate)
   },
 }
 
