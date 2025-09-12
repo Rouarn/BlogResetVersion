@@ -55,6 +55,7 @@ const local: App.I18n.Schema = {
     link: '链接',
     about: '关于',
     directives: '自定义指令',
+    docs: '文档',
     home: '首页',
   },
   page: {

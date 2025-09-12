@@ -1,6 +1,7 @@
 import { useSvgIcon } from '@/hooks/common/icon'
 import { $t, $te } from '@/locales'
-import type { _RouteRecordBase, RouteRecordRaw } from 'vue-router'
+import FOLDER_DISPLAY_CONFIG from '~/menu.config'
+import type { _RouteRecordBase, RouteMeta, RouteRecordRaw } from 'vue-router'
 
 /**
  * 自动菜单生成器
@@ -16,28 +17,6 @@ const DEFAULT_CONFIG = {
 }
 
 /**
- * 文件夹显示配置
- * 没有定义的话，默认使用默认配置
- *  */
-const FOLDER_DISPLAY_CONFIG: Record<string, { title: string; icon: string; order: number; i18nKey?: string }> = {
-  directives: {
-    title: '自定义指令',
-    icon: 'material-icon-theme:folder-vue-directives-open',
-    order: 2,
-  },
-  link: {
-    title: '外部链接',
-    icon: 'material-symbols:link',
-    order: 3,
-  },
-  docs: {
-    title: '文档',
-    icon: 'material-icon-theme:folder-docs-open',
-    order: 4,
-  },
-}
-
-/**
  * 从路由路径提取文件夹信息
  */
 function extractFolderFromPath(routePath: string): string {
@@ -48,7 +27,7 @@ function extractFolderFromPath(routePath: string): string {
 /**
  * 获取文件夹显示配置
  */
-function getFolderDisplayConfig(folder: string) {
+function getFolderDisplayConfig(folder: string): RouteMeta {
   return (
     FOLDER_DISPLAY_CONFIG[folder] || {
       title: folder.charAt(0).toUpperCase() + folder.slice(1),
@@ -202,8 +181,8 @@ function createGroupMenu(folder: string, children: App.Global.Menu[]): App.Globa
   return {
     key: `group-${folder}`,
     label: config.title,
-    i18nKey: config.i18nKey as App.I18n.I18nKey | null | undefined,
-    order: config.order,
+    i18nKey: config.i18nKey,
+    order: config.order || DEFAULT_CONFIG.defaultOrder,
     routeKey: `group-${folder}` as App.Global.RouteKey,
     routePath: `group-${folder}`,
     icon: createMenuIcon(config.icon, 20),

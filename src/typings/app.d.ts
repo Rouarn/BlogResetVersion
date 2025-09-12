@@ -138,6 +138,7 @@ declare namespace App {
         link: string
         about: string
         directives: string
+        docs: string
         home: string
       }
       page: {
@@ -217,13 +218,13 @@ declare namespace App {
       /** The menu label */
       label: string
       /** The menu i18n key */
-      i18nKey?: I18n.I18nKey | null
+      i18nKey?: I18n.I18nKey
       /** The menu order */
       order?: number
       /** The menu icon */
       icon?: () => VNode
       /** The menu parent */
-      parent?: string | null
+      parent?: string
     }
 
     /** Menu group properties */

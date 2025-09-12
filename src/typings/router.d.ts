@@ -13,7 +13,7 @@ declare module 'vue-router' {
      *
      * 用于国际化，如果设置了该字段，则标题字段将被忽略
      */
-    i18nKey?: App.I18n.I18nKey | null
+    i18nKey?: App.I18n.I18nKey
     /** 是否缓存该路由 */
     isKeepAlive?: boolean | null
     /**

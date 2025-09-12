@@ -54,6 +54,7 @@ const local: App.I18n.Schema = {
     link: 'Link',
     about: 'About',
     directives: 'Directives',
+    docs: 'Docs',
     home: 'Home',
   },
   page: {
