@@ -19,11 +19,21 @@ declare module 'vue-router/auto-routes' {
    */
   export interface RouteNamedMap {
     '/about/': RouteRecordInfo<'/about/', '/about', Record<never, never>, Record<never, never>>,
+    '/directives/animate-direct/': RouteRecordInfo<'/directives/animate-direct/', '/directives/animate-direct', Record<never, never>, Record<never, never>>,
+    '/directives/clickoutside-direct/': RouteRecordInfo<'/directives/clickoutside-direct/', '/directives/clickoutside-direct', Record<never, never>, Record<never, never>>,
     '/directives/copy-direct/': RouteRecordInfo<'/directives/copy-direct/', '/directives/copy-direct', Record<never, never>, Record<never, never>>,
     '/directives/debounce-direct/': RouteRecordInfo<'/directives/debounce-direct/', '/directives/debounce-direct', Record<never, never>, Record<never, never>>,
     '/directives/drag-direct/': RouteRecordInfo<'/directives/drag-direct/', '/directives/drag-direct', Record<never, never>, Record<never, never>>,
+    '/directives/focus-direct/': RouteRecordInfo<'/directives/focus-direct/', '/directives/focus-direct', Record<never, never>, Record<never, never>>,
+    '/directives/highlight-direct/': RouteRecordInfo<'/directives/highlight-direct/', '/directives/highlight-direct', Record<never, never>, Record<never, never>>,
+    '/directives/lazy-direct/': RouteRecordInfo<'/directives/lazy-direct/', '/directives/lazy-direct', Record<never, never>, Record<never, never>>,
+    '/directives/loading-direct/': RouteRecordInfo<'/directives/loading-direct/', '/directives/loading-direct', Record<never, never>, Record<never, never>>,
     '/directives/longpress-direct/': RouteRecordInfo<'/directives/longpress-direct/', '/directives/longpress-direct', Record<never, never>, Record<never, never>>,
+    '/directives/permission-direct/': RouteRecordInfo<'/directives/permission-direct/', '/directives/permission-direct', Record<never, never>, Record<never, never>>,
+    '/directives/ripple-direct/': RouteRecordInfo<'/directives/ripple-direct/', '/directives/ripple-direct', Record<never, never>, Record<never, never>>,
+    '/directives/scroll-direct/': RouteRecordInfo<'/directives/scroll-direct/', '/directives/scroll-direct', Record<never, never>, Record<never, never>>,
     '/directives/throttle-direct/': RouteRecordInfo<'/directives/throttle-direct/', '/directives/throttle-direct', Record<never, never>, Record<never, never>>,
+    '/directives/tooltip-direct/': RouteRecordInfo<'/directives/tooltip-direct/', '/directives/tooltip-direct', Record<never, never>, Record<never, never>>,
     '/directives/watermark-direct/': RouteRecordInfo<'/directives/watermark-direct/', '/directives/watermark-direct', Record<never, never>, Record<never, never>>,
     '/home/': RouteRecordInfo<'/home/', '/home', Record<never, never>, Record<never, never>>,
     '/user-center/': RouteRecordInfo<'/user-center/', '/user-center', Record<never, never>, Record<never, never>>,
@@ -44,6 +54,14 @@ declare module 'vue-router/auto-routes' {
       routes: '/about/'
       views: never
     }
+    'src/views/directives/animate-direct/index.vue': {
+      routes: '/directives/animate-direct/'
+      views: never
+    }
+    'src/views/directives/clickoutside-direct/index.vue': {
+      routes: '/directives/clickoutside-direct/'
+      views: never
+    }
     'src/views/directives/copy-direct/index.vue': {
       routes: '/directives/copy-direct/'
       views: never
@@ -56,12 +74,44 @@ declare module 'vue-router/auto-routes' {
       routes: '/directives/drag-direct/'
       views: never
     }
+    'src/views/directives/focus-direct/index.vue': {
+      routes: '/directives/focus-direct/'
+      views: never
+    }
+    'src/views/directives/highlight-direct/index.vue': {
+      routes: '/directives/highlight-direct/'
+      views: never
+    }
+    'src/views/directives/lazy-direct/index.vue': {
+      routes: '/directives/lazy-direct/'
+      views: never
+    }
+    'src/views/directives/loading-direct/index.vue': {
+      routes: '/directives/loading-direct/'
+      views: never
+    }
     'src/views/directives/longpress-direct/index.vue': {
       routes: '/directives/longpress-direct/'
       views: never
     }
+    'src/views/directives/permission-direct/index.vue': {
+      routes: '/directives/permission-direct/'
+      views: never
+    }
+    'src/views/directives/ripple-direct/index.vue': {
+      routes: '/directives/ripple-direct/'
+      views: never
+    }
+    'src/views/directives/scroll-direct/index.vue': {
+      routes: '/directives/scroll-direct/'
+      views: never
+    }
     'src/views/directives/throttle-direct/index.vue': {
       routes: '/directives/throttle-direct/'
+      views: never
+    }
+    'src/views/directives/tooltip-direct/index.vue': {
+      routes: '/directives/tooltip-direct/'
       views: never
     }
     'src/views/directives/watermark-direct/index.vue': {

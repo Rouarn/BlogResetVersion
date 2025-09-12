@@ -144,6 +144,16 @@ declare namespace App {
         throttleDirect: string
         debounceDirect: string
         watermarkDirect: string
+        focusDirect: string
+        rippleDirect: string
+        clickoutsideDirect: string
+        tooltipDirect: string
+        loadingDirect: string
+        permissionDirect: string
+        animateDirect: string
+        scrollDirect: string
+        lazyDirect: string
+        highlightDirect: string
       }
       page: {
         about: {

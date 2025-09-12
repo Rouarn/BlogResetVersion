@@ -61,6 +61,16 @@ const local: App.I18n.Schema = {
     throttleDirect: '节流指令',
     debounceDirect: '防抖指令',
     watermarkDirect: '水印指令',
+    focusDirect: '聚焦指令',
+    rippleDirect: '波纹指令',
+    clickoutsideDirect: '点击外部指令',
+    tooltipDirect: '提示指令',
+    loadingDirect: '加载指令',
+    permissionDirect: '权限指令',
+    animateDirect: '动画指令',
+    scrollDirect: '滚动指令',
+    lazyDirect: '懒加载指令',
+    highlightDirect: '高亮指令',
   },
   page: {
     about: {

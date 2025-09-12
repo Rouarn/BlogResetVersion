@@ -60,6 +60,16 @@ const local: App.I18n.Schema = {
     throttleDirect: 'Throttle Directive',
     debounceDirect: 'Debounce Directive',
     watermarkDirect: 'Watermark Directive',
+    focusDirect: 'Focus Directive',
+    rippleDirect: 'Ripple Directive',
+    clickoutsideDirect: 'Click Outside Directive',
+    tooltipDirect: 'Tooltip Directive',
+    loadingDirect: 'Loading Directive',
+    permissionDirect: 'Permission Directive',
+    animateDirect: 'Animate Directive',
+    scrollDirect: 'Scroll Directive',
+    lazyDirect: 'Lazy Loading Directive',
+    highlightDirect: 'Highlight Directive',
   },
   page: {
     about: {
