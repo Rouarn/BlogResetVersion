@@ -41,26 +41,42 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     cacheRoutes.value = getCacheRouteNames(routes)
   }
 
-  /** Initialize route */
+  /** 初始化应用路由 */
   async function initRoute(routes: RouteRecordRaw[]) {
+    // 如果已经初始化则直接返回
     if (isInitConstantRoute.value) return
 
-    if (authRouteMode.value === 'static') {
-      getGlobalMenus(routes)
-    } else {
-      const { data, error } = await fetchGetUserRoutes()
+    try {
+      let routesToUse: RouteRecordRaw[] = routes
 
-      if (!error) {
-        getGlobalMenus(data.routes)
+      // 如果是动态模式则获取动态路由
+      if (authRouteMode.value === 'dynamic') {
+        const { data, error } = await fetchGetUserRoutes()
+
+        if (!error && data?.routes) {
+          routesToUse = data.routes
+        } else {
+          // 出错时回退到静态路由
+          console.warn('获取动态路由失败，使用静态路由回退:', error)
+        }
+      }
+
+      // 处理选定的路由
+      getGlobalMenus(routesToUse)
+      getCacheRoutes(routesToUse)
+
+      // 标记初始化完成
+      setIsInitConstantRoute(true)
+    } catch (error) {
+      // 处理初始化过程中的意外错误
+      console.error('路由初始化失败:', error)
+      // 可选择重新抛出或优雅处理
+      if (error instanceof Error) {
+        throw new Error(`路由初始化失败: ${error.message}`)
       } else {
-        // if fetch constant routes failed, use static constant routes
-        getGlobalMenus(routes)
+        throw new Error('路由初始化因未知错误而失败')
       }
     }
-
-    getCacheRoutes(routes)
-
-    setIsInitConstantRoute(true)
   }
 
   return {

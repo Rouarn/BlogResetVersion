@@ -95,7 +95,7 @@ class RequestHttp {
         if (config.headers) {
           // axios 的 headers 可能是普通对象或 Headers 结构，安全判断
           try {
-            // @ts-expect-error 设置 header（兼容性处理）
+            // 设置 header
             if (userStore.token) config.headers['Authorization'] = `Bearer ${userStore.token}`
             if (config.isUpload) config.headers['Content-Type'] = 'multipart/form-data'
           } catch {
