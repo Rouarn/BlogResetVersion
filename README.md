@@ -457,7 +457,7 @@ src/views/
 | 配置一致性 | 中等   | 完美     | ↑ 100%   |
 | 错误率     | 中等   | 几乎为零 | ↓ 95%    |
 
-### 预设文件夹配置
+### 预设文件夹配置 (./menu.config.ts)
 
 ```typescript
 const FOLDER_DISPLAY_CONFIG = {
@@ -760,13 +760,197 @@ const url = `${AUTH_API_PREFIX}/login`
 3. **文件上传**：使用 `upload` 方法时会自动设置正确的 Content-Type
 4. **错误处理**：可以通过 `skipErrorHandler` 选项禁用全局错误处理
 
-### 🔮 未来计划
+## 📖 Axios 请求封装系统详解
 
-- [ ] 添加请求/响应拦截器的插件机制
-- [ ] 支持请求缓存功能
-- [ ] 添加请求性能监控
-- [ ] 支持请求优先级队列
-- [ ] 添加离线请求队列支持
+这是一个基于 **Axios + TypeScript** 的请求封装系统，具备 **强类型提示**、**错误统一处理**、**请求取消**、**自动重试**、**加载状态管理** 等特性。
+旨在为 Vue3 / React 前端项目提供 **可扩展**、**类型安全** 的请求层。
+
+### ✨ 系统特性
+
+- ✅ **强类型支持**：`App.Service.Response<T>` 统一约束后端返回数据结构
+- ✅ **请求取消**：重复请求自动取消，避免资源浪费
+- ✅ **全局 Loading**：请求时自动显示/关闭全局加载
+- ✅ **统一错误处理**：网络错误 / 超时 / 自定义错误消息集中处理
+- ✅ **自动重试**：网络错误时可配置请求重试次数与延时
+- ✅ **响应结果优化**：返回 `OptimizedResponse<T>`，结构简洁，免去繁琐判空
+- ✅ **可配置**：支持 `skipErrorHandler`、`customErrorMessage`、`isDownload` 等扩展字段
+
+### 📂 目录结构
+
+```
+src/service/request/
+├── axiosCancel.ts     # 请求取消管理
+├── checkStatus.ts     # HTTP 状态码错误处理
+├── index.ts           # Axios 封装入口
+├── servicePort.ts     # 接口路径常量
+```
+
+### 🏷️ 类型设计
+
+#### 后端统一响应
+
+```ts
+/** The backend service response data */
+export type Response<T = unknown> = {
+  code: number // 业务状态码（通常 0 或 200 表示成功）
+  message: string // 消息提示
+  data: T // 业务数据
+}
+```
+
+#### 优化后的返回结果
+
+```ts
+export type OptimizedResponse<T> = {
+  data: T | null
+  error: boolean
+  errorType: 'network' | 'business' | null
+}
+```
+
+#### Axios 请求配置扩展
+
+```ts
+export interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+  loading?: boolean // 是否开启全局 loading
+  skipErrorHandler?: boolean // 是否跳过全局错误处理
+  customErrorMessage?: string // 自定义错误提示
+  isDownload?: boolean // 是否为下载请求
+  retry?: { count: number; delay: number } // 自动重试配置
+}
+```
+
+### 🛠️ 使用方式
+
+#### 1. 定义 API 方法
+
+```ts
+import request from '@/service/request'
+import type { UserRoute } from '@/types'
+
+export function fetchGetUserRoutes() {
+  return request.get<UserRoute>('/user/routes')
+}
+```
+
+#### 2. 调用 API
+
+```ts
+const { data, error } = await fetchGetUserRoutes()
+
+if (!error && data) {
+  getGlobalMenus(data.routes)
+} else {
+  // fallback
+  getGlobalMenus(staticRoutes)
+}
+```
+
+#### 3. 下载请求
+
+```ts
+await request.get<Blob>('/file/download', {
+  isDownload: true,
+  responseType: 'blob',
+})
+```
+
+#### 4. 自动重试
+
+```ts
+await request.get('/unstable/api', {
+  retry: { count: 3, delay: 1000 }, // 最多重试 3 次，每次间隔 1 秒
+})
+```
+
+### ⚡ 全局功能介绍
+
+#### 1. 请求取消
+
+在 `axiosCancel.ts` 中实现了请求取消功能：
+
+- 相同 URL + 方法的请求会被自动取消，避免重复请求。
+
+```ts
+import request from '@/service/request'
+
+const { data } = await request.get('/user/info')
+// 如果在第一个请求未完成前再次调用相同接口，会取消之前的请求
+```
+
+#### 2. 全局 Loading
+
+- 设置 `loading: true` 时，请求开始时显示 Loading，请求结束后自动关闭。
+- 适用于全局遮罩（比如 `window.$loading`）。
+
+```ts
+await request.post('/user/update', payload, {
+  loading: true,
+})
+```
+
+#### 3. 错误提示
+
+所有错误都通过 `checkStatus.ts` 集中处理：
+
+- 网络错误（超时 / Network Error）
+- HTTP 状态码错误（401 / 403 / 500）
+- 业务错误（`code !== 0 && code !== 200`）
+
+```ts
+// 跳过全局错误处理
+await request.get('/user/info', {
+  skipErrorHandler: true,
+})
+
+// 自定义错误提示
+await request.post('/user/create', payload, {
+  customErrorMessage: '创建用户失败，请重试',
+})
+```
+
+#### 4. 自动重试
+
+支持配置请求的自动重试机制。
+
+```ts
+await request.get('/unstable/api', {
+  retry: {
+    count: 3, // 最大重试次数
+    delay: 1000, // 每次重试间隔（ms）
+  },
+})
+```
+
+> 注意：仅在网络错误（如超时、断网）时才会触发重试，业务错误不会重试。
+
+### 📊 成功码约定
+
+约定后端响应：
+
+- `code === 200` 或 `code === 0` → 成功
+- 其他值 → 业务错误
+
+> ⚠️ 建议和后端团队统一规范。推荐使用 `code: 0` 表示成功，更加清晰。
+
+### 📝 最佳实践
+
+- 所有请求函数 **必须定义返回类型**，如 `get<UserRoute>()`
+- 在业务中只需判断 `error`，避免频繁的 `try/catch`
+- 下载请求用 `isDownload: true`，业务中自行解析文件
+- 建议在 `servicePort.ts` 维护统一的接口路径常量，避免硬编码
+- 遇到需要跳过错误提示时，使用 `skipErrorHandler: true`
+
+### 📌 系统总结
+
+本封装系统解决了常见的请求痛点：
+
+- **重复请求问题**（请求取消）
+- **复杂错误处理**（统一封装）
+- **繁琐判空**（返回结构优化）
+- **业务通用性**（强类型 + 可扩展配置）
+
+适合作为 **前端项目的请求基础库**，统一团队代码风格与开发体验。
 
 ## 📝 开发规范
 
