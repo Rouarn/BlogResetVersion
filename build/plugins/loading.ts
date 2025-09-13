@@ -114,10 +114,14 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
     --loading-exit-duration: ${config.animation.exitDuration}ms;
   }
 
+  /* 加载动画覆盖滚动条区域 */
   .modern-loading {
     position: fixed;
-    inset: 0;
-    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999999;
     background: var(--loading-bg);
     display: grid;
     place-items: center;
@@ -126,6 +130,10 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
     visibility: visible;
     transition: opacity var(--loading-exit-duration) var(--loading-easing),
                 visibility var(--loading-exit-duration) var(--loading-easing);
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
 
   .modern-loading.hidden {
@@ -241,57 +249,9 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
     font-variant-numeric: tabular-nums;
   }
 
-  .loading-exit-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 10000;
-    background: transparent;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.1s ease, visibility 0.1s ease;
-    overflow: hidden;
-  }
-
-  .loading-exit-overlay.active {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .exit-panel {
-    background: var(--loading-bg);
-    transition: transform var(--loading-exit-duration) cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    width: 100%;
-    height: 100%;
-  }
-
-  .exit-panel.left {
-    transform: translateX(0%);
-    transform-origin: left center;
-  }
-
-  .exit-panel.right {
-    transform: translateX(0%);
-    transform-origin: right center;
-  }
-
-  .loading-exit-overlay.opening .exit-panel.left {
-    transform: translateX(-100%);
-  }
-
-  .loading-exit-overlay.opening .exit-panel.right {
-    transform: translateX(100%);
-  }
-
-  /* 确保推拉门效果可见 */
-  .loading-exit-overlay {
-    pointer-events: none;
-  }
-
-  .loading-exit-overlay.active {
-    pointer-events: auto;
+  /* 简单的淡出过渡效果 */
+  .modern-loading {
+    transition: opacity 0.3s ease;
   }
 
   @keyframes rotate {
@@ -363,13 +323,12 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
         container: null,
         stage: null,
         progressFill: null,
-        percentage: null,
-        exitOverlay: null
+        percentage: null
       };
 
       this.timers = new Set();
       this.observers = new Set();
-      
+
       this.init();
     }
 
@@ -390,15 +349,15 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
       // 主加载界面
       const container = document.createElement('div');
       container.className = 'modern-loading';
-      
+
       // 创建内容容器
       const content = document.createElement('div');
       content.className = 'loading-content';
-      
+
       // 创建视觉元素
       const visual = document.createElement('div');
       visual.className = 'loading-visual';
-      
+
       const rings = document.createElement('div');
       rings.className = 'loading-rings';
       for (let i = 0; i < 3; i++) {
@@ -406,69 +365,54 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
         ring.className = 'loading-ring';
         rings.appendChild(ring);
       }
-      
+
       const core = document.createElement('div');
       core.className = 'loading-core';
-      
+
       visual.appendChild(rings);
       visual.appendChild(core);
-      
+
       // 创建信息元素
       const info = document.createElement('div');
       info.className = 'loading-info';
-      
+
       const stage = document.createElement('div');
       stage.className = 'loading-stage';
       stage.textContent = '初始化应用...';
       info.appendChild(stage);
-      
+
       // 创建进度条（如果启用）
       if (CONFIG.display.showProgress) {
         const progressContainer = document.createElement('div');
         progressContainer.className = 'loading-progress-container';
-        
+
         const progressBar = document.createElement('div');
         progressBar.className = 'loading-progress-bar';
-        
+
         const progressFill = document.createElement('div');
         progressFill.className = 'loading-progress-fill';
-        
+
         const percentage = document.createElement('div');
         percentage.className = 'loading-percentage';
         percentage.textContent = '0%';
-        
+
         progressBar.appendChild(progressFill);
         progressContainer.appendChild(progressBar);
         progressContainer.appendChild(percentage);
         info.appendChild(progressContainer);
       }
-      
+
       content.appendChild(visual);
       content.appendChild(info);
       container.appendChild(content);
 
-      // 退出动画覆盖层
-      const exitOverlay = document.createElement('div');
-      exitOverlay.className = 'loading-exit-overlay';
-      
-      const leftPanel = document.createElement('div');
-      leftPanel.className = 'exit-panel left';
-      
-      const rightPanel = document.createElement('div');
-      rightPanel.className = 'exit-panel right';
-      
-      exitOverlay.appendChild(leftPanel);
-      exitOverlay.appendChild(rightPanel);
-
       document.body.appendChild(container);
-      document.body.appendChild(exitOverlay);
 
       // 缓存元素引用
       this.elements.container = container;
       this.elements.stage = container.querySelector('.loading-stage');
       this.elements.progressFill = container.querySelector('.loading-progress-fill');
       this.elements.percentage = container.querySelector('.loading-percentage');
-      this.elements.exitOverlay = exitOverlay;
 
       this.state.isActive = true;
     }
@@ -480,7 +424,7 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
       const progressStage = () => {
         if (this.state.currentStage < STAGES.length && !this.state.isAppReady) {
           const stage = STAGES[this.state.currentStage];
-          
+
           // 更新显示
           if (CONFIG.display.showStages && this.elements.stage) {
             this.elements.stage.textContent = stage.text;
@@ -490,11 +434,11 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
           const totalWeight = STAGES.reduce((sum, s) => sum + s.weight, 0);
           const completedWeight = STAGES.slice(0, this.state.currentStage + 1)
             .reduce((sum, s) => sum + s.weight, 0);
-          
+
           this.updateProgress(Math.min(85, (completedWeight / totalWeight) * 100));
-          
+
           this.state.currentStage++;
-          
+
           // 调度下一个阶段
           const delay = 300 + Math.random() * 400; // 300-700ms随机延迟
           const timer = setTimeout(progressStage, delay);
@@ -512,11 +456,11 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
      */
     updateProgress(progress) {
       this.state.progress = Math.min(100, Math.max(0, progress));
-      
+
       if (this.elements.progressFill) {
         this.elements.progressFill.style.width = this.state.progress + '%';
       }
-      
+
       if (this.elements.percentage) {
         this.elements.percentage.textContent = Math.round(this.state.progress) + '%';
       }
@@ -528,19 +472,19 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
     startAppDetection() {
       let stableTime = null;
       let lastCheck = Date.now();
-      
+
       const checkAppReady = () => {
         const now = Date.now();
-        
+
         // 防抖检查
         if (now - lastCheck < CONFIG.detection.debounce) {
           const timer = setTimeout(checkAppReady, CONFIG.detection.debounce);
           this.timers.add(timer);
           return;
         }
-        
+
         lastCheck = now;
-        
+
         const appElement = document.getElementById('app');
         if (!appElement) {
           const timer = setTimeout(checkAppReady, CONFIG.detection.debounce);
@@ -554,9 +498,9 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
         const hasInteractiveElements = appElement.querySelector('button, input, a, [role="button"]');
         const hasNavigation = appElement.querySelector('nav, header, .nav, .header');
         const hasMainContent = appElement.querySelector('main, .main, .content, .page');
-        
+
         const isReady = hasContent && hasVisibleContent && (hasInteractiveElements || hasNavigation || hasMainContent);
-        
+
         if (isReady) {
           if (!stableTime) {
             stableTime = now;
@@ -567,7 +511,7 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
         } else {
           stableTime = null;
         }
-        
+
         // 继续检测
         if (!this.state.isAppReady && now - this.state.startTime < CONFIG.detection.timeout) {
           const timer = setTimeout(checkAppReady, CONFIG.detection.debounce);
@@ -585,14 +529,14 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
             checkAppReady();
           }
         });
-        
+
         observer.observe(document.body, {
           childList: true,
           subtree: true,
           attributes: true,
           attributeFilter: ['class', 'style']
         });
-        
+
         this.observers.add(observer);
       }
 
@@ -606,24 +550,24 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
      */
     onAppReady() {
       if (this.state.isAppReady) return;
-      
+
       this.state.isAppReady = true;
-      
+
       // 更新显示
       if (this.elements.stage) {
         this.elements.stage.textContent = '加载完成！';
       }
-      
+
       this.updateProgress(100);
-      
+
       // 确保最小显示时间
       const elapsedTime = Date.now() - this.state.startTime;
       const remainingTime = Math.max(0, CONFIG.display.minShowTime - elapsedTime);
-      
+
       const timer = setTimeout(() => {
         this.startExitAnimation();
       }, remainingTime);
-      
+
       this.timers.add(timer);
     }
 
@@ -632,41 +576,28 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
      */
     startExitAnimation() {
       if (this.state.isExiting) return;
-      
+
       this.state.isExiting = true;
-      
+
       // 显示退出提示
       if (this.elements.stage) {
         this.elements.stage.textContent = '正在进入应用...';
       }
-      
-      // 激活退出覆盖层
-      if (this.elements.exitOverlay) {
-        this.elements.exitOverlay.classList.add('active');
-        
-        const timer1 = setTimeout(() => {
-          this.elements.exitOverlay.classList.add('opening');
-          
-          const timer2 = setTimeout(() => {
-            this.cleanup();
-          }, CONFIG.animation.exitDuration);
-          
-          this.timers.add(timer2);
-        }, 100);
-        
-        this.timers.add(timer1);
-      } else {
-        // 降级方案
+
+      // 简单的淡出动画
+      const timer = setTimeout(() => {
         if (this.elements.container) {
-          this.elements.container.classList.add('hidden');
-          
-          const timer = setTimeout(() => {
+          this.elements.container.style.opacity = '0';
+
+          const cleanupTimer = setTimeout(() => {
             this.cleanup();
-          }, CONFIG.animation.exitDuration);
-          
-          this.timers.add(timer);
+          }, 300);
+
+          this.timers.add(cleanupTimer);
         }
-      }
+      }, 500);
+
+      this.timers.add(timer);
     }
 
     /**
@@ -682,13 +613,13 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
         }, 1000);
         this.timers.add(timer);
       };
-      
+
       if (document.readyState === 'complete') {
         onLoad();
       } else {
         window.addEventListener('load', onLoad, { once: true });
       }
-      
+
       // 页面可见性变化
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible' && !this.state.isAppReady) {
@@ -709,20 +640,20 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
       // 清理定时器
       this.timers.forEach(timer => clearTimeout(timer));
       this.timers.clear();
-      
+
       // 清理观察者
       this.observers.forEach(observer => observer.disconnect());
       this.observers.clear();
-      
+
       // 移除DOM元素
       if (this.elements.container && this.elements.container.parentNode) {
         this.elements.container.parentNode.removeChild(this.elements.container);
       }
-      
+
       if (this.elements.exitOverlay && this.elements.exitOverlay.parentNode) {
         this.elements.exitOverlay.parentNode.removeChild(this.elements.exitOverlay);
       }
-      
+
       // 清理引用
       this.elements = {};
       this.state.isActive = false;
@@ -747,11 +678,11 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
 
   // 初始化加载管理器
   let loadingManager = null;
-  
+
   const initLoading = () => {
     if (!loadingManager) {
       loadingManager = new ModernLoadingManager();
-      
+
       // 暴露全局API
       window.ModernLoading = {
         hide: () => loadingManager?.hide(),
@@ -760,7 +691,7 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
       };
     }
   };
-  
+
   // 启动
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initLoading);
