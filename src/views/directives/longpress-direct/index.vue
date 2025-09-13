@@ -216,16 +216,16 @@ const resetCounter = () => {
 
 .demo-section {
   padding: 24px 0;
-}
 
-.demo-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  .demo-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 }
 
 .stats-section {

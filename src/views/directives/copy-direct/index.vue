@@ -120,68 +120,68 @@ const handleCopy = () => {
 
 .header-content {
   flex: 1;
-}
 
-.header-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0 0 4px 0;
-}
+  .header-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 4px 0;
+  }
 
-.header-desc {
-  font-size: 14px;
-  color: #6b7280;
-  margin: 0;
+  .header-desc {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+  }
 }
 
 .demo-section {
   padding: 24px 0;
-}
 
-.demo-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.input-group {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.copy-input {
-  :deep(.n-input) {
-    border-radius: 12px;
-    border: 2px solid #e5e7eb;
-    transition: all 0.3s ease;
-
-    &:hover {
-      border-color: #d1d5db;
-    }
-
-    &:focus-within {
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
+  .demo-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
-}
 
-.copy-btn {
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  .input-group {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
 
-  &.copy-success {
-    background: #10b981 !important;
-    border-color: #10b981 !important;
+    .copy-input {
+      :deep(.n-input) {
+        border-radius: 12px;
+        border: 2px solid #e5e7eb;
+        transition: all 0.3s ease;
 
-    &:hover {
-      background: #059669 !important;
+        &:hover {
+          border-color: #d1d5db;
+        }
+
+        &:focus-within {
+          border-color: #667eea;
+          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+      }
+    }
+
+    .copy-btn {
+      border-radius: 8px;
+      transition: all 0.3s ease;
+
+      &.copy-success {
+        background: #10b981 !important;
+        border-color: #10b981 !important;
+
+        &:hover {
+          background: #059669 !important;
+        }
+      }
     }
   }
 }
@@ -194,29 +194,29 @@ const handleCopy = () => {
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
   border-radius: 12px;
   border-left: 4px solid #f59e0b;
-}
 
-.tip-icon {
-  font-size: 20px;
-  line-height: 1;
-}
-
-.tip-text {
-  flex: 1;
-  font-size: 14px;
-  line-height: 1.5;
-  color: #92400e;
-
-  strong {
-    color: #78350f;
+  .tip-icon {
+    font-size: 20px;
+    line-height: 1;
   }
 
-  code {
-    background: rgba(120, 53, 15, 0.1);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'Monaco', 'Menlo', monospace;
-    font-size: 13px;
+  .tip-text {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #92400e;
+
+    strong {
+      color: #78350f;
+    }
+
+    code {
+      background: rgba(120, 53, 15, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 13px;
+    }
   }
 }
 

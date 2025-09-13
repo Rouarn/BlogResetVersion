@@ -109,7 +109,7 @@ const conditionalValue = ref('')
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .directive-container {
   padding: 20px;
   max-width: 1200px;
@@ -126,136 +126,138 @@ const conditionalValue = ref('')
   display: flex;
   align-items: center;
   gap: 16px;
-}
 
-.header-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
+  .header-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
 
-.header-content {
-  flex: 1;
-}
+  .header-content {
+    flex: 1;
 
-.header-title {
-  font-size: 24px;
-  font-weight: 600;
-  margin: 0 0 4px 0;
-  color: #1a1a1a;
-}
+    .header-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0 0 4px 0;
+      color: #1a1a1a;
+    }
 
-.header-desc {
-  font-size: 14px;
-  color: #666;
-  margin: 0;
+    .header-desc {
+      font-size: 14px;
+      color: #666;
+      margin: 0;
+    }
+  }
 }
 
 .demo-section {
   margin-bottom: 32px;
-}
 
-.demo-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #333;
-}
+  .demo-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #333;
+  }
 
-.demo-content {
-  background: #f8fafc;
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
+  .demo-content {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
 
-.demo-desc {
-  margin: 0 0 16px 0;
-  color: #64748b;
-  font-size: 14px;
-}
+    .demo-desc {
+      margin: 0 0 16px 0;
+      color: #64748b;
+      font-size: 14px;
+    }
+  }
 
-.focus-input {
-  margin-bottom: 16px;
-}
+  .focus-input {
+    margin-bottom: 16px;
+  }
 
-.control-group {
-  margin-bottom: 16px;
+  .control-group {
+    margin-bottom: 16px;
+  }
 }
 
 .code-section {
   margin-bottom: 32px;
-}
 
-.code-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #333;
-}
+  .code-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #333;
+  }
 
-.code-content {
-  background: #1e293b;
-  color: #e2e8f0;
-  padding: 20px;
-  border-radius: 8px;
-  overflow-x: auto;
-}
+  .code-content {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 20px;
+    border-radius: 8px;
+    overflow-x: auto;
 
-.code-content pre {
-  margin: 0;
-  font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
-  font-size: 14px;
-  line-height: 1.5;
+    pre {
+      margin: 0;
+      font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  }
 }
 
 .feature-section {
   margin-bottom: 32px;
-}
 
-.feature-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #333;
-}
+  .feature-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #333;
+  }
 
-.feature-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 16px;
-}
+  .feature-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
 
-.feature-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 16px;
-  background: #f8fafc;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
 
-.feature-icon {
-  font-size: 24px;
-  flex-shrink: 0;
-}
+      .feature-icon {
+        font-size: 24px;
+        flex-shrink: 0;
+      }
 
-.feature-content h4 {
-  margin: 0 0 4px 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-}
+      .feature-content {
+        h4 {
+          margin: 0 0 4px 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #333;
+        }
 
-.feature-content p {
-  margin: 0;
-  font-size: 14px;
-  color: #666;
+        p {
+          margin: 0;
+          font-size: 14px;
+          color: #666;
+        }
+      }
+    }
+  }
 }
 </style>

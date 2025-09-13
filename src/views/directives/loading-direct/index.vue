@@ -236,7 +236,7 @@ const tableColumns = [
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .directive-container {
   padding: 20px;
   max-width: 1200px;
@@ -253,88 +253,88 @@ const tableColumns = [
   display: flex;
   align-items: center;
   gap: 16px;
-}
 
-.header-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
+  .header-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
 
-.header-content {
-  flex: 1;
-}
+  .header-content {
+    flex: 1;
 
-.header-title {
-  font-size: 24px;
-  font-weight: 600;
-  margin: 0 0 4px 0;
-  color: #1a1a1a;
-}
+    .header-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0 0 4px 0;
+      color: #1a1a1a;
+    }
 
-.header-desc {
-  font-size: 14px;
-  color: #666;
-  margin: 0;
+    .header-desc {
+      font-size: 14px;
+      color: #666;
+      margin: 0;
+    }
+  }
 }
 
 .demo-section {
   margin-bottom: 32px;
-}
 
-.demo-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #333;
-}
+  .demo-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #333;
+  }
 
-.demo-content {
-  background: #f8fafc;
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
+  .demo-content {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
 
-.demo-desc {
-  margin: 0 0 16px 0;
-  color: #64748b;
-  font-size: 14px;
-}
+    .demo-desc {
+      margin: 0 0 16px 0;
+      color: #64748b;
+      font-size: 14px;
+    }
 
-.loading-demo {
-  position: relative;
-  margin-bottom: 16px;
-  min-height: 120px;
-}
+    .loading-demo {
+      position: relative;
+      margin-bottom: 16px;
+      min-height: 120px;
 
-.demo-box {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
+      .demo-box {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
 
-.demo-box h3 {
-  margin: 0 0 12px 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-}
+        h3 {
+          margin: 0 0 12px 0;
+          font-size: 18px;
+          font-weight: 600;
+          color: #333;
+        }
 
-.demo-box p {
-  margin: 0 0 8px 0;
-  color: #666;
-  line-height: 1.5;
-}
+        p {
+          margin: 0 0 8px 0;
+          color: #666;
+          line-height: 1.5;
+        }
+      }
+    }
 
-.demo-btn {
-  margin-top: 8px;
+    .demo-btn {
+      margin-top: 8px;
+    }
+  }
 }
 
 .table-container {

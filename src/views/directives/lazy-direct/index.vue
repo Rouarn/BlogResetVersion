@@ -254,7 +254,7 @@ const onImageLoad = () => {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .directive-container {
   padding: 20px;
   max-width: 1200px;
@@ -271,34 +271,34 @@ const onImageLoad = () => {
   display: flex;
   align-items: center;
   gap: 16px;
-}
 
-.header-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #333;
-}
+  .header-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+  }
 
-.header-content {
-  flex: 1;
-}
+  .header-content {
+    flex: 1;
 
-.header-title {
-  font-size: 24px;
-  font-weight: 600;
-  margin: 0 0 4px 0;
-  color: #1a1a1a;
-}
+    .header-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0 0 4px 0;
+      color: #1a1a1a;
+    }
 
-.header-desc {
-  font-size: 14px;
-  color: #666;
-  margin: 0;
+    .header-desc {
+      font-size: 14px;
+      color: #666;
+      margin: 0;
+    }
+  }
 }
 
 .demo-section {
@@ -364,65 +364,67 @@ const onImageLoad = () => {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   margin-top: 20px;
-}
 
-.image-item {
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-}
+  .image-item {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
 
-.image-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-}
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 
-.image-wrapper {
-  position: relative;
-  overflow: hidden;
-}
+      .lazy-image {
+        transform: scale(1.05);
+      }
 
-.lazy-image {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  transition: transform 0.3s;
-}
+      .image-overlay {
+        transform: translateY(0);
+      }
+    }
 
-.image-item:hover .lazy-image {
-  transform: scale(1.05);
-}
+    .image-wrapper {
+      position: relative;
+      overflow: hidden;
 
-.image-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
-  color: white;
-  padding: 16px;
-  transform: translateY(100%);
-  transition: transform 0.3s;
-}
+      .lazy-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        transition: transform 0.3s;
+      }
 
-.image-item:hover .image-overlay {
-  transform: translateY(0);
-}
+      .image-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+        color: white;
+        padding: 16px;
+        transform: translateY(100%);
+        transition: transform 0.3s;
 
-.image-info h4 {
-  margin: 0 0 4px 0;
-  font-size: 16px;
-  font-weight: 600;
-}
+        .image-info {
+          h4 {
+            margin: 0 0 4px 0;
+            font-size: 16px;
+            font-weight: 600;
+          }
 
-.image-info p {
-  margin: 0;
-  font-size: 14px;
-  opacity: 0.9;
+          p {
+            margin: 0;
+            font-size: 14px;
+            opacity: 0.9;
+          }
+        }
+      }
+    }
+  }
 }
 
 .config-examples {

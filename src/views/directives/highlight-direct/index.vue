@@ -9,7 +9,7 @@ definePage({
   },
 })
 
-const searchText = ref('')
+const searchText = ref('Vue')
 const highlightColor = ref('#ffeb3b')
 const textContent = ref(`Vue.js 是一个用于构建用户界面的渐进式 JavaScript 框架。
 与其它大型框架不同的是，Vue 被设计为可以自底向上逐层应用。
@@ -28,13 +28,13 @@ Vue 的自定义指令为我们提供了一个很好的解决方案。`)
 
 const codeContent = ref(`function highlightText(element, keyword) {
   if (!keyword) return;
-  
+
   const regex = new RegExp(keyword, 'gi');
   const originalText = element.textContent;
   const highlightedText = originalText.replace(regex, (match) => {
     return \`<mark class="highlight">\${match}</mark>\`;
   });
-  
+
   element.innerHTML = highlightedText;
 }`)
 
@@ -103,7 +103,7 @@ const _searchKeyword = ref('Vue') // 用于模板中的动态高亮
           <div class="highlight-demo">
             <div class="demo-text">
               <h4>文本高亮演示</h4>
-              <div v-highlight="{ keyword: searchText, color: highlightColor }" class="highlight-content">
+              <div v-highlight="{ keywords: searchText, colors: highlightColor }" class="highlight-content">
                 {{ textContent }}
               </div>
             </div>
@@ -121,7 +121,7 @@ const _searchKeyword = ref('Vue') // 用于模板中的动态高亮
             </div>
             <div class="code-block">
               <pre><code
-                v-highlight="{ keyword: searchText, color: highlightColor, caseSensitive: true }"
+                v-highlight="{ keywords: searchText, colors: highlightColor, caseSensitive: true }"
                 class="code-content"
               >{{ codeContent }}</code></pre>
             </div>
@@ -143,7 +143,7 @@ const _searchKeyword = ref('Vue') // 用于模板中的动态高亮
             <!-- 自定义背景色 -->
             <div class="example-item">
               <h4>自定义背景色</h4>
-              <div v-highlight="{ keyword: 'JavaScript', color: '#e3f2fd', textColor: '#1976d2' }" class="example-text">
+              <div v-highlight="{ keywords: 'JavaScript', colors: '#e3f2fd', textColor: '#1976d2' }" class="example-text">
                 JavaScript 是一种动态编程语言，JavaScript 应用广泛。
               </div>
             </div>
@@ -151,7 +151,7 @@ const _searchKeyword = ref('Vue') // 用于模板中的动态高亮
             <!-- 边框高亮 -->
             <div class="example-item">
               <h4>边框高亮</h4>
-              <div v-highlight="{ keyword: '框架', style: 'border', color: '#4caf50' }" class="example-text">
+              <div v-highlight="{ keywords: '框架', style: 'border', colors: '#4caf50' }" class="example-text">
                 前端框架有很多种，选择合适的框架很重要。
               </div>
             </div>
@@ -159,7 +159,7 @@ const _searchKeyword = ref('Vue') // 用于模板中的动态高亮
             <!-- 下划线高亮 -->
             <div class="example-item">
               <h4>下划线高亮</h4>
-              <div v-highlight="{ keyword: '组件', style: 'underline', color: '#ff9800' }" class="example-text">
+              <div v-highlight="{ keywords: '组件', style: 'underline', colors: '#ff9800' }" class="example-text">
                 组件化开发是现代前端的趋势，组件复用提高效率。
               </div>
             </div>
@@ -175,7 +175,7 @@ const _searchKeyword = ref('Vue') // 用于模板中的动态高亮
             <div class="config-item">
               <h4>大小写敏感</h4>
               <div class="config-demo">
-                <div v-highlight="{ keyword: 'Vue', caseSensitive: true }" class="config-text">
+                <div v-highlight="{ keywords: 'Vue', caseSensitive: true }" class="config-text">
                   Vue.js 和 vue.js 在大小写敏感模式下会区别对待。
                 </div>
               </div>
@@ -185,7 +185,7 @@ const _searchKeyword = ref('Vue') // 用于模板中的动态高亮
             <div class="config-item">
               <h4>全词匹配</h4>
               <div class="config-demo">
-                <div v-highlight="{ keyword: 'app', wholeWord: true }" class="config-text">
+                <div v-highlight="{ keywords: 'app', wholeWord: true }" class="config-text">
                   app 应用和 application 在全词匹配模式下只会高亮 app。
                 </div>
               </div>
@@ -211,14 +211,14 @@ const _searchKeyword = ref('Vue') // 用于模板中的动态高亮
 &lt;div v-highlight="'关键词'"&gt;要高亮的文本内容&lt;/div&gt;
 
 &lt;!-- 自定义颜色 --&gt;
-&lt;div v-highlight="{ keyword: '关键词', color: '#ffeb3b' }"&gt;
+&lt;div v-highlight="{ keywords: '关键词', colors: '#ffeb3b' }"&gt;
   要高亮的文本内容
 &lt;/div&gt;
 
 &lt;!-- 完整配置 --&gt;
 &lt;div v-highlight="{
-  keyword: '关键词',
-  color: '#ffeb3b',
+  keywords: '关键词',
+  colors: '#ffeb3b',
   textColor: '#333',
   style: 'background', // 'background' | 'border' | 'underline'
   caseSensitive: false,
@@ -236,7 +236,7 @@ const _searchKeyword = ref('Vue') // 用于模板中的动态高亮
 &lt;/div&gt;
 
 &lt;!-- 动态高亮 --&gt;
-&lt;div v-highlight="{ keyword: _searchKeyword, color: highlightColor }"&gt;
+&lt;div v-highlight="{ keywords: _searchKeyword, colors: highlightColor }"&gt;
   {{ dynamicContent }}
 &lt;/div&gt;</code></pre>
         </div>
@@ -279,7 +279,7 @@ const _searchKeyword = ref('Vue') // 用于模板中的动态高亮
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .directive-container {
   padding: 20px;
   max-width: 1200px;
@@ -296,114 +296,126 @@ const _searchKeyword = ref('Vue') // 用于模板中的动态高亮
   display: flex;
   align-items: center;
   gap: 16px;
-}
 
-.header-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #fff3e0 0%, #ffb74d 100%);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #333;
-}
+  .header-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #fff3e0 0%, #ffb74d 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+  }
 
-.header-content {
-  flex: 1;
-}
+  .header-content {
+    flex: 1;
 
-.header-title {
-  font-size: 24px;
-  font-weight: 600;
-  margin: 0 0 4px 0;
-  color: #1a1a1a;
-}
+    .header-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0 0 4px 0;
+      color: #1a1a1a;
+    }
 
-.header-desc {
-  font-size: 14px;
-  color: #666;
-  margin: 0;
+    .header-desc {
+      font-size: 14px;
+      color: #666;
+      margin: 0;
+    }
+  }
 }
 
 .demo-section {
   margin-bottom: 32px;
-}
 
-.demo-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #333;
-}
+  .demo-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #333;
+  }
 
-.demo-content {
-  background: #f8fafc;
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
+  .demo-content {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
 
-.demo-desc {
-  margin: 0 0 16px 0;
-  color: #64748b;
-  font-size: 14px;
+    .demo-desc {
+      margin: 0 0 16px 0;
+      color: #64748b;
+      font-size: 14px;
+    }
+  }
 }
 
 .search-controls {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 20px;
   margin-bottom: 20px;
-}
 
-.control-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
 
-.control-label {
-  font-weight: 500;
-  color: #374151;
-  font-size: 14px;
-}
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0; // 防止内容溢出
 
-.search-input {
-  width: 100%;
+    .control-label {
+      font-weight: 500;
+      color: #374151;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .search-input {
+      width: 100%;
+      max-width: 100%;
+    }
+  }
 }
 
 .color-controls {
   display: flex;
   align-items: center;
   gap: 12px;
-}
+  flex-wrap: wrap;
+  min-width: 0; // 防止内容溢出
 
-.color-picker {
-  flex-shrink: 0;
-}
+  .color-picker {
+    flex-shrink: 0;
+  }
 
-.preset-colors {
-  display: flex;
-  gap: 8px;
-}
+  .preset-colors {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    min-width: 0;
 
-.color-preset {
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: all 0.2s;
-}
+    .color-preset {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+      flex-shrink: 0;
 
-.color-preset:hover {
-  transform: scale(1.1);
-}
+      &:hover {
+        transform: scale(1.1);
+      }
 
-.color-preset.active {
-  border-color: #333;
-  transform: scale(1.1);
+      &.active {
+        border-color: #333;
+        transform: scale(1.1);
+      }
+    }
+  }
 }
 
 .highlight-demo {
@@ -411,19 +423,25 @@ const _searchKeyword = ref('Vue') // 用于模板中的动态高亮
   padding: 20px;
   border-radius: 8px;
   border: 1px solid #e2e8f0;
-}
+  overflow: hidden; // 防止内容溢出
 
-.demo-text h4 {
-  margin: 0 0 12px 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-}
+  .demo-text {
+    h4 {
+      margin: 0 0 12px 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+    }
 
-.highlight-content {
-  line-height: 1.6;
-  color: #374151;
-  white-space: pre-line;
+    .highlight-content {
+      line-height: 1.6;
+      color: #374151;
+      white-space: pre-line;
+      word-wrap: break-word; // 长单词换行
+      overflow-wrap: break-word; // 现代浏览器支持
+      max-width: 100%; // 确保不超出容器宽度
+    }
+  }
 }
 
 .code-highlight-demo {
@@ -431,166 +449,179 @@ const _searchKeyword = ref('Vue') // 用于模板中的动态高亮
   border-radius: 8px;
   border: 1px solid #e2e8f0;
   overflow: hidden;
-}
 
-.code-controls {
-  padding: 16px;
-  border-bottom: 1px solid #e2e8f0;
-  background: #f8fafc;
-}
+  .code-controls {
+    padding: 16px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
 
-.code-search {
-  width: 100%;
-}
+    .code-search {
+      width: 100%;
+    }
+  }
 
-.code-block {
-  background: #1e293b;
-  color: #e2e8f0;
-  padding: 20px;
-  overflow-x: auto;
-}
+  .code-block {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 20px;
+    overflow-x: auto;
 
-.code-content {
-  font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
-  font-size: 14px;
-  line-height: 1.5;
-  margin: 0;
+    .code-content {
+      font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      margin: 0;
+    }
+  }
 }
 
 .style-examples {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
-}
 
-.example-item {
-  background: white;
-  padding: 16px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
+  .example-item {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
 
-.example-item h4 {
-  margin: 0 0 12px 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-}
+    h4 {
+      margin: 0 0 12px 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+    }
 
-.example-text {
-  line-height: 1.6;
-  color: #374151;
+    .example-text {
+      line-height: 1.6;
+      color: #374151;
+    }
+  }
 }
 
 .advanced-examples {
   display: grid;
   gap: 20px;
-}
 
-.config-item {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
+  .config-item {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
 
-.config-item h4 {
-  margin: 0 0 12px 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-}
+    h4 {
+      margin: 0 0 12px 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+    }
 
-.config-demo {
-  padding: 16px;
-  background: #f8fafc;
-  border-radius: 6px;
-  border: 1px solid #e2e8f0;
-}
+    .config-demo {
+      padding: 16px;
+      background: #f8fafc;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
 
-.config-text {
-  line-height: 1.6;
-  color: #374151;
+      .config-text {
+        line-height: 1.6;
+        color: #374151;
+      }
+    }
+  }
 }
 
 .code-section {
   margin-bottom: 32px;
-}
 
-.code-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #333;
-}
+  .code-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #333;
+  }
 
-.code-content {
-  background: #1e293b;
-  color: #e2e8f0;
-  padding: 20px;
-  border-radius: 8px;
-  overflow-x: auto;
-}
+  .code-content {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 20px;
+    border-radius: 8px;
+    overflow-x: auto;
 
-.code-content pre {
-  margin: 0;
-  font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
-  font-size: 14px;
-  line-height: 1.5;
+    pre {
+      margin: 0;
+      font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  }
 }
 
 .feature-section {
   margin-bottom: 32px;
-}
 
-.feature-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #333;
-}
+  .feature-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #333;
+  }
 
-.feature-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 16px;
-}
+  .feature-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
 
-.feature-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 16px;
-  background: #f8fafc;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
 
-.feature-icon {
-  font-size: 24px;
-  flex-shrink: 0;
-}
+      .feature-icon {
+        font-size: 24px;
+        flex-shrink: 0;
+      }
 
-.feature-content h4 {
-  margin: 0 0 4px 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-}
+      .feature-content {
+        h4 {
+          margin: 0 0 4px 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #333;
+        }
 
-.feature-content p {
-  margin: 0;
-  font-size: 14px;
-  color: #666;
+        p {
+          margin: 0;
+          font-size: 14px;
+          color: #666;
+        }
+      }
+    }
+  }
 }
 
 @media (max-width: 768px) {
   .search-controls {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .color-controls {
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+
+    .preset-colors {
+      justify-content: flex-start;
+    }
+  }
+
+  .highlight-demo {
+    padding: 16px;
   }
 }
 </style>
