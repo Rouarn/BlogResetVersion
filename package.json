@@ -46,7 +46,8 @@
     "vfonts": "^0.0.3",
     "vue": "^3.5.21",
     "vue-i18n": "^11.1.12",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.5.1",
+    "workbox-window": "^7.3.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
@@ -83,6 +84,7 @@
     "vite": "^7.1.5",
     "vite-plugin-pages": "^0.33.1",
     "vite-plugin-progress": "^0.0.7",
+    "vite-plugin-pwa": "^1.0.3",
     "vite-plugin-svg-icons": "2.0.1",
     "vite-plugin-vue-devtools": "^8.0.2",
     "vite-plugin-vue-layouts-next": "^1.0.0",
