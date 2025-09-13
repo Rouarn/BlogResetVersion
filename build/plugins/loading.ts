@@ -117,8 +117,7 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
   /* 加载动画覆盖滚动条区域 */
   .modern-loading {
     position: fixed;
-    top: 0;
-    left: 0;
+    inset: 0;
     width: 100vw;
     height: 100vh;
     z-index: 999999;

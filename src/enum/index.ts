@@ -1,3 +1,6 @@
+/**
+ * @description： 全局状态管理
+ */
 export enum SetupStoreId {
   App = 'app-store',
   Theme = 'theme-store',
@@ -6,7 +9,9 @@ export enum SetupStoreId {
   Tab = 'tab-store',
 }
 
-// 全局默认配置项
+/**
+ * @description： 全局默认配置项
+ */
 export enum GlobalConfig {
   HOME_URL = '/home/',
   LOGIN_URL = '/login',
