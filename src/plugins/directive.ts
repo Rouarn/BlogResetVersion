@@ -10,6 +10,7 @@ import loading from '@/directives/loading'
 import longpress from '@/directives/longpress'
 import permission from '@/directives/permission'
 import ripple from '@/directives/ripple'
+import scroll from '@/directives/scroll'
 import throttle from '@/directives/throttle'
 import tooltip from '@/directives/tooltip'
 import waterMarker from '@/directives/waterMarker'
@@ -31,6 +32,7 @@ const directivesList: { [key: string]: Directive } = {
   ripple,
   tooltip,
   animate,
+  scroll,
 }
 
 const directives = {

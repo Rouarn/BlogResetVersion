@@ -40,16 +40,16 @@ const clickoutside: Directive = {
     // 保存处理函数引用，用于后续移除
     el.__clickOutsideHandler__ = handler
 
-    // 延迟绑定事件，避免立即触发
+    // 使用 mousedown 事件而不是 click，以及延迟绑定以避免立即触发
     setTimeout(() => {
-      document.addEventListener('click', handler)
-    }, 0)
+      document.addEventListener('mousedown', handler)
+    }, 100) // 增加延迟时间
   },
 
   beforeUnmount(el: ClickOutsideElement) {
     // 移除事件监听器
     if (el.__clickOutsideHandler__) {
-      document.removeEventListener('click', el.__clickOutsideHandler__)
+      document.removeEventListener('mousedown', el.__clickOutsideHandler__)
       delete el.__clickOutsideHandler__
     }
   },

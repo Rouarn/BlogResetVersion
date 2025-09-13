@@ -1,5 +1,6 @@
 <script setup lang="ts" name="permissionDirect">
-import { ref } from 'vue'
+import { nextTick, ref, watch } from 'vue'
+import { PermissionHelper } from '@/directives/permission'
 
 definePage({
   meta: {
@@ -14,7 +15,12 @@ const userRole = ref('user')
 
 const setPermissions = (permissions: string[]) => {
   currentPermissions.value = permissions
-  // 模拟权限更新，实际项目中应该通过权限管理系统
+  // 同步到权限系统
+  PermissionHelper.setUserPermissions(permissions)
+  // 触发权限更新事件，让所有使用权限指令的元素重新检查权限
+  nextTick(() => {
+    window.dispatchEvent(new CustomEvent('permissionUpdate'))
+  })
 }
 
 const switchRole = (role: string) => {
@@ -32,6 +38,32 @@ const switchRole = (role: string) => {
     default:
       setPermissions([])
   }
+}
+
+// 监听权限更新事件，在页面加载时重新检查所有权限指令
+watch(
+  currentPermissions,
+  () => {
+    // 延迟一帧执行，确保 DOM 更新完成
+    nextTick(() => {
+      const elements = document.querySelectorAll('[data-permission]')
+      elements.forEach((el) => {
+        // 触发指令重新检查
+        const event = new CustomEvent('permissionCheck')
+        el.dispatchEvent(event)
+      })
+    })
+  },
+  { deep: true },
+)
+
+// 初始化权限
+setPermissions(['user'])
+
+// 计算权限覆盖率
+const getPermissionScore = () => {
+  const allPermissions = ['admin', 'editor', 'user']
+  return Math.round((currentPermissions.value.length / allPermissions.length) * 100)
 }
 </script>
 
@@ -154,12 +186,16 @@ const switchRole = (role: string) => {
               v-permission="{
                 permissions: ['admin'],
                 fallback: 'show',
-                fallbackContent: '权限不足，请联系管理员',
+                fallbackContent: '权限不足，请联系管理员获取访问权限',
               }"
               class="permission-content"
             >
               <NCard title="敏感数据" :bordered="true">
-                <p>这里是一些敏感数据内容</p>
+                <p>这里是一些敏感数据内容，只有管理员才能查看</p>
+                <NSpace>
+                  <NButton type="warning" size="small">查看用户数据</NButton>
+                  <NButton type="error" size="small">导出报表</NButton>
+                </NSpace>
               </NCard>
             </div>
           </div>
@@ -191,6 +227,36 @@ const switchRole = (role: string) => {
                 <div class="stat-label">管理员权限</div>
               </div>
             </div>
+            <div class="stat-card">
+              <div class="stat-icon">📊</div>
+              <div class="stat-content">
+                <div class="stat-value">{{ getPermissionScore() }}%</div>
+                <div class="stat-label">权限覆盖率</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 权限级别说明 -->
+          <div class="permission-levels">
+            <h4>📋 权限级别说明</h4>
+            <div class="level-list">
+              <div class="level-item" :class="{ active: userRole === 'guest' }">
+                <div class="level-badge guest">访客</div>
+                <div class="level-desc">无任何权限，只能查看公开内容</div>
+              </div>
+              <div class="level-item" :class="{ active: userRole === 'user' }">
+                <div class="level-badge user">用户</div>
+                <div class="level-desc">基础权限，可以查看一般内容</div>
+              </div>
+              <div class="level-item" :class="{ active: userRole === 'editor' }">
+                <div class="level-badge editor">编辑者</div>
+                <div class="level-desc">编辑权限，可以创建和编辑内容</div>
+              </div>
+              <div class="level-item" :class="{ active: userRole === 'admin' }">
+                <div class="level-badge admin">管理员</div>
+                <div class="level-desc">最高权限，可以访问所有功能</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -206,13 +272,20 @@ const switchRole = (role: string) => {
   管理员或编辑者可见
 &lt;/div&gt;
 
-&lt;!-- 高级配置 --&gt;
+&lt;!-- 需要所有权限 --&gt;
+&lt;button v-permission="{
+  permissions: ['admin', 'editor'],
+  mode: 'every'
+}"&gt;
+  需要所有权限
+&lt;/button&gt;
+
+&lt;!-- 禁用而不是隐藏 --&gt;
 &lt;button v-permission="{
   permissions: ['admin'],
-  mode: 'every',
   fallback: 'disable'
 }"&gt;
-  需要所有权限，无权限时禁用
+  无权限时禁用
 &lt;/button&gt;
 
 &lt;!-- 权限不足时显示提示 --&gt;
@@ -493,5 +566,76 @@ const switchRole = (role: string) => {
   margin: 0;
   font-size: 14px;
   color: #666;
+}
+
+.permission-levels {
+  margin-top: 24px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.permission-levels h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.level-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.level-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.level-item.active {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+.level-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 60px;
+  text-align: center;
+  color: white;
+}
+
+.level-badge.guest {
+  background: #9ca3af;
+}
+
+.level-badge.user {
+  background: #06b6d4;
+}
+
+.level-badge.editor {
+  background: #f59e0b;
+}
+
+.level-badge.admin {
+  background: #dc2626;
+}
+
+.level-desc {
+  flex: 1;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.4;
 }
 </style>

@@ -23,6 +23,10 @@ const scrollStats = ref({
   velocity: 0,
 })
 
+// 添加调试信息状态
+const debugInfo = ref<string>('')
+const showDebugInfo = ref(false)
+
 const scrollToTop = () => {
   const element = document.querySelector('.scroll-container')
   if (element) {
@@ -37,11 +41,83 @@ const scrollToBottom = () => {
   }
 }
 
-const scrollToPosition = (position: number) => {
+const scrollToPosition = (percentage: number) => {
   const element = document.querySelector('.scroll-container')
   if (element) {
-    element.scrollTo({ top: position, behavior: 'smooth' })
+    // 根据百分比计算实际位置
+    const maxScrollHeight = element.scrollHeight - element.clientHeight
+    const targetPosition = (maxScrollHeight * percentage) / 100
+    element.scrollTo({ top: targetPosition, behavior: 'smooth' })
   }
+}
+
+// 为滚动控制区域添加单独的函数
+const scrollControlToPosition = (percentage: number) => {
+  const element = document.querySelector('.control-scroll-container')
+  if (element) {
+    // 根据百分比计算实际位置
+    const maxScrollHeight = element.scrollHeight - element.clientHeight
+    const targetPosition = (maxScrollHeight * percentage) / 100
+    console.log(`滚动控制导航: ${percentage}% -> ${Math.round(targetPosition)}px (最大滚动高度: ${maxScrollHeight}px)`)
+    element.scrollTo({ top: targetPosition, behavior: 'smooth' })
+  }
+}
+
+// 添加调试函数，显示容器信息
+const showContainerInfo = () => {
+  const basicContainer = document.querySelector('.scroll-container')
+  const controlContainer = document.querySelector('.control-scroll-container')
+
+  let debugText = '🔍 滚动容器调试信息\n\n'
+
+  if (basicContainer) {
+    const basicInfo = {
+      clientHeight: basicContainer.clientHeight,
+      scrollHeight: basicContainer.scrollHeight,
+      maxScroll: basicContainer.scrollHeight - basicContainer.clientHeight,
+      currentScroll: basicContainer.scrollTop,
+      currentPercentage: Math.round((basicContainer.scrollTop / (basicContainer.scrollHeight - basicContainer.clientHeight)) * 100) || 0,
+    }
+
+    debugText += '📊 基础滚动容器:\n'
+    debugText += `• 可视高度: ${basicInfo.clientHeight}px\n`
+    debugText += `• 内容总高度: ${basicInfo.scrollHeight}px\n`
+    debugText += `• 最大可滚动距离: ${basicInfo.maxScroll}px\n`
+    debugText += `• 当前滚动位置: ${basicInfo.currentScroll}px\n`
+    debugText += `• 当前滚动百分比: ${basicInfo.currentPercentage}%\n\n`
+
+    console.log('基础滚动容器信息:', basicInfo)
+  }
+
+  if (controlContainer) {
+    const controlInfo = {
+      clientHeight: controlContainer.clientHeight,
+      scrollHeight: controlContainer.scrollHeight,
+      maxScroll: controlContainer.scrollHeight - controlContainer.clientHeight,
+      currentScroll: controlContainer.scrollTop,
+      currentPercentage:
+        Math.round((controlContainer.scrollTop / (controlContainer.scrollHeight - controlContainer.clientHeight)) * 100) || 0,
+    }
+
+    debugText += '🎮 控制滚动容器:\n'
+    debugText += `• 可视高度: ${controlInfo.clientHeight}px\n`
+    debugText += `• 内容总高度: ${controlInfo.scrollHeight}px\n`
+    debugText += `• 最大可滚动距离: ${controlInfo.maxScroll}px\n`
+    debugText += `• 当前滚动位置: ${controlInfo.currentScroll}px\n`
+    debugText += `• 当前滚动百分比: ${controlInfo.currentPercentage}%\n\n`
+
+    console.log('控制滚动容器信息:', controlInfo)
+  }
+
+  debugText += '💡 调试说明:\n'
+  debugText += '• 滚动百分比计算：(当前位置 / 最大可滚动距离) × 100%\n'
+  debugText += '• 如果定位不准确，检查目标位置计算是否正确\n'
+  debugText += '• 查看控制台获取更详细的技术信息'
+
+  debugInfo.value = debugText
+  showDebugInfo.value = true
+
+  console.log('🔍 调试信息已显示在页面上')
 }
 
 interface ScrollData {
@@ -154,12 +230,26 @@ const resetScroll = () => {
         <div class="demo-title">🎯 基础滚动演示</div>
         <div class="demo-content">
           <p class="demo-desc">在下方容器中滚动查看滚动监听效果</p>
+          <div class="auto-scroll-tip" v-if="autoScroll">
+            <div class="tip-icon">🔄</div>
+            <div class="tip-text"><strong>自动滚动已启用！</strong>容器正在以 {{ scrollSpeed }}px/s 的速度自动滚动</div>
+          </div>
           <div class="scroll-demo">
             <div class="scroll-controls">
               <NButton size="small" @click="scrollToTop">滚动到顶部</NButton>
-              <NButton size="small" @click="scrollToPosition(500)">滚动到中间</NButton>
+              <NButton size="small" @click="scrollToPosition(50)">滚动到中间</NButton>
               <NButton size="small" @click="scrollToBottom">滚动到底部</NButton>
               <NButton size="small" @click="resetScroll">重置状态</NButton>
+              <NButton size="small" type="info" @click="showContainerInfo">显示容器信息</NButton>
+            </div>
+
+            <!-- 调试信息显示区域 -->
+            <div v-if="showDebugInfo" class="debug-info-panel">
+              <div class="debug-header">
+                <span class="debug-title">🔍 调试信息</span>
+                <NButton size="small" text @click="showDebugInfo = false">✕ 关闭</NButton>
+              </div>
+              <pre class="debug-content">{{ debugInfo }}</pre>
             </div>
 
             <div
@@ -168,6 +258,8 @@ const resetScroll = () => {
                 threshold: scrollThreshold,
                 smooth: smoothScroll,
                 showScrollbar: showScrollbar,
+                autoScroll: autoScroll,
+                autoScrollSpeed: scrollSpeed,
                 onScroll: onScrollUpdate,
               }"
               class="scroll-container"
@@ -231,13 +323,22 @@ const resetScroll = () => {
       <div class="demo-section">
         <div class="demo-title">🔄 水平滚动演示</div>
         <div class="demo-content">
-          <p class="demo-desc">水平滚动容器演示</p>
+          <p class="demo-desc">水平滚动容器演示 - 支持鼠标滚轮水平滚动</p>
+          <div class="scroll-tip">
+            <div class="tip-icon">💡</div>
+            <div class="tip-text">
+              <strong>水平滚动操作方式：</strong>
+              <br />• 鼠标滚轮：直接滚动鼠标滚轮即可水平滚动 <br />• 拖拽滚动条：点击拖拽底部滚动条 <br />• 双向滚动模式：按住 Shift +
+              滚轮可水平滚动
+            </div>
+          </div>
           <div class="horizontal-scroll-demo">
             <div
               v-scroll="{
                 direction: 'horizontal',
                 threshold: 50,
                 smooth: true,
+                wheelHorizontal: true,
                 onScroll: onScrollUpdate,
               }"
               class="horizontal-scroll-container"
@@ -311,11 +412,12 @@ const resetScroll = () => {
               <div class="control-section">
                 <h4>快速导航</h4>
                 <div class="nav-buttons">
-                  <button class="nav-button" @click="scrollToPosition(0)">开始</button>
-                  <button class="nav-button" @click="scrollToPosition(200)">25%</button>
-                  <button class="nav-button" @click="scrollToPosition(400)">50%</button>
-                  <button class="nav-button" @click="scrollToPosition(600)">75%</button>
-                  <button class="nav-button" @click="scrollToPosition(800)">结束</button>
+                  <button class="nav-button" @click="scrollControlToPosition(0)">开始</button>
+                  <button class="nav-button" @click="scrollControlToPosition(25)">25%</button>
+                  <button class="nav-button" @click="scrollControlToPosition(50)">50%</button>
+                  <button class="nav-button" @click="scrollControlToPosition(75)">75%</button>
+                  <button class="nav-button" @click="scrollControlToPosition(100)">结束</button>
+                  <button class="nav-button debug-btn" @click="showContainerInfo">调试</button>
                 </div>
               </div>
 
@@ -349,8 +451,8 @@ const resetScroll = () => {
                     <h4>里程碑 {{ i }}</h4>
                     <p>这是第 {{ i }} 个滚动里程碑，展示滚动控制的效果。</p>
                     <div class="milestone-details">
-                      <span class="detail-item">位置: ~{{ (i - 1) * 80 }}px</span>
-                      <span class="detail-item">进度: {{ Math.round((i - 1) * 11.11) }}%</span>
+                      <span class="detail-item">位置: ~{{ Math.round((i - 1) * 11.11) }}%</span>
+                      <span class="detail-item">里程碑: {{ i }}/10</span>
                     </div>
                   </div>
                 </div>
@@ -418,22 +520,24 @@ const resetScroll = () => {
   onScroll: handleScroll
 }"&gt;垂直滚动内容&lt;/div&gt;
 
-&lt;!-- 水平滚动 --&gt;
+&lt;!-- 水平滚动（支持鼠标滚轮） --&gt;
 &lt;div v-scroll="{
   direction: 'horizontal',
   threshold: 50,
-  smooth: true
+  smooth: true,
+  wheelHorizontal: true
 }"&gt;水平滚动内容&lt;/div&gt;
 
 &lt;!-- 双向滚动 --&gt;
 &lt;div v-scroll="{
   direction: 'both',
+  wheelHorizontal: true,
   onScroll: (data) =&gt; {
     console.log('滚动位置:', data.position)
     console.log('滚动百分比:', data.percentage)
     console.log('滚动方向:', data.direction)
   }
-}"&gt;双向滚动内容&lt;/div&gt;
+}"&gt;双向滚动内容（按 Shift + 滚轮水平滚动）&lt;/div&gt;
 
 &lt;!-- 自动滚动 --&gt;
 &lt;div v-scroll="{
@@ -579,6 +683,57 @@ const resetScroll = () => {
   margin: 0 0 16px 0;
   color: #64748b;
   font-size: 14px;
+}
+
+.scroll-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
+  border-radius: 8px;
+  border-left: 4px solid #0ea5e9;
+}
+
+.auto-scroll-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+  border-radius: 8px;
+  border-left: 4px solid #4caf50;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.tip-icon {
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.tip-text {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #0284c7;
+
+  strong {
+    color: #0c4a6e;
+    font-weight: 600;
+  }
 }
 
 .config-controls {
@@ -1050,6 +1205,15 @@ const resetScroll = () => {
   background: #cbd5e1;
 }
 
+.nav-button.debug-btn {
+  background: #fbbf24;
+  color: #78350f;
+}
+
+.nav-button.debug-btn:hover {
+  background: #f59e0b;
+}
+
 .mode-button.active {
   background: #2196f3;
   color: white;
@@ -1288,6 +1452,62 @@ const resetScroll = () => {
   margin: 0;
   font-size: 14px;
   color: #666;
+}
+
+/* 调试信息面板样式 */
+.debug-info-panel {
+  margin-top: 16px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.debug-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #fff;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.debug-title {
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+}
+
+.debug-content {
+  padding: 16px;
+  margin: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #495057;
+  background: #f8f9fa;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.debug-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.debug-content::-webkit-scrollbar-track {
+  background: #e9ecef;
+}
+
+.debug-content::-webkit-scrollbar-thumb {
+  background: #ced4da;
+  border-radius: 3px;
+}
+
+.debug-content::-webkit-scrollbar-thumb:hover {
+  background: #adb5bd;
 }
 
 @media (max-width: 768px) {
