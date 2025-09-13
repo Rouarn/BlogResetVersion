@@ -1564,8 +1564,8 @@ export const colorNames: [hex: string, name: string][] = [
   ['#ffff99', 'Pale Canary'],
   ['#ffffb4', 'Portafino'],
   ['#fffff0', 'Ivory'],
-  ['#ffffff', 'White']
-];
+  ['#ffffff', 'White'],
+]
 
 /**
  * Map Of hex color values to color names
@@ -1574,6 +1574,6 @@ export const colorNames: [hex: string, name: string][] = [
  * - value: color name
  */
 export const colorNameMap = colorNames.reduce<Record<string, string>>((acc, [hex, name]) => {
-  acc[hex] = name;
-  return acc;
-}, {});
+  acc[hex] = name
+  return acc
+}, {})

@@ -20,7 +20,7 @@
     "build-only": "vite build",
     "typecheck": "vue-tsc --noEmit --skipLibCheck",
     "lint:eslint": "eslint . --fix",
-    "lint:prettier": "prettier --write src/",
+    "lint:prettier": "prettier --write ./",
     "prepare": "husky",
     "lint:lint-staged": "lint-staged",
     "commit": "cz-git commit"
