@@ -271,7 +271,7 @@ const resetScroll = () => {
                   <p>这是滚动容器的第一部分内容。当你滚动时，指令会监听滚动事件并更新状态信息。</p>
                   <div class="content-items">
                     <div class="content-item" v-for="i in 5" :key="i">
-                      <div class="item-icon">📝</div>
+                      <div class="content-icon">📝</div>
                       <div class="item-text">内容项 {{ i }}</div>
                     </div>
                   </div>
@@ -282,7 +282,7 @@ const resetScroll = () => {
                   <p>继续滚动查看更多内容。滚动指令会实时计算滚动位置、百分比和滚动方向。</p>
                   <div class="content-grid">
                     <div class="grid-item" v-for="i in 8" :key="i">
-                      <div class="grid-icon">🎨</div>
+                      <div class="content-grid-icon">🎨</div>
                       <div class="grid-title">项目 {{ i }}</div>
                       <div class="grid-desc">这是项目 {{ i }} 的描述</div>
                     </div>

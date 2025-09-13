@@ -197,13 +197,13 @@ const isEnabled = ref(true)
           <div class="demo-area">
             <h3>特殊场景</h3>
             <div class="special-demo">
-              <div class="icon-grid">
-                <div v-tooltip="'用户信息'" class="icon-item" @mouseenter="handleTooltipShow">👤</div>
-                <div v-tooltip="'设置选项'" class="icon-item" @mouseenter="handleTooltipShow">⚙️</div>
-                <div v-tooltip="'消息通知'" class="icon-item" @mouseenter="handleTooltipShow">📧</div>
-                <div v-tooltip="'帮助文档'" class="icon-item" @mouseenter="handleTooltipShow">❓</div>
-                <div v-tooltip="'收藏夹'" class="icon-item" @mouseenter="handleTooltipShow">⭐</div>
-                <div v-tooltip="'搜索功能'" class="icon-item" @mouseenter="handleTooltipShow">🔍</div>
+              <div class="icons-grid">
+                <div v-tooltip="'用户信息'" class="icons-item" @mouseenter="handleTooltipShow">👤</div>
+                <div v-tooltip="'设置选项'" class="icons-item" @mouseenter="handleTooltipShow">⚙️</div>
+                <div v-tooltip="'消息通知'" class="icons-item" @mouseenter="handleTooltipShow">📧</div>
+                <div v-tooltip="'帮助文档'" class="icons-item" @mouseenter="handleTooltipShow">❓</div>
+                <div v-tooltip="'收藏夹'" class="icons-item" @mouseenter="handleTooltipShow">⭐</div>
+                <div v-tooltip="'搜索功能'" class="icons-item" @mouseenter="handleTooltipShow">🔍</div>
               </div>
             </div>
           </div>
@@ -456,14 +456,14 @@ const isEnabled = ref(true)
   justify-content: center;
 }
 
-.icon-grid {
+.icons-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 16px;
   max-width: 400px;
 }
 
-.icon-item {
+.icons-item {
   width: 50px;
   height: 50px;
   display: flex;
