@@ -3,6 +3,7 @@ import { setupComponentsPlugin } from './components'
 import { setupHtmlPlugin } from './htmlPlugin'
 import { setupIconsPlugin } from './icons'
 import { setupLayoutsPlugin } from './layouts'
+import { setupLoadingPlugin } from './loading'
 import { setupProgressPlugin } from './progress'
 import { setupSvgIconsPlugin } from './svgIcons'
 import { setupUnocssPlugin } from './unocss'
@@ -36,6 +37,7 @@ export function setupVitePlugins(viteEnv: Env.ImportMeta, buildTime: string): Pl
     setupHtmlPlugin(buildTime),
     setupIconsPlugin(localIconPath, collectionName),
     setupSvgIconsPlugin(localIconPath, VITE_ICON_LOCAL_PREFIX),
+    setupLoadingPlugin(),
   ]
 
   return plugins
