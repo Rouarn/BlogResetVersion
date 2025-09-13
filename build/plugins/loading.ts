@@ -1,563 +1,777 @@
 /**
- * Vite 插件：完全自动化的加载动画插件
+ * Vite 插件：现代化加载动画插件 v3.0
  *
- * 特性：
- * - 🚀 零入侵：无需修改业务代码，自动检测应用状态
- * - 🎯 智能检测：多层次检测Vue应用渲染完成状态
- * - 🎨 高度可配置：支持主题、进度、检测参数等全面配置
- * - 📱 响应式设计：自适应桌面端和移动端显示
- *
- * 使用方法：
- * ```typescript
- * import { setupLoadingPlugin } from './build/plugins/loading'
- *
- * export default defineConfig({
- *   plugins: [
- *     setupLoadingPlugin({
- *       enabled: true,
- *       theme: { primary: '#4bc0c8' },
- *       minDisplayTime: 1500
- *     })
- *   ]
- * })
- * ```
+ * 全新架构设计：
+ * - 🎯 观察者模式：基于事件驱动的状态管理
+ * - 🚀 现代CSS：使用CSS变量、Grid布局和现代动画
+ * - 📦 模块化设计：分离关注点，易于维护和扩展
+ * - 🔍 智能检测：基于MutationObserver的实时检测
+ * - ⚡ 高性能：RAF优化，避免强制重排
+ * - 🎨 响应式：完全响应式设计，支持所有设备
  *
  * @author Rouarn
- * @version 1.0.0
+ * @version 3.0.0
  */
 
 import type { PluginOption } from 'vite'
 
 /**
- * 加载动画插件配置接口
- *
- * @interface LoadingConfig
- * @description 提供完整的加载动画自定义配置选项
+ * 加载插件配置接口
  */
-interface LoadingConfig {
-  /** 是否启用加载动画 */
+interface LoadingPluginConfig {
+  /** 是否启用 */
   enabled?: boolean
-  /** 最小显示时间（毫秒） */
-  minDisplayTime?: number
-  /** 淡出动画时间（毫秒） */
-  fadeOutDuration?: number
-  /** 主题颜色配置 */
+  /** 主题配置 */
   theme?: {
-    /** 主色调 */
     primary?: string
-    /** 次要色调 */
     secondary?: string
-    /** 第三色调 */
-    tertiary?: string
-    /** 背景色 */
+    accent?: string
     background?: string
-    /** 文字颜色 */
-    textColor?: string
+    surface?: string
+    text?: string
+  }
+  /** 动画配置 */
+  animation?: {
+    duration?: number
+    easing?: string
+    exitDuration?: number
   }
   /** 检测配置 */
   detection?: {
-    /** 检测间隔（毫秒） */
-    checkInterval?: number
-    /** 最大检测次数 */
-    maxChecks?: number
-    /** 首次加载稳定延迟（毫秒） */
-    firstLoadDelay?: number
-    /** 刷新加载稳定延迟（毫秒） */
-    refreshDelay?: number
-    /** Vue挂载检查延迟（毫秒） */
-    vueCheckDelay?: number
+    timeout?: number
+    debounce?: number
+    minStableTime?: number
   }
-  /** 进度配置 */
-  progress?: {
-    /** 自动阶段间隔（毫秒） */
-    stageInterval?: number
-    /** 自动完成的阶段数量 */
-    autoStageCount?: number
-    /** 自定义加载阶段 */
-    customStages?: Array<{ name: string; text: string }>
-  }
-  /** 响应式配置 */
-  responsive?: {
-    /** 移动端加载器尺寸 */
-    mobileSize?: number
-    /** 桌面端加载器尺寸 */
-    desktopSize?: number
+  /** 显示配置 */
+  display?: {
+    minShowTime?: number
+    showProgress?: boolean
+    showStages?: boolean
   }
 }
 
 /**
- * 创建并配置加载动画插件
- *
- * @param {LoadingConfig} config - 加载动画配置选项
- * @param {boolean} [config.enabled=true] - 是否启用加载动画
- * @param {number} [config.minDisplayTime=1500] - 最小显示时间（毫秒）
- * @param {number} [config.fadeOutDuration=300] - 淡出动画时间（毫秒）
- * @param {object} [config.theme] - 主题颜色配置
- * @param {object} [config.detection] - 检测配置
- * @param {object} [config.progress] - 进度配置
- * @param {object} [config.responsive] - 响应式配置
- *
- * @returns {PluginOption} Vite插件选项
- *
- * @example
- * ```typescript
- * // 基础使用
- * setupLoadingPlugin()
- *
- * // 自定义配置
- * setupLoadingPlugin({
- *   enabled: true,
- *   minDisplayTime: 2000,
- *   theme: {
- *     primary: '#ff6b6b',
- *     secondary: '#4ecdc4',
- *     background: 'linear-gradient(45deg, #667eea 0%, #764ba2 100%)'
- *   },
- *   detection: {
- *     checkInterval: 50,
- *     maxChecks: 200
- *   }
- * })
- * ```
- *
- * @since 1.0.0
- * @author Rouarn
+ * 创建现代化加载插件
  */
-export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
-  // 合并默认配置
-  const defaultConfig: Required<LoadingConfig> = {
+export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): PluginOption {
+  // 默认配置
+  const defaultConfig: Required<LoadingPluginConfig> = {
     enabled: true,
-    minDisplayTime: 1500,
-    fadeOutDuration: 300,
     theme: {
-      primary: '#4bc0c8',
-      secondary: '#c779d0',
-      tertiary: '#feac5e',
-      background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.8) 100%)',
-      textColor: '#ffffff',
+      primary: 'hsl(200, 100%, 60%)',
+      secondary: 'hsl(280, 100%, 70%)',
+      accent: 'hsl(45, 100%, 65%)',
+      background: 'hsl(220, 30%, 8%)',
+      surface: 'hsl(220, 25%, 12%)',
+      text: 'hsl(0, 0%, 95%)',
+    },
+    animation: {
+      duration: 800,
+      easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+      exitDuration: 600,
     },
     detection: {
-      checkInterval: 100,
-      maxChecks: 120,
-      firstLoadDelay: 500,
-      refreshDelay: 200,
-      vueCheckDelay: 2000,
+      timeout: 10000,
+      debounce: 150,
+      minStableTime: 300,
     },
-    progress: {
-      stageInterval: 400,
-      autoStageCount: 6,
-      customStages: [
-        { name: 'dom-ready', text: '正在加载DOM...' },
-        { name: 'scripts', text: '正在加载脚本...' },
-        { name: 'styles', text: '正在加载样式...' },
-        { name: 'vue-app', text: '正在初始化Vue应用...' },
-        { name: 'router', text: '正在初始化路由...' },
-        { name: 'store', text: '正在初始化状态管理...' },
-        { name: 'plugins', text: '正在加载插件...' },
-        { name: 'mount', text: '正在挂载应用...' },
-        { name: 'render', text: '正在渲染页面...' },
-      ],
-    },
-    responsive: {
-      mobileSize: 120,
-      desktopSize: 180,
+    display: {
+      minShowTime: 1200,
+      showProgress: true,
+      showStages: true,
     },
   }
 
-  const finalConfig = {
+  // 合并配置
+  const config = {
     ...defaultConfig,
-    ...config,
-    theme: { ...defaultConfig.theme, ...config.theme },
-    detection: { ...defaultConfig.detection, ...config.detection },
-    progress: { ...defaultConfig.progress, ...config.progress },
-    responsive: { ...defaultConfig.responsive, ...config.responsive },
+    ...userConfig,
+    theme: { ...defaultConfig.theme, ...userConfig.theme },
+    animation: { ...defaultConfig.animation, ...userConfig.animation },
+    detection: { ...defaultConfig.detection, ...userConfig.detection },
+    display: { ...defaultConfig.display, ...userConfig.display },
   }
 
-  // 如果禁用，返回空插件
-  if (!finalConfig.enabled) {
-    return { name: 'auto-loading-plugin-disabled' }
+  if (!config.enabled) {
+    return { name: 'modern-loading-disabled' }
   }
 
   return {
-    name: 'auto-loading-plugin',
+    name: 'modern-loading-plugin',
     transformIndexHtml(html: string) {
-      // 注入完全自动化的加载系统
-      const loadingHtml = `
+      const loadingSystem = `
+<!-- 现代化加载系统 v3.0 -->
 <style>
-/* 加载动画样式 */
-.auto-loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: ${finalConfig.theme.background};
-  backdrop-filter: blur(4px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  opacity: 1;
-  transition: opacity ${finalConfig.fadeOutDuration}ms ease-in-out;
-}
+  :root {
+    --loading-primary: ${config.theme.primary};
+    --loading-secondary: ${config.theme.secondary};
+    --loading-accent: ${config.theme.accent};
+    --loading-bg: ${config.theme.background};
+    --loading-surface: ${config.theme.surface};
+    --loading-text: ${config.theme.text};
+    --loading-duration: ${config.animation.duration}ms;
+    --loading-easing: ${config.animation.easing};
+    --loading-exit-duration: ${config.animation.exitDuration}ms;
+  }
 
-.auto-loading-overlay.fade-out {
-  opacity: 0;
-}
+  .modern-loading {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: var(--loading-bg);
+    display: grid;
+    place-items: center;
+    font-family: system-ui, -apple-system, sans-serif;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity var(--loading-exit-duration) var(--loading-easing),
+                visibility var(--loading-exit-duration) var(--loading-easing);
+  }
 
-.auto-loader {
-  width: ${finalConfig.responsive.desktopSize}px;
-  height: ${finalConfig.responsive.desktopSize}px;
-  position: relative;
-  border-radius: 50%;
-  border: 3px solid transparent;
-  border-top-color: ${finalConfig.theme.primary};
-  animation: auto-spin 2s linear infinite;
-  box-shadow: 0 0 30px ${finalConfig.theme.primary}4D;
-}
+  .modern-loading.hidden {
+    opacity: 0;
+    visibility: hidden;
+  }
 
-.auto-loader::before {
-  content: '';
-  position: absolute;
-  left: 6px;
-  top: 6px;
-  right: 6px;
-  bottom: 6px;
-  border-radius: 50%;
-  border: 3px solid transparent;
-  border-top-color: ${finalConfig.theme.secondary};
-  animation: auto-spin 3s linear infinite;
-  box-shadow: 0 0 20px ${finalConfig.theme.secondary}4D;
-}
+  .loading-content {
+    display: grid;
+    gap: 2rem;
+    text-align: center;
+    max-width: 90vw;
+  }
 
-.auto-loader::after {
-  content: '';
-  position: absolute;
-  left: 16px;
-  top: 16px;
-  right: 16px;
-  bottom: 16px;
-  border-radius: 50%;
-  border: 3px solid transparent;
-  border-top-color: ${finalConfig.theme.tertiary};
-  animation: auto-spin 1.5s linear infinite;
-  box-shadow: 0 0 15px ${finalConfig.theme.tertiary}4D;
-}
+  .loading-visual {
+    position: relative;
+    width: clamp(120px, 15vw, 200px);
+    height: clamp(120px, 15vw, 200px);
+    margin: 0 auto;
+  }
 
-.auto-loading-progress {
-  position: absolute;
-  bottom: 140px;
-  width: 200px;
-  height: 3px;
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 2px;
-  overflow: hidden;
-}
+  .loading-rings {
+    position: absolute;
+    inset: 0;
+  }
 
-.auto-loading-progress-bar {
-  width: 0%;
-  height: 100%;
-  background-color: ${finalConfig.theme.primary};
-  border-radius: 2px;
-  transition: width 0.3s ease-out;
-  box-shadow: 0 0 10px ${finalConfig.theme.primary}99;
-}
+  .loading-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    animation: rotate var(--loading-duration) linear infinite;
+  }
 
-.auto-loading-percentage {
-  position: absolute;
-  bottom: 110px;
-  color: ${finalConfig.theme.primary};
-  font-size: 14px;
-  font-weight: 600;
-}
+  .loading-ring:nth-child(1) {
+    border-top-color: var(--loading-primary);
+    animation-duration: 2s;
+    filter: drop-shadow(0 0 20px var(--loading-primary));
+  }
 
-.auto-loading-text {
-  position: absolute;
-  bottom: 80px;
-  color: ${finalConfig.theme.textColor};
-  font-size: 16px;
-  font-weight: 500;
-  letter-spacing: 1px;
-  text-align: center;
-  animation: auto-pulse 2s ease-in-out infinite;
-}
+  .loading-ring:nth-child(2) {
+    border-right-color: var(--loading-secondary);
+    animation-duration: 1.5s;
+    animation-direction: reverse;
+    inset: 15%;
+    filter: drop-shadow(0 0 15px var(--loading-secondary));
+  }
 
-@keyframes auto-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+  .loading-ring:nth-child(3) {
+    border-bottom-color: var(--loading-accent);
+    animation-duration: 1s;
+    inset: 30%;
+    filter: drop-shadow(0 0 10px var(--loading-accent));
+  }
 
-@keyframes auto-pulse {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 1; }
-}
+  .loading-core {
+    position: absolute;
+    inset: 40%;
+    background: radial-gradient(circle, var(--loading-primary), transparent);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
 
-@media (max-width: 768px) {
-  .auto-loader { width: ${finalConfig.responsive.mobileSize}px; height: ${finalConfig.responsive.mobileSize}px; }
-  .auto-loader::before { left: 8px; top: 8px; right: 8px; bottom: 8px; }
-  .auto-loader::after { left: 18px; top: 18px; right: 18px; bottom: 18px; }
-  .auto-loading-text { font-size: 14px; bottom: 60px; }
-}
+  .loading-info {
+    color: var(--loading-text);
+  }
+
+  .loading-stage {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    min-height: 1.5em;
+    opacity: 0.9;
+  }
+
+  .loading-progress-container {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .loading-progress-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--loading-surface);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .loading-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--loading-primary), var(--loading-secondary));
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.3s var(--loading-easing);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .loading-progress-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+  }
+
+  .loading-percentage {
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    opacity: 0.8;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .loading-exit-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: transparent;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.1s ease, visibility 0.1s ease;
+    overflow: hidden;
+  }
+
+  .loading-exit-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .exit-panel {
+    background: var(--loading-bg);
+    transition: transform var(--loading-exit-duration) cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .exit-panel.left {
+    transform: translateX(0%);
+    transform-origin: left center;
+  }
+
+  .exit-panel.right {
+    transform: translateX(0%);
+    transform-origin: right center;
+  }
+
+  .loading-exit-overlay.opening .exit-panel.left {
+    transform: translateX(-100%);
+  }
+
+  .loading-exit-overlay.opening .exit-panel.right {
+    transform: translateX(100%);
+  }
+
+  /* 确保推拉门效果可见 */
+  .loading-exit-overlay {
+    pointer-events: none;
+  }
+
+  .loading-exit-overlay.active {
+    pointer-events: auto;
+  }
+
+  @keyframes rotate {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  @media (max-width: 768px) {
+    .loading-content {
+      gap: 1.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .loading-ring {
+      animation-duration: 4s;
+    }
+    .loading-core {
+      animation: none;
+    }
+    .loading-progress-fill::after {
+      animation: none;
+    }
+  }
 </style>
 
 <script>
-// 完全自动化的加载管理器
 (function() {
   'use strict';
 
-  // 注入的配置
-  const config = ${JSON.stringify(finalConfig)};
+  // 配置
+  const CONFIG = ${JSON.stringify(config)};
 
-  let startTime = Date.now();
-  let progress = 0;
-  let currentStage = '正在初始化应用...';
-  let overlay = null;
-  let isVisible = false;
+  // 加载阶段定义
+  const STAGES = [
+    { id: 'init', text: '初始化应用...', weight: 10 },
+    { id: 'dom', text: '构建DOM结构...', weight: 15 },
+    { id: 'assets', text: '加载资源文件...', weight: 20 },
+    { id: 'scripts', text: '执行脚本...', weight: 15 },
+    { id: 'vue', text: '启动Vue应用...', weight: 20 },
+    { id: 'router', text: '初始化路由...', weight: 10 },
+    { id: 'render', text: '渲染页面内容...', weight: 10 }
+  ];
 
-  const stages = config.progress.customStages;
+  /**
+   * 现代化加载管理器
+   */
+  class ModernLoadingManager {
+    constructor() {
+      this.state = {
+        isActive: false,
+        isExiting: false,
+        startTime: Date.now(),
+        currentStage: 0,
+        progress: 0,
+        isAppReady: false
+      };
 
-  let completedStages = 0;
-  let autoStageTimer = null;
-  let hideTimer = null;
+      this.elements = {
+        container: null,
+        stage: null,
+        progressFill: null,
+        percentage: null,
+        exitOverlay: null
+      };
 
-  // 创建加载界面
-  function createLoadingOverlay() {
-    if (overlay) return overlay;
+      this.timers = new Set();
+      this.observers = new Set();
+      
+      this.init();
+    }
 
-    overlay = document.createElement('div');
-    overlay.className = 'auto-loading-overlay';
-    overlay.id = 'auto-app-loading';
+    /**
+     * 初始化加载系统
+     */
+    init() {
+      this.createUI();
+      this.startStageProgression();
+      this.startAppDetection();
+      this.setupEventListeners();
+    }
 
-    overlay.innerHTML = \`
-      <div class="auto-loader"></div>
-      <div class="auto-loading-progress">
-        <div class="auto-loading-progress-bar" id="auto-progress-bar"></div>
-      </div>
-      <div class="auto-loading-percentage" id="auto-loading-percentage">0%</div>
-      <div class="auto-loading-text" id="auto-loading-text">正在初始化应用...</div>
-    \`;
+    /**
+     * 创建用户界面
+     */
+    createUI() {
+      // 主加载界面
+      const container = document.createElement('div');
+      container.className = 'modern-loading';
+      
+      // 创建内容容器
+      const content = document.createElement('div');
+      content.className = 'loading-content';
+      
+      // 创建视觉元素
+      const visual = document.createElement('div');
+      visual.className = 'loading-visual';
+      
+      const rings = document.createElement('div');
+      rings.className = 'loading-rings';
+      for (let i = 0; i < 3; i++) {
+        const ring = document.createElement('div');
+        ring.className = 'loading-ring';
+        rings.appendChild(ring);
+      }
+      
+      const core = document.createElement('div');
+      core.className = 'loading-core';
+      
+      visual.appendChild(rings);
+      visual.appendChild(core);
+      
+      // 创建信息元素
+      const info = document.createElement('div');
+      info.className = 'loading-info';
+      
+      const stage = document.createElement('div');
+      stage.className = 'loading-stage';
+      stage.textContent = '初始化应用...';
+      info.appendChild(stage);
+      
+      // 创建进度条（如果启用）
+      if (CONFIG.display.showProgress) {
+        const progressContainer = document.createElement('div');
+        progressContainer.className = 'loading-progress-container';
+        
+        const progressBar = document.createElement('div');
+        progressBar.className = 'loading-progress-bar';
+        
+        const progressFill = document.createElement('div');
+        progressFill.className = 'loading-progress-fill';
+        
+        const percentage = document.createElement('div');
+        percentage.className = 'loading-percentage';
+        percentage.textContent = '0%';
+        
+        progressBar.appendChild(progressFill);
+        progressContainer.appendChild(progressBar);
+        progressContainer.appendChild(percentage);
+        info.appendChild(progressContainer);
+      }
+      
+      content.appendChild(visual);
+      content.appendChild(info);
+      container.appendChild(content);
 
-    document.body.appendChild(overlay);
-    isVisible = true;
-    return overlay;
-  }
+      // 退出动画覆盖层
+      const exitOverlay = document.createElement('div');
+      exitOverlay.className = 'loading-exit-overlay';
+      
+      const leftPanel = document.createElement('div');
+      leftPanel.className = 'exit-panel left';
+      
+      const rightPanel = document.createElement('div');
+      rightPanel.className = 'exit-panel right';
+      
+      exitOverlay.appendChild(leftPanel);
+      exitOverlay.appendChild(rightPanel);
 
-  // 更新进度
-  function updateProgress() {
-    progress = Math.round((completedStages / stages.length) * 100);
-    const progressBar = document.getElementById('auto-progress-bar');
-    const percentageEl = document.getElementById('auto-loading-percentage');
-    const textEl = document.getElementById('auto-loading-text');
+      document.body.appendChild(container);
+      document.body.appendChild(exitOverlay);
 
-    if (progressBar) progressBar.style.width = progress + '%';
-    if (percentageEl) percentageEl.textContent = progress + '%';
-    if (textEl) textEl.textContent = currentStage;
-  }
+      // 缓存元素引用
+      this.elements.container = container;
+      this.elements.stage = container.querySelector('.loading-stage');
+      this.elements.progressFill = container.querySelector('.loading-progress-fill');
+      this.elements.percentage = container.querySelector('.loading-percentage');
+      this.elements.exitOverlay = exitOverlay;
 
-  // 自动完成阶段
-  function autoCompleteStage() {
-    if (completedStages < stages.length) {
-      const stage = stages[completedStages];
-      completedStages++;
-      currentStage = stage.text;
-      updateProgress();
+      this.state.isActive = true;
+    }
 
-      // 如果所有阶段都完成，准备隐藏
-      if (completedStages >= stages.length) {
-        currentStage = '加载完成！';
-        updateProgress();
-        scheduleHide();
+    /**
+     * 开始阶段进展
+     */
+    startStageProgression() {
+      const progressStage = () => {
+        if (this.state.currentStage < STAGES.length && !this.state.isAppReady) {
+          const stage = STAGES[this.state.currentStage];
+          
+          // 更新显示
+          if (CONFIG.display.showStages && this.elements.stage) {
+            this.elements.stage.textContent = stage.text;
+          }
+
+          // 计算进度
+          const totalWeight = STAGES.reduce((sum, s) => sum + s.weight, 0);
+          const completedWeight = STAGES.slice(0, this.state.currentStage + 1)
+            .reduce((sum, s) => sum + s.weight, 0);
+          
+          this.updateProgress(Math.min(85, (completedWeight / totalWeight) * 100));
+          
+          this.state.currentStage++;
+          
+          // 调度下一个阶段
+          const delay = 300 + Math.random() * 400; // 300-700ms随机延迟
+          const timer = setTimeout(progressStage, delay);
+          this.timers.add(timer);
+        }
+      };
+
+      // 开始第一个阶段
+      const timer = setTimeout(progressStage, 200);
+      this.timers.add(timer);
+    }
+
+    /**
+     * 更新进度显示
+     */
+    updateProgress(progress) {
+      this.state.progress = Math.min(100, Math.max(0, progress));
+      
+      if (this.elements.progressFill) {
+        this.elements.progressFill.style.width = this.state.progress + '%';
+      }
+      
+      if (this.elements.percentage) {
+        this.elements.percentage.textContent = Math.round(this.state.progress) + '%';
       }
     }
-  }
 
-  // 计划隐藏加载界面
-  function scheduleHide() {
-    if (hideTimer) clearTimeout(hideTimer);
+    /**
+     * 开始应用检测
+     */
+    startAppDetection() {
+      let stableTime = null;
+      let lastCheck = Date.now();
+      
+      const checkAppReady = () => {
+        const now = Date.now();
+        
+        // 防抖检查
+        if (now - lastCheck < CONFIG.detection.debounce) {
+          const timer = setTimeout(checkAppReady, CONFIG.detection.debounce);
+          this.timers.add(timer);
+          return;
+        }
+        
+        lastCheck = now;
+        
+        const appElement = document.getElementById('app');
+        if (!appElement) {
+          const timer = setTimeout(checkAppReady, CONFIG.detection.debounce);
+          this.timers.add(timer);
+          return;
+        }
 
-    // 确保最少显示配置的时间
-    const elapsedTime = Date.now() - startTime;
-    const minDisplayTime = config.minDisplayTime;
-    const remainingTime = Math.max(500, minDisplayTime - elapsedTime);
-
-    hideTimer = setTimeout(() => {
-      hideLoading();
-    }, remainingTime);
-  }
-
-  // 隐藏加载界面
-  function hideLoading() {
-    if (!overlay || !isVisible) return;
-
-    overlay.classList.add('fade-out');
-    isVisible = false;
-
-    setTimeout(() => {
-      if (overlay && overlay.parentNode) {
-        overlay.parentNode.removeChild(overlay);
-        overlay = null;
-      }
-    }, config.fadeOutDuration);
-
-    // 清理定时器
-    if (autoStageTimer) {
-      clearInterval(autoStageTimer);
-      autoStageTimer = null;
-    }
-  }
-
-  // 智能检测Vue应用渲染状态
-  function detectVueApp() {
-    const checkInterval = config.detection.checkInterval;
-    let checkCount = 0;
-    const maxChecks = config.detection.maxChecks;
-    let contentFoundTime = null;
-    const isFirstLoad = !sessionStorage.getItem('app-loaded-before');
-
-    const detector = setInterval(() => {
-      checkCount++;
-
-      // 多层次检测Vue应用渲染状态
-      const appElement = document.getElementById('app');
-
-      if (appElement) {
-        // 1. 检查是否有子元素
-        const hasChildren = appElement.children.length > 0;
-
-        // 2. 检查是否有实际的文本内容或可见元素
-        const hasVisibleContent = (appElement.textContent?.trim().length || 0) > 0 ||
-                                 appElement.querySelectorAll('*').length > 2;
-
-        // 3. 检查是否有导航菜单或主要内容区域
-        const hasNavigation = appElement.querySelector('nav, .n-layout-sider, .layout-sider');
-        const hasMainContent = appElement.querySelector('main, .n-layout-content, .layout-content, .page-container');
-
-        // 4. 检查是否有具体的页面内容（文字、图片、表单等）
-        const hasActualContent = appElement.querySelector('p, h1, h2, h3, h4, h5, h6, img, button, input, .n-button, .content');
-
-        // 5. 检查元素是否真正可见（非display:none或visibility:hidden）
-        const isVisible = window.getComputedStyle(appElement).display !== 'none' &&
-                         window.getComputedStyle(appElement).visibility !== 'hidden';
-
-        // 6. 检查内容区域的实际尺寸
-        const hasReasonableSize = appElement.offsetHeight > 200 && appElement.offsetWidth > 200;
-
-        // 综合判断：应用已挂载且有实际内容
-        const isAppReady = hasChildren && hasVisibleContent && isVisible && hasReasonableSize &&
-                          (hasNavigation || hasMainContent || hasActualContent);
-
-        if (isAppReady) {
-          // 根据首次加载还是刷新调整等待时间
-          const stabilityDelay = isFirstLoad ? config.detection.firstLoadDelay : config.detection.refreshDelay;
-
-          if (!contentFoundTime) {
-            contentFoundTime = Date.now();
-          } else if (Date.now() - contentFoundTime >= stabilityDelay) {
-            // 内容稳定显示后才完成加载
-            currentStage = '页面渲染完成！';
-            updateProgress();
-
-            // 标记已加载过
-            sessionStorage.setItem('app-loaded-before', 'true');
-
-            // 快速完成剩余阶段
-            setTimeout(() => {
-              while (completedStages < stages.length) {
-                autoCompleteStage();
-              }
-            }, 200);
-
-            clearInterval(detector);
+        // 检查应用是否准备就绪
+        const hasContent = appElement.children.length > 0;
+        const hasVisibleContent = appElement.offsetHeight > 100 && appElement.offsetWidth > 100;
+        const hasInteractiveElements = appElement.querySelector('button, input, a, [role="button"]');
+        const hasNavigation = appElement.querySelector('nav, header, .nav, .header');
+        const hasMainContent = appElement.querySelector('main, .main, .content, .page');
+        
+        const isReady = hasContent && hasVisibleContent && (hasInteractiveElements || hasNavigation || hasMainContent);
+        
+        if (isReady) {
+          if (!stableTime) {
+            stableTime = now;
+          } else if (now - stableTime >= CONFIG.detection.minStableTime) {
+            this.onAppReady();
             return;
           }
         } else {
-          // 如果状态变化，重置计时器
-          contentFoundTime = null;
+          stableTime = null;
         }
-      }
-
-      // 超时处理 - 确保加载动画不会无限显示
-      if (checkCount >= maxChecks) {
-        console.warn('Vue app detection timed out, forcing completion');
-        sessionStorage.setItem('app-loaded-before', 'true');
-        while (completedStages < stages.length) {
-          autoCompleteStage();
+        
+        // 继续检测
+        if (!this.state.isAppReady && now - this.state.startTime < CONFIG.detection.timeout) {
+          const timer = setTimeout(checkAppReady, CONFIG.detection.debounce);
+          this.timers.add(timer);
+        } else if (!this.state.isAppReady) {
+          // 超时，强制完成
+          this.onAppReady();
         }
-        clearInterval(detector);
-      }
-    }, checkInterval);
+      };
 
-    // 额外的保险机制：监听Vue的渲染完成事件
-    const checkVueMount = () => {
-      // 检查是否有Vue实例的迹象
-      if (window.Vue || document.querySelector('[data-v-]') ||
-          document.querySelector('.n-config-provider, .naive-ui')) {
-        // 发现Vue组件渲染的迹象，延迟一段时间后完成
-        const vueDelay = isFirstLoad ? config.detection.firstLoadDelay * 2 : config.detection.refreshDelay * 2.5;
-        setTimeout(() => {
-          if (isVisible) {
-            while (completedStages < stages.length) {
-              autoCompleteStage();
-            }
+      // 使用MutationObserver监听DOM变化
+      if (window.MutationObserver) {
+        const observer = new MutationObserver(() => {
+          if (!this.state.isAppReady) {
+            checkAppReady();
           }
-        }, vueDelay);
+        });
+        
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['class', 'style']
+        });
+        
+        this.observers.add(observer);
       }
-    };
 
-    // 延迟检查Vue挂载
-    const mountCheckDelay = config.detection.vueCheckDelay;
-    setTimeout(checkVueMount, mountCheckDelay);
-  }
+      // 开始检测
+      const timer = setTimeout(checkAppReady, 1000);
+      this.timers.add(timer);
+    }
 
-  // 初始化
-  function init() {
-    // 立即显示加载界面
-    createLoadingOverlay();
-
-    // 开始自动进度
-    autoCompleteStage(); // DOM ready
-
-    // 定时自动完成前几个阶段
-    let stageIndex = 1;
-    autoStageTimer = setInterval(() => {
-      if (stageIndex < config.progress.autoStageCount && completedStages < config.progress.autoStageCount) {
-        autoCompleteStage();
-        stageIndex++;
+    /**
+     * 应用准备就绪回调
+     */
+    onAppReady() {
+      if (this.state.isAppReady) return;
+      
+      this.state.isAppReady = true;
+      
+      // 更新显示
+      if (this.elements.stage) {
+        this.elements.stage.textContent = '加载完成！';
       }
-    }, config.progress.stageInterval);
+      
+      this.updateProgress(100);
+      
+      // 确保最小显示时间
+      const elapsedTime = Date.now() - this.state.startTime;
+      const remainingTime = Math.max(0, CONFIG.display.minShowTime - elapsedTime);
+      
+      const timer = setTimeout(() => {
+        this.startExitAnimation();
+      }, remainingTime);
+      
+      this.timers.add(timer);
+    }
 
-    // 启动Vue应用检测
-    setTimeout(() => {
-      detectVueApp();
-    }, 2000);
-
-    // 监听window.load事件作为最终保险
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        while (completedStages < stages.length) {
-          autoCompleteStage();
+    /**
+     * 开始退出动画
+     */
+    startExitAnimation() {
+      if (this.state.isExiting) return;
+      
+      this.state.isExiting = true;
+      
+      // 显示退出提示
+      if (this.elements.stage) {
+        this.elements.stage.textContent = '正在进入应用...';
+      }
+      
+      // 激活退出覆盖层
+      if (this.elements.exitOverlay) {
+        this.elements.exitOverlay.classList.add('active');
+        
+        const timer1 = setTimeout(() => {
+          this.elements.exitOverlay.classList.add('opening');
+          
+          const timer2 = setTimeout(() => {
+            this.cleanup();
+          }, CONFIG.animation.exitDuration);
+          
+          this.timers.add(timer2);
+        }, 100);
+        
+        this.timers.add(timer1);
+      } else {
+        // 降级方案
+        if (this.elements.container) {
+          this.elements.container.classList.add('hidden');
+          
+          const timer = setTimeout(() => {
+            this.cleanup();
+          }, CONFIG.animation.exitDuration);
+          
+          this.timers.add(timer);
         }
-      }, 500);
-    });
+      }
+    }
+
+    /**
+     * 设置事件监听器
+     */
+    setupEventListeners() {
+      // 页面加载完成保险
+      const onLoad = () => {
+        const timer = setTimeout(() => {
+          if (!this.state.isAppReady) {
+            this.onAppReady();
+          }
+        }, 1000);
+        this.timers.add(timer);
+      };
+      
+      if (document.readyState === 'complete') {
+        onLoad();
+      } else {
+        window.addEventListener('load', onLoad, { once: true });
+      }
+      
+      // 页面可见性变化
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && !this.state.isAppReady) {
+          const timer = setTimeout(() => {
+            if (!this.state.isAppReady) {
+              this.onAppReady();
+            }
+          }, 500);
+          this.timers.add(timer);
+        }
+      });
+    }
+
+    /**
+     * 清理资源
+     */
+    cleanup() {
+      // 清理定时器
+      this.timers.forEach(timer => clearTimeout(timer));
+      this.timers.clear();
+      
+      // 清理观察者
+      this.observers.forEach(observer => observer.disconnect());
+      this.observers.clear();
+      
+      // 移除DOM元素
+      if (this.elements.container && this.elements.container.parentNode) {
+        this.elements.container.parentNode.removeChild(this.elements.container);
+      }
+      
+      if (this.elements.exitOverlay && this.elements.exitOverlay.parentNode) {
+        this.elements.exitOverlay.parentNode.removeChild(this.elements.exitOverlay);
+      }
+      
+      // 清理引用
+      this.elements = {};
+      this.state.isActive = false;
+    }
+
+    /**
+     * 手动隐藏加载界面
+     */
+    hide() {
+      if (!this.state.isExiting) {
+        this.onAppReady();
+      }
+    }
+
+    /**
+     * 获取当前状态
+     */
+    getState() {
+      return { ...this.state };
+    }
   }
 
-  // DOM准备就绪时开始
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-
-  // 暴露最小化的全局API（可选）
-  window.AutoLoading = {
-    hide: hideLoading,
-    isVisible: () => isVisible
+  // 初始化加载管理器
+  let loadingManager = null;
+  
+  const initLoading = () => {
+    if (!loadingManager) {
+      loadingManager = new ModernLoadingManager();
+      
+      // 暴露全局API
+      window.ModernLoading = {
+        hide: () => loadingManager?.hide(),
+        getState: () => loadingManager?.getState() || {},
+        isActive: () => loadingManager?.state.isActive || false
+      };
+    }
   };
+  
+  // 启动
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLoading);
+  } else {
+    initLoading();
+  }
 })();
-</script>`
+</script>
+`
 
-      return html.replace('<head>', `<head>${loadingHtml}`)
+      return html.replace('<head>', '<head>' + loadingSystem)
     },
   }
 }
