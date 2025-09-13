@@ -12,7 +12,6 @@ import { setupVuePlugin } from './vue'
 import { setupVueDevToolsPlugin } from './vueDevTools'
 import { setupVueJsxPlugin } from './vueJsx'
 import { setupVueRouterPlugin } from './vueRouter'
-import type { Env } from '@/typings/vite-env'
 import path from 'path'
 import type { PluginOption } from 'vite'
 

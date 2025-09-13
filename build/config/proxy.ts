@@ -1,4 +1,3 @@
-import type { Env } from '@/typings/vite-env'
 import { consola } from 'consola'
 import { bgRed, bgYellow, green, lightBlue } from 'kolorist'
 import type { ProxyOptions } from 'vite'

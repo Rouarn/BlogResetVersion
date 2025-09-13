@@ -1,6 +1,5 @@
 import { createViteProxy, getBuildTime } from './build/config'
 import { setupVitePlugins } from './build/plugins'
-import type { Env } from '@/typings/vite-env'
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig, loadEnv } from 'vite'
 

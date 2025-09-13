@@ -1,6 +1,3 @@
-import type { ImportGlobFunction } from 'vite'
-import type { VitePluginVueDevToolsOptions } from 'vite-plugin-vue-devtools'
-
 /**
  * Namespace Env
  *
@@ -23,10 +20,16 @@ declare namespace Env {
     readonly VITE_OPEN: CommonType.YesOrNo
     /** Whether to use https */
     readonly VITE_PROXY: string
+    /** Whether to enable the http proxy */
+    readonly VITE_HTTP_PROXY: CommonType.YesOrNo
+    /** Whether to enable the proxy log */
+    readonly VITE_PROXY_LOG: CommonType.YesOrNo
+    /** Whether to drop the console */
+    readonly VITE_DROP_CONSOLE: CommonType.YesOrNo
     /** The mode of the application */
     readonly VITE_ROUTER_MODE: RouterHistoryMode
     /** Whether to enable the Vue DevTools */
-    readonly VITE_DEVTOOLS_LAUNCH_EDITOR: VitePluginVueDevToolsOptions['launchEditor']
+    readonly VITE_DEVTOOLS_LAUNCH_EDITOR: import('vite-plugin-vue-devtools').VitePluginVueDevToolsOptions['launchEditor']
     /** Whether to automatically detect updates */
     readonly VITE_AUTOMATICALLY_DETECT_UPDATE: CommonType.YesOrNo
     /** The prefix of the iconify icon */
@@ -57,5 +60,5 @@ declare namespace Env {
 
 interface ImportMeta {
   readonly env: Env.ImportMeta
-  glob: ImportGlobFunction
+  glob: import('vite').ImportGlobFunction
 }
