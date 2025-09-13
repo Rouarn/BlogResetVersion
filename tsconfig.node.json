@@ -1,25 +1,13 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "target": "ESNext",
     "jsx": "preserve",
     "jsxImportSource": "vue",
     "lib": ["DOM", "ESNext"],
-    "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "paths": {
-      "@/*": ["./src/*"],
-      "~/*": ["./*"]
-    },
     "resolveJsonModule": true,
-    "types": [
-      "vite/client",
-      "node",
-      "naive-ui/volar",
-      "unplugin-vue-router/client",
-      "vite-plugin-vue-layouts-next/client",
-      "vite-plugin-pwa/client"
-    ],
     "strict": true,
     "strictNullChecks": true,
     "noUnusedLocals": false,

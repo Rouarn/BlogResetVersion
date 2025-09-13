@@ -7,7 +7,7 @@ import type { GlobalThemeOverrides } from 'naive-ui'
 
 /** Init theme settings */
 export function initThemeSettings() {
-  const isProd = import.meta.env.PROD
+  const isProd = import.meta.env.VITE_USER_NODE_ENV === 'production'
 
   //如果是开发模式，主题设置将不会被缓存，通过更新‘ src/theme/settings ’中的‘ themessettings ’。这是更新主题设置
   if (!isProd) return themeSettings
@@ -175,7 +175,7 @@ function getCssVarByTokens(tokens: App.Theme.BaseToken) {
   for (const [key, tokenValues] of Object.entries(themeVars)) {
     for (const [tokenKey, tokenValue] of Object.entries(tokenValues)) {
       let cssVarsKey = removeVarPrefix(tokenValue)
-      let cssValue = tokens[key][tokenKey]
+      let cssValue = tokens[key]?.[tokenKey] ?? ''
 
       if (key === 'colors') {
         cssVarsKey = removeRgbPrefix(cssVarsKey)

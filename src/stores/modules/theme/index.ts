@@ -60,7 +60,7 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
 
     const nextThemeScheme = themeSchemes[nextIndex]
 
-    setThemeScheme(nextThemeScheme)
+    setThemeScheme(nextThemeScheme ?? 'light')
   }
 
   /**

@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "~/*": ["./*"]
+    },
+    "types": [
+      "vite/client",
+      "node",
+      "naive-ui/volar",
+      "unplugin-vue-router/client",
+      "vite-plugin-vue-layouts-next/client",
+      "vite-plugin-pwa/client"
+    ]
+  }
+}

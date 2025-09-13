@@ -28,6 +28,10 @@ declare namespace Env {
     readonly VITE_DROP_CONSOLE: CommonType.YesOrNo
     /** The mode of the application */
     readonly VITE_ROUTER_MODE: RouterHistoryMode
+    /** The prefix of the storage key */
+    readonly VITE_STORAGE_PREFIX: string
+    /** The node environment */
+    readonly VITE_USER_NODE_ENV: 'development' | 'production'
     /** Whether to enable the Vue DevTools */
     readonly VITE_DEVTOOLS_LAUNCH_EDITOR: import('vite-plugin-vue-devtools').VitePluginVueDevToolsOptions['launchEditor']
     /** Whether to automatically detect updates */
