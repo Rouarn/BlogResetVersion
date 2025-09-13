@@ -29,7 +29,7 @@ function extractFolderFromPath(routePath: string): string {
  */
 function getFolderDisplayConfig(folder: string): RouteMeta {
   return (
-    FOLDER_DISPLAY_CONFIG[folder] || {
+    (FOLDER_DISPLAY_CONFIG as Record<string, RouteMeta>)[folder] || {
       title: folder.charAt(0).toUpperCase() + folder.slice(1),
       icon: DEFAULT_CONFIG.defaultIcon,
       order: DEFAULT_CONFIG.defaultOrder,
@@ -113,7 +113,7 @@ function groupRoutesByFolder(routes: RouteRecordRaw[]): Record<string, RouteReco
     if (!folderGroups[folder]) {
       folderGroups[folder] = []
     }
-    folderGroups[folder].push(route)
+    folderGroups[folder]?.push(route)
   })
 
   return folderGroups
