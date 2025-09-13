@@ -1,11 +1,39 @@
 /**
  * Vite 插件：完全自动化的加载动画插件
- * 零入侵，自动检测应用状态并管理加载动画
+ *
+ * 特性：
+ * - 🚀 零入侵：无需修改业务代码，自动检测应用状态
+ * - 🎯 智能检测：多层次检测Vue应用渲染完成状态
+ * - 🎨 高度可配置：支持主题、进度、检测参数等全面配置
+ * - 📱 响应式设计：自适应桌面端和移动端显示
+ *
+ * 使用方法：
+ * ```typescript
+ * import { setupLoadingPlugin } from './build/plugins/loading'
+ *
+ * export default defineConfig({
+ *   plugins: [
+ *     setupLoadingPlugin({
+ *       enabled: true,
+ *       theme: { primary: '#4bc0c8' },
+ *       minDisplayTime: 1500
+ *     })
+ *   ]
+ * })
+ * ```
+ *
+ * @author Rouarn
+ * @version 1.0.0
  */
 
 import type { PluginOption } from 'vite'
 
-// 简化的配置类型
+/**
+ * 加载动画插件配置接口
+ *
+ * @interface LoadingConfig
+ * @description 提供完整的加载动画自定义配置选项
+ */
 interface LoadingConfig {
   /** 是否启用加载动画 */
   enabled?: boolean
@@ -13,9 +41,143 @@ interface LoadingConfig {
   minDisplayTime?: number
   /** 淡出动画时间（毫秒） */
   fadeOutDuration?: number
+  /** 主题颜色配置 */
+  theme?: {
+    /** 主色调 */
+    primary?: string
+    /** 次要色调 */
+    secondary?: string
+    /** 第三色调 */
+    tertiary?: string
+    /** 背景色 */
+    background?: string
+    /** 文字颜色 */
+    textColor?: string
+  }
+  /** 检测配置 */
+  detection?: {
+    /** 检测间隔（毫秒） */
+    checkInterval?: number
+    /** 最大检测次数 */
+    maxChecks?: number
+    /** 首次加载稳定延迟（毫秒） */
+    firstLoadDelay?: number
+    /** 刷新加载稳定延迟（毫秒） */
+    refreshDelay?: number
+    /** Vue挂载检查延迟（毫秒） */
+    vueCheckDelay?: number
+  }
+  /** 进度配置 */
+  progress?: {
+    /** 自动阶段间隔（毫秒） */
+    stageInterval?: number
+    /** 自动完成的阶段数量 */
+    autoStageCount?: number
+    /** 自定义加载阶段 */
+    customStages?: Array<{ name: string; text: string }>
+  }
+  /** 响应式配置 */
+  responsive?: {
+    /** 移动端加载器尺寸 */
+    mobileSize?: number
+    /** 桌面端加载器尺寸 */
+    desktopSize?: number
+  }
 }
 
-export function setupLoadingPlugin(_config: LoadingConfig = {}): PluginOption {
+/**
+ * 创建并配置加载动画插件
+ *
+ * @param {LoadingConfig} config - 加载动画配置选项
+ * @param {boolean} [config.enabled=true] - 是否启用加载动画
+ * @param {number} [config.minDisplayTime=1500] - 最小显示时间（毫秒）
+ * @param {number} [config.fadeOutDuration=300] - 淡出动画时间（毫秒）
+ * @param {object} [config.theme] - 主题颜色配置
+ * @param {object} [config.detection] - 检测配置
+ * @param {object} [config.progress] - 进度配置
+ * @param {object} [config.responsive] - 响应式配置
+ *
+ * @returns {PluginOption} Vite插件选项
+ *
+ * @example
+ * ```typescript
+ * // 基础使用
+ * setupLoadingPlugin()
+ *
+ * // 自定义配置
+ * setupLoadingPlugin({
+ *   enabled: true,
+ *   minDisplayTime: 2000,
+ *   theme: {
+ *     primary: '#ff6b6b',
+ *     secondary: '#4ecdc4',
+ *     background: 'linear-gradient(45deg, #667eea 0%, #764ba2 100%)'
+ *   },
+ *   detection: {
+ *     checkInterval: 50,
+ *     maxChecks: 200
+ *   }
+ * })
+ * ```
+ *
+ * @since 1.0.0
+ * @author Rouarn
+ */
+export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
+  // 合并默认配置
+  const defaultConfig: Required<LoadingConfig> = {
+    enabled: true,
+    minDisplayTime: 1500,
+    fadeOutDuration: 300,
+    theme: {
+      primary: '#4bc0c8',
+      secondary: '#c779d0',
+      tertiary: '#feac5e',
+      background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.8) 100%)',
+      textColor: '#ffffff',
+    },
+    detection: {
+      checkInterval: 100,
+      maxChecks: 120,
+      firstLoadDelay: 500,
+      refreshDelay: 200,
+      vueCheckDelay: 2000,
+    },
+    progress: {
+      stageInterval: 400,
+      autoStageCount: 6,
+      customStages: [
+        { name: 'dom-ready', text: '正在加载DOM...' },
+        { name: 'scripts', text: '正在加载脚本...' },
+        { name: 'styles', text: '正在加载样式...' },
+        { name: 'vue-app', text: '正在初始化Vue应用...' },
+        { name: 'router', text: '正在初始化路由...' },
+        { name: 'store', text: '正在初始化状态管理...' },
+        { name: 'plugins', text: '正在加载插件...' },
+        { name: 'mount', text: '正在挂载应用...' },
+        { name: 'render', text: '正在渲染页面...' },
+      ],
+    },
+    responsive: {
+      mobileSize: 120,
+      desktopSize: 180,
+    },
+  }
+
+  const finalConfig = {
+    ...defaultConfig,
+    ...config,
+    theme: { ...defaultConfig.theme, ...config.theme },
+    detection: { ...defaultConfig.detection, ...config.detection },
+    progress: { ...defaultConfig.progress, ...config.progress },
+    responsive: { ...defaultConfig.responsive, ...config.responsive },
+  }
+
+  // 如果禁用，返回空插件
+  if (!finalConfig.enabled) {
+    return { name: 'auto-loading-plugin-disabled' }
+  }
+
   return {
     name: 'auto-loading-plugin',
     transformIndexHtml(html: string) {
@@ -29,7 +191,7 @@ export function setupLoadingPlugin(_config: LoadingConfig = {}): PluginOption {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.8) 100%);
+  background: ${finalConfig.theme.background};
   backdrop-filter: blur(4px);
   display: flex;
   flex-direction: column;
@@ -37,7 +199,7 @@ export function setupLoadingPlugin(_config: LoadingConfig = {}): PluginOption {
   align-items: center;
   z-index: 9999;
   opacity: 1;
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity ${finalConfig.fadeOutDuration}ms ease-in-out;
 }
 
 .auto-loading-overlay.fade-out {
@@ -45,14 +207,14 @@ export function setupLoadingPlugin(_config: LoadingConfig = {}): PluginOption {
 }
 
 .auto-loader {
-  width: 180px;
-  height: 180px;
+  width: ${finalConfig.responsive.desktopSize}px;
+  height: ${finalConfig.responsive.desktopSize}px;
   position: relative;
   border-radius: 50%;
   border: 3px solid transparent;
-  border-top-color: #4bc0c8;
+  border-top-color: ${finalConfig.theme.primary};
   animation: auto-spin 2s linear infinite;
-  box-shadow: 0 0 30px rgba(75, 192, 200, 0.3);
+  box-shadow: 0 0 30px ${finalConfig.theme.primary}4D;
 }
 
 .auto-loader::before {
@@ -64,9 +226,9 @@ export function setupLoadingPlugin(_config: LoadingConfig = {}): PluginOption {
   bottom: 6px;
   border-radius: 50%;
   border: 3px solid transparent;
-  border-top-color: #c779d0;
+  border-top-color: ${finalConfig.theme.secondary};
   animation: auto-spin 3s linear infinite;
-  box-shadow: 0 0 20px rgba(199, 121, 208, 0.3);
+  box-shadow: 0 0 20px ${finalConfig.theme.secondary}4D;
 }
 
 .auto-loader::after {
@@ -78,9 +240,9 @@ export function setupLoadingPlugin(_config: LoadingConfig = {}): PluginOption {
   bottom: 16px;
   border-radius: 50%;
   border: 3px solid transparent;
-  border-top-color: #feac5e;
+  border-top-color: ${finalConfig.theme.tertiary};
   animation: auto-spin 1.5s linear infinite;
-  box-shadow: 0 0 15px rgba(254, 172, 94, 0.3);
+  box-shadow: 0 0 15px ${finalConfig.theme.tertiary}4D;
 }
 
 .auto-loading-progress {
@@ -96,16 +258,16 @@ export function setupLoadingPlugin(_config: LoadingConfig = {}): PluginOption {
 .auto-loading-progress-bar {
   width: 0%;
   height: 100%;
-  background-color: #4bc0c8;
+  background-color: ${finalConfig.theme.primary};
   border-radius: 2px;
   transition: width 0.3s ease-out;
-  box-shadow: 0 0 10px rgba(75, 192, 200, 0.6);
+  box-shadow: 0 0 10px ${finalConfig.theme.primary}99;
 }
 
 .auto-loading-percentage {
   position: absolute;
   bottom: 110px;
-  color: #4bc0c8;
+  color: ${finalConfig.theme.primary};
   font-size: 14px;
   font-weight: 600;
 }
@@ -113,7 +275,7 @@ export function setupLoadingPlugin(_config: LoadingConfig = {}): PluginOption {
 .auto-loading-text {
   position: absolute;
   bottom: 80px;
-  color: #fff;
+  color: ${finalConfig.theme.textColor};
   font-size: 16px;
   font-weight: 500;
   letter-spacing: 1px;
@@ -132,7 +294,7 @@ export function setupLoadingPlugin(_config: LoadingConfig = {}): PluginOption {
 }
 
 @media (max-width: 768px) {
-  .auto-loader { width: 120px; height: 120px; }
+  .auto-loader { width: ${finalConfig.responsive.mobileSize}px; height: ${finalConfig.responsive.mobileSize}px; }
   .auto-loader::before { left: 8px; top: 8px; right: 8px; bottom: 8px; }
   .auto-loader::after { left: 18px; top: 18px; right: 18px; bottom: 18px; }
   .auto-loading-text { font-size: 14px; bottom: 60px; }
@@ -144,23 +306,16 @@ export function setupLoadingPlugin(_config: LoadingConfig = {}): PluginOption {
 (function() {
   'use strict';
 
+  // 注入的配置
+  const config = ${JSON.stringify(finalConfig)};
+
   let startTime = Date.now();
   let progress = 0;
   let currentStage = '正在初始化应用...';
   let overlay = null;
   let isVisible = false;
 
-  const stages = [
-    { name: 'dom-ready', text: '正在加载DOM...' },
-    { name: 'scripts', text: '正在加载脚本...' },
-    { name: 'styles', text: '正在加载样式...' },
-    { name: 'vue-app', text: '正在初始化Vue应用...' },
-    { name: 'router', text: '正在初始化路由...' },
-    { name: 'store', text: '正在初始化状态管理...' },
-    { name: 'plugins', text: '正在加载插件...' },
-    { name: 'mount', text: '正在挂载应用...' },
-    { name: 'render', text: '正在渲染页面...' }
-  ];
+  const stages = config.progress.customStages;
 
   let completedStages = 0;
   let autoStageTimer = null;
@@ -221,9 +376,9 @@ export function setupLoadingPlugin(_config: LoadingConfig = {}): PluginOption {
   function scheduleHide() {
     if (hideTimer) clearTimeout(hideTimer);
 
-    // 确保最少显示1.5秒
+    // 确保最少显示配置的时间
     const elapsedTime = Date.now() - startTime;
-    const minDisplayTime = 1500;
+    const minDisplayTime = config.minDisplayTime;
     const remainingTime = Math.max(500, minDisplayTime - elapsedTime);
 
     hideTimer = setTimeout(() => {
@@ -243,7 +398,7 @@ export function setupLoadingPlugin(_config: LoadingConfig = {}): PluginOption {
         overlay.parentNode.removeChild(overlay);
         overlay = null;
       }
-    }, 300);
+    }, config.fadeOutDuration);
 
     // 清理定时器
     if (autoStageTimer) {
@@ -254,9 +409,9 @@ export function setupLoadingPlugin(_config: LoadingConfig = {}): PluginOption {
 
   // 智能检测Vue应用渲染状态
   function detectVueApp() {
-    const checkInterval = 100;
+    const checkInterval = config.detection.checkInterval;
     let checkCount = 0;
-    const maxChecks = 120; // 最多检查12秒
+    const maxChecks = config.detection.maxChecks;
     let contentFoundTime = null;
     const isFirstLoad = !sessionStorage.getItem('app-loaded-before');
 
@@ -271,7 +426,7 @@ export function setupLoadingPlugin(_config: LoadingConfig = {}): PluginOption {
         const hasChildren = appElement.children.length > 0;
 
         // 2. 检查是否有实际的文本内容或可见元素
-        const hasVisibleContent = appElement.textContent.trim().length > 0 ||
+        const hasVisibleContent = (appElement.textContent?.trim().length || 0) > 0 ||
                                  appElement.querySelectorAll('*').length > 2;
 
         // 3. 检查是否有导航菜单或主要内容区域
@@ -294,7 +449,7 @@ export function setupLoadingPlugin(_config: LoadingConfig = {}): PluginOption {
 
         if (isAppReady) {
           // 根据首次加载还是刷新调整等待时间
-          const stabilityDelay = isFirstLoad ? 500 : 200; // 首次加载等待更久
+          const stabilityDelay = isFirstLoad ? config.detection.firstLoadDelay : config.detection.refreshDelay;
 
           if (!contentFoundTime) {
             contentFoundTime = Date.now();
@@ -339,7 +494,7 @@ export function setupLoadingPlugin(_config: LoadingConfig = {}): PluginOption {
       if (window.Vue || document.querySelector('[data-v-]') ||
           document.querySelector('.n-config-provider, .naive-ui')) {
         // 发现Vue组件渲染的迹象，延迟一段时间后完成
-        const vueDelay = isFirstLoad ? 1000 : 500;
+        const vueDelay = isFirstLoad ? config.detection.firstLoadDelay * 2 : config.detection.refreshDelay * 2.5;
         setTimeout(() => {
           if (isVisible) {
             while (completedStages < stages.length) {
@@ -351,7 +506,7 @@ export function setupLoadingPlugin(_config: LoadingConfig = {}): PluginOption {
     };
 
     // 延迟检查Vue挂载
-    const mountCheckDelay = isFirstLoad ? 4000 : 2000;
+    const mountCheckDelay = config.detection.vueCheckDelay;
     setTimeout(checkVueMount, mountCheckDelay);
   }
 
@@ -366,11 +521,11 @@ export function setupLoadingPlugin(_config: LoadingConfig = {}): PluginOption {
     // 定时自动完成前几个阶段
     let stageIndex = 1;
     autoStageTimer = setInterval(() => {
-      if (stageIndex < 6 && completedStages < 6) { // 前6个阶段自动完成
+      if (stageIndex < config.progress.autoStageCount && completedStages < config.progress.autoStageCount) {
         autoCompleteStage();
         stageIndex++;
       }
-    }, 400);
+    }, config.progress.stageInterval);
 
     // 启动Vue应用检测
     setTimeout(() => {

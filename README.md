@@ -22,6 +22,7 @@
 ### 🎨 完整功能支持
 
 - **主题系统**：亮色/暗色/跟随系统，动态主题色
+- **加载动画**：智能加载动画，自动检测应用状态，零入侵集成
 - **国际化**：Vue I18n 支持，动态语言切换
 - **自定义指令**：复制、拖拽、水印、防抖等实用指令
 - **HTTP 请求**：智能重试、请求取消、类型安全封装
@@ -176,6 +177,70 @@ src/views/
 │   └── drag-direct/
 └── _builtin/       # 自动排除：内置页面
 ```
+
+## 🎨 加载动画配置
+
+### 智能加载动画插件
+
+本模板集成了完全自动化的加载动画插件，具有以下特性：
+
+- **零入侵**：无需修改业务代码，自动检测应用状态
+- **智能检测**：多层次检测Vue应用渲染完成状态
+- **高度可配置**：支持主题、进度、检测参数等全面配置
+- **响应式设计**：自适应桌面端和移动端显示
+
+### 配置选项
+
+在 `vite.config.ts` 中可以自定义加载动画：
+
+```typescript
+import { setupLoadingPlugin } from './build/plugins/loading'
+
+export default defineConfig({
+  plugins: [
+    // 其他插件...
+    setupLoadingPlugin({
+      enabled: true, // 是否启用
+      minDisplayTime: 1500, // 最小显示时间（毫秒）
+      theme: {
+        primary: '#4bc0c8', // 主色调
+        secondary: '#c779d0', // 次要色调
+        background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.8) 100%)',
+        textColor: '#ffffff',
+      },
+      detection: {
+        checkInterval: 100, // 检测间隔
+        maxChecks: 120, // 最大检测次数
+        firstLoadDelay: 500, // 首次加载延迟
+        refreshDelay: 200, // 刷新加载延迟
+      },
+      progress: {
+        stageInterval: 400, // 阶段间隔
+        autoStageCount: 6, // 自动完成阶段数
+        customStages: [
+          { name: 'dom-ready', text: '正在加载DOM...' },
+          { name: 'vue-app', text: '正在初始化Vue应用...' },
+          // 更多自定义阶段...
+        ],
+      },
+      responsive: {
+        mobileSize: 120, // 移动端尺寸
+        desktopSize: 180, // 桌面端尺寸
+      },
+    }),
+  ],
+})
+```
+
+### 主要配置项说明
+
+| 配置项                    | 类型    | 默认值    | 说明                 |
+| ------------------------- | ------- | --------- | -------------------- |
+| `enabled`                 | boolean | `true`    | 是否启用加载动画     |
+| `minDisplayTime`          | number  | `1500`    | 最小显示时间（毫秒） |
+| `theme.primary`           | string  | `#4bc0c8` | 主色调               |
+| `detection.checkInterval` | number  | `100`     | 检测间隔（毫秒）     |
+| `progress.customStages`   | array   | 预设阶段  | 自定义加载阶段       |
 
 ## 📚 学习资源
 
