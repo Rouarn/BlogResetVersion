@@ -25,6 +25,7 @@ export function setupVitePlugins(viteEnv: Env.ImportMeta, buildTime: string): Pl
   const collectionName = VITE_ICON_LOCAL_PREFIX.replace(`${VITE_ICON_PREFIX}-`, '')
 
   const plugins: PluginOption[] = [
+    setupLoadingPlugin(),
     setupVueRouterPlugin(),
     setupVuePlugin(),
     setupVueJsxPlugin(),
@@ -37,7 +38,6 @@ export function setupVitePlugins(viteEnv: Env.ImportMeta, buildTime: string): Pl
     setupHtmlPlugin(buildTime),
     setupIconsPlugin(localIconPath, collectionName),
     setupSvgIconsPlugin(localIconPath, VITE_ICON_LOCAL_PREFIX),
-    setupLoadingPlugin(),
     setupPWAPlugin(),
   ]
 

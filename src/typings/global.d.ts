@@ -13,7 +13,7 @@ declare global {
     /** Notification instance */
     $notification?: import('naive-ui').NotificationProviderInst
     /** Modern loading instance */
-    $loading?: import('@/build/plugins/loading').ModernLoadingAPI
+    $loading?: import('@/plugins/loading').LoadingAPI
   }
 
   /** Build time of the project */

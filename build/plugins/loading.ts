@@ -71,16 +71,21 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
     visibility: visible;
     transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
   }
 
   .loading-overlay::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.1) 0%, transparent 60%),
-                radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.08) 0%, transparent 60%),
-                radial-gradient(circle at center, rgba(6, 182, 212, 0.05) 0%, transparent 80%);
-    animation: pulseBackground 6s ease-in-out infinite;
+    background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at center, rgba(6, 182, 212, 0.04) 0%, transparent 70%);
+    animation: pulseBackground 8s linear infinite;
+    will-change: opacity, transform;
+    transform: translateZ(0);
   }
 
   .loading-overlay.door-opening {
@@ -130,22 +135,28 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
     animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     z-index: 5;
+    will-change: transform;
+    transform: translateZ(0);
   }
 
   .loading-container::before {
     content: '';
     position: absolute;
     inset: -60px;
-    background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, rgba(139, 92, 246, 0.06) 40%, rgba(6, 182, 212, 0.04) 70%, transparent 100%);
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, rgba(139, 92, 246, 0.04) 40%, rgba(6, 182, 212, 0.03) 70%, transparent 100%);
     border-radius: 50%;
-    animation: breathe 5s ease-in-out infinite;
+    animation: breathe 6s linear infinite;
+    will-change: transform, opacity;
+    transform: translateZ(0);
   }
 
   .loading-spinner {
     position: relative;
     width: 100px;
     height: 100px;
-    animation: float 4s ease-in-out infinite;
+    animation: float 4s linear infinite;
+    will-change: transform;
+    transform: translateZ(0);
   }
 
   .spinner-ring {
@@ -154,69 +165,72 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
     border: 4px solid transparent;
     border-radius: 50%;
     animation: spin 2s linear infinite;
-    filter: drop-shadow(0 0 10px currentColor);
+    will-change: transform;
+    transform: translateZ(0);
   }
 
   .spinner-ring:nth-child(1) {
     border-top-color: ${finalConfig.primaryColor};
     border-right-color: ${finalConfig.primaryColor};
-    animation-duration: 2s;
-    opacity: 0.9;
-    border-width: 3px;
-    filter: drop-shadow(0 0 8px ${finalConfig.primaryColor}40);
+    animation-duration: 1.5s;
+    opacity: 0.8;
+    border-width: 2px;
+    box-shadow: 0 0 6px ${finalConfig.primaryColor}30;
   }
 
   .spinner-ring:nth-child(2) {
     border-bottom-color: #8b5cf6;
     border-left-color: #8b5cf6;
-    animation-duration: 2.8s;
+    animation-duration: 2s;
     animation-direction: reverse;
-    inset: 10px;
-    opacity: 0.7;
+    inset: 8px;
+    opacity: 0.6;
     border-width: 2px;
-    filter: drop-shadow(0 0 6px #8b5cf640);
+    box-shadow: 0 0 4px #8b5cf630;
   }
 
   .spinner-ring:nth-child(3) {
     border-top-color: #06b6d4;
     border-bottom-color: #06b6d4;
-    animation-duration: 3.5s;
-    inset: 20px;
-    opacity: 0.5;
-    border-width: 2px;
-    filter: drop-shadow(0 0 4px #06b6d440);
+    animation-duration: 2.5s;
+    inset: 16px;
+    opacity: 0.4;
+    border-width: 1px;
+    box-shadow: 0 0 3px #06b6d430;
   }
 
   .spinner-ring:nth-child(4) {
     border-right-color: #10b981;
     border-left-color: #10b981;
-    animation-duration: 4s;
+    animation-duration: 3s;
     animation-direction: reverse;
-    inset: 30px;
+    inset: 24px;
     opacity: 0.3;
     border-width: 1px;
-    filter: drop-shadow(0 0 3px #10b98140);
+    box-shadow: 0 0 2px #10b98130;
   }
 
   .loading-core {
     position: absolute;
-    inset: 40px;
-    background: radial-gradient(circle, ${finalConfig.primaryColor}30, #8b5cf630, transparent 80%);
+    inset: 32px;
+    background: radial-gradient(circle, ${finalConfig.primaryColor}20, #8b5cf620, transparent 80%);
     border-radius: 50%;
-    animation: pulse 3s ease-in-out infinite;
-    filter: blur(0.5px);
+    animation: pulse 2s linear infinite;
+    will-change: transform, opacity;
+    transform: translateZ(0);
   }
 
   .loading-text {
     color: #e2e8f0;
     font-size: 1.1rem;
     font-weight: 500;
-    opacity: 0.9;
+    opacity: 0.85;
     text-align: center;
-    transition: all 0.4s ease;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.3s ease;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     letter-spacing: 0.3px;
-    animation: textFade 3s ease-in-out infinite alternate;
+    animation: textFade 2s linear infinite alternate;
+    will-change: opacity;
   }
 
   .loading-progress {
@@ -232,14 +246,15 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
   .progress-bar {
     height: 100%;
     background: linear-gradient(90deg, ${finalConfig.primaryColor}, #8b5cf6, #06b6d4, #10b981);
-    background-size: 300% 100%;
+    background-size: 200% 100%;
     border-radius: 2px;
     width: 0%;
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.2s ease-out;
     position: relative;
-    animation: gradientFlow 3s ease-in-out infinite;
-    filter: drop-shadow(0 1px 3px rgba(59, 130, 246, 0.3));
-    box-shadow: 0 0 8px rgba(59, 130, 246, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    animation: gradientFlow 2s linear infinite;
+    box-shadow: 0 0 6px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    will-change: width;
+    transform: translateZ(0);
   }
 
   .progress-bar::after {
@@ -281,60 +296,76 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
   }
 
   @keyframes float {
-    0%, 100% {
-      transform: translateY(0) rotate(0deg);
+    0% {
+      transform: translateY(0) rotate(0deg) translateZ(0);
     }
     50% {
-      transform: translateY(-6px) rotate(180deg);
+      transform: translateY(-4px) rotate(180deg) translateZ(0);
+    }
+    100% {
+      transform: translateY(0) rotate(360deg) translateZ(0);
     }
   }
 
   @keyframes pulse {
-    0%, 100% {
-      opacity: 0.3;
-      transform: scale(0.9);
+    0% {
+      opacity: 0.2;
+      transform: scale(0.95) translateZ(0);
     }
     50% {
-      opacity: 0.6;
-      transform: scale(1.1);
+      opacity: 0.4;
+      transform: scale(1.05) translateZ(0);
+    }
+    100% {
+      opacity: 0.2;
+      transform: scale(0.95) translateZ(0);
     }
   }
 
   @keyframes breathe {
-    0%, 100% {
-      transform: scale(1);
-      opacity: 0.2;
+    0% {
+      transform: scale(1) translateZ(0);
+      opacity: 0.15;
     }
     50% {
-      transform: scale(1.05);
-      opacity: 0.4;
+      transform: scale(1.03) translateZ(0);
+      opacity: 0.3;
+    }
+    100% {
+      transform: scale(1) translateZ(0);
+      opacity: 0.15;
     }
   }
 
   @keyframes textFade {
-    from {
-      opacity: 0.7;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    0% {
+      opacity: 0.6;
     }
-    to {
-      opacity: 0.9;
-      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    50% {
+      opacity: 0.85;
+    }
+    100% {
+      opacity: 0.6;
     }
   }
 
   @keyframes gradientFlow {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
   }
 
   @keyframes pulseBackground {
-    0%, 100% {
-      opacity: 0.3;
-      transform: scale(1);
+    0% {
+      opacity: 0.2;
+      transform: scale(1) translateZ(0);
     }
     50% {
-      opacity: 0.5;
-      transform: scale(1.02);
+      opacity: 0.35;
+      transform: scale(1.01) translateZ(0);
+    }
+    100% {
+      opacity: 0.2;
+      transform: scale(1) translateZ(0);
     }
   }
 
