@@ -22,8 +22,7 @@
     "lint:eslint": "eslint . --fix",
     "lint:prettier": "prettier --write ./",
     "prepare": "husky",
-    "lint:lint-staged": "lint-staged",
-    "commit": "cz-git commit"
+    "lint:lint-staged": "lint-staged"
   },
   "dependencies": {
     "@iconify/vue": "^5.0.0",
@@ -61,7 +60,6 @@
     "@vue/tsconfig": "^0.8.1",
     "commitizen": "^4.3.1",
     "consola": "3.4.2",
-    "cz-git": "^1.12.0",
     "eslint": "^9.35.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-vue": "~10.4.0",
