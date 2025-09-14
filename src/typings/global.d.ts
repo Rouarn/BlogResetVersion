@@ -12,10 +12,8 @@ declare global {
     $message?: import('naive-ui').MessageProviderInst
     /** Notification instance */
     $notification?: import('naive-ui').NotificationProviderInst
-    /** Theme instance */
-    $loading?: import('@/plugins/loading').LoadingProviderInst
-    /** 原始console */
-    $originalConsole?: Console
+    /** Modern loading instance */
+    $loading?: import('@/build/plugins/loading').ModernLoadingAPI
   }
 
   /** Build time of the project */

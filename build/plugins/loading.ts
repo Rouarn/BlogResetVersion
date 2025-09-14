@@ -1,16 +1,16 @@
 /**
- * Vite 插件：现代化加载动画插件 v3.0
+ * Vite 插件：现代化加载动画插件 v4.0
  *
  * 全新架构设计：
- * - 🎯 观察者模式：基于事件驱动的状态管理
- * - 🚀 现代CSS：使用CSS变量、Grid布局和现代动画
- * - 📦 模块化设计：分离关注点，易于维护和扩展
- * - 🔍 智能检测：基于MutationObserver的实时检测
- * - ⚡ 高性能：RAF优化，避免强制重排
- * - 🎨 响应式：完全响应式设计，支持所有设备
+ * - 🎯 Vue生命周期集成：基于Vue应用生命周期的精确控制
+ * - 🚀 事件驱动：通过自定义事件与Vue应用通信
+ * - 📦 零依赖检测：不依赖DOM结构检测，避免时机问题
+ * - 🔍 智能状态管理：基于Promise的异步状态控制
+ * - ⚡ 高性能：最小化DOM操作，优化渲染性能
+ * - 🎨 现代设计：使用最新CSS特性和动画技术
  *
  * @author Rouarn
- * @version 3.0.0
+ * @version 4.0.0
  */
 
 import type { PluginOption } from 'vite'
@@ -36,17 +36,12 @@ interface LoadingPluginConfig {
     easing?: string
     exitDuration?: number
   }
-  /** 检测配置 */
-  detection?: {
-    timeout?: number
-    debounce?: number
-    minStableTime?: number
-  }
   /** 显示配置 */
   display?: {
     minShowTime?: number
     showProgress?: boolean
     showStages?: boolean
+    autoHide?: boolean
   }
 }
 
@@ -68,17 +63,13 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
     animation: {
       duration: 800,
       easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-      exitDuration: 600,
-    },
-    detection: {
-      timeout: 10000,
-      debounce: 150,
-      minStableTime: 300,
+      exitDuration: 800,
     },
     display: {
-      minShowTime: 1200,
+      minShowTime: 1500,
       showProgress: true,
       showStages: true,
+      autoHide: true,
     },
   }
 
@@ -88,7 +79,6 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
     ...userConfig,
     theme: { ...defaultConfig.theme, ...userConfig.theme },
     animation: { ...defaultConfig.animation, ...userConfig.animation },
-    detection: { ...defaultConfig.detection, ...userConfig.detection },
     display: { ...defaultConfig.display, ...userConfig.display },
   }
 
@@ -97,10 +87,10 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
   }
 
   return {
-    name: 'modern-loading-plugin',
+    name: 'modern-loading-plugin-v4',
     transformIndexHtml(html: string) {
       const loadingSystem = `
-<!-- 现代化加载系统 v3.0 -->
+<!-- 现代化加载系统 v4.0 -->
 <style>
   :root {
     --loading-primary: ${config.theme.primary};
@@ -114,143 +104,179 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
     --loading-exit-duration: ${config.animation.exitDuration}ms;
   }
 
-  /* 加载动画覆盖滚动条区域 */
-  .modern-loading {
+  .modern-loading-v4 {
     position: fixed;
     inset: 0;
     width: 100vw;
     height: 100vh;
     z-index: 999999;
     background: var(--loading-bg);
-    display: grid;
-    place-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     font-family: system-ui, -apple-system, sans-serif;
     opacity: 1;
     visibility: visible;
     transition: opacity var(--loading-exit-duration) var(--loading-easing),
-                visibility var(--loading-exit-duration) var(--loading-easing);
+                visibility var(--loading-exit-duration) var(--loading-easing),
+                transform var(--loading-exit-duration) var(--loading-easing);
+    transform: scale(1);
     overflow: hidden;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
   }
 
-  .modern-loading.hidden {
+  .modern-loading-v4.exiting {
     opacity: 0;
     visibility: hidden;
+    transform: scale(0.95);
   }
 
-  .loading-content {
-    display: grid;
+  .loading-content-v4 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 2rem;
     text-align: center;
     max-width: 90vw;
+    animation: fadeInUp 0.6s var(--loading-easing) forwards;
   }
 
-  .loading-visual {
+  .loading-visual-v4 {
     position: relative;
-    width: clamp(120px, 15vw, 200px);
-    height: clamp(120px, 15vw, 200px);
-    margin: 0 auto;
+    width: clamp(140px, 18vw, 220px);
+    height: clamp(140px, 18vw, 220px);
   }
 
-  .loading-rings {
+  .loading-rings-v4 {
     position: absolute;
     inset: 0;
   }
 
-  .loading-ring {
+  .loading-ring-v4 {
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    border: 3px solid transparent;
+    border: 4px solid transparent;
     animation: rotate var(--loading-duration) linear infinite;
   }
 
-  .loading-ring:nth-child(1) {
+  .loading-ring-v4:nth-child(1) {
     border-top-color: var(--loading-primary);
-    animation-duration: 2s;
-    filter: drop-shadow(0 0 20px var(--loading-primary));
-  }
-
-  .loading-ring:nth-child(2) {
-    border-right-color: var(--loading-secondary);
-    animation-duration: 1.5s;
-    animation-direction: reverse;
-    inset: 15%;
-    filter: drop-shadow(0 0 15px var(--loading-secondary));
-  }
-
-  .loading-ring:nth-child(3) {
-    border-bottom-color: var(--loading-accent);
-    animation-duration: 1s;
-    inset: 30%;
-    filter: drop-shadow(0 0 10px var(--loading-accent));
-  }
-
-  .loading-core {
-    position: absolute;
-    inset: 40%;
-    background: radial-gradient(circle, var(--loading-primary), transparent);
-    border-radius: 50%;
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  .loading-info {
-    color: var(--loading-text);
-  }
-
-  .loading-stage {
-    font-size: clamp(1rem, 2.5vw, 1.25rem);
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    min-height: 1.5em;
+    border-right-color: var(--loading-primary);
+    animation-duration: 2.5s;
+    filter: drop-shadow(0 0 25px var(--loading-primary));
     opacity: 0.9;
   }
 
-  .loading-progress-container {
-    width: 100%;
-    max-width: 300px;
-    margin: 0 auto;
+  .loading-ring-v4:nth-child(2) {
+    border-bottom-color: var(--loading-secondary);
+    border-left-color: var(--loading-secondary);
+    animation-duration: 2s;
+    animation-direction: reverse;
+    inset: 12%;
+    filter: drop-shadow(0 0 20px var(--loading-secondary));
+    opacity: 0.8;
   }
 
-  .loading-progress-bar {
+  .loading-ring-v4:nth-child(3) {
+    border-top-color: var(--loading-accent);
+    border-bottom-color: var(--loading-accent);
+    animation-duration: 1.5s;
+    inset: 25%;
+    filter: drop-shadow(0 0 15px var(--loading-accent));
+    opacity: 0.7;
+  }
+
+  .loading-core-v4 {
+    position: absolute;
+    inset: 35%;
+    background: radial-gradient(circle, var(--loading-primary), transparent 70%);
+    border-radius: 50%;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+
+  .loading-info-v4 {
+    color: var(--loading-text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .loading-stage-v4 {
+    font-size: clamp(1.1rem, 3vw, 1.4rem);
+    font-weight: 600;
+    min-height: 1.8em;
+    opacity: 0.95;
+    letter-spacing: 0.5px;
+    transition: all 0.3s var(--loading-easing);
+  }
+
+  .loading-progress-container-v4 {
     width: 100%;
-    height: 4px;
+    max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .loading-progress-bar-v4 {
+    width: 100%;
+    height: 6px;
     background: var(--loading-surface);
-    border-radius: 2px;
+    border-radius: 3px;
     overflow: hidden;
     position: relative;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
   }
 
-  .loading-progress-fill {
+  .loading-progress-fill-v4 {
     height: 100%;
-    background: linear-gradient(90deg, var(--loading-primary), var(--loading-secondary));
-    border-radius: 2px;
+    background: linear-gradient(90deg, var(--loading-primary), var(--loading-secondary), var(--loading-accent));
+    background-size: 200% 100%;
+    border-radius: 3px;
     width: 0%;
-    transition: width 0.3s var(--loading-easing);
+    transition: width 0.4s var(--loading-easing);
     position: relative;
-    overflow: hidden;
+    animation: gradientShift 3s ease-in-out infinite;
   }
 
-  .loading-progress-fill::after {
+  .loading-progress-fill-v4::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    animation: shimmer 2s infinite;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shimmer 2.5s infinite;
   }
 
-  .loading-percentage {
-    font-size: 0.875rem;
-    margin-top: 0.5rem;
-    opacity: 0.8;
+  .loading-percentage-v4 {
+    font-size: 0.95rem;
+    opacity: 0.85;
     font-variant-numeric: tabular-nums;
+    font-weight: 500;
   }
 
-  /* 简单的淡出过渡效果 */
-  .modern-loading {
-    transition: opacity 0.3s ease;
+  .loading-tips-v4 {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    opacity: 0.6;
+    max-width: 280px;
+    line-height: 1.4;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   @keyframes rotate {
@@ -258,8 +284,14 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
   }
 
   @keyframes pulse {
-    0%, 100% { opacity: 0.6; transform: scale(0.8); }
-    50% { opacity: 1; transform: scale(1); }
+    0%, 100% {
+      opacity: 0.4;
+      transform: scale(0.8);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.1);
+    }
   }
 
   @keyframes shimmer {
@@ -267,20 +299,30 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
     100% { transform: translateX(100%); }
   }
 
+  @keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
   @media (max-width: 768px) {
-    .loading-content {
+    .loading-content-v4 {
       gap: 1.5rem;
+    }
+    .loading-tips-v4 {
+      font-size: 0.8rem;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .loading-ring {
-      animation-duration: 4s;
+    .loading-ring-v4 {
+      animation-duration: 6s;
     }
-    .loading-core {
+    .loading-core-v4 {
       animation: none;
+      opacity: 0.7;
     }
-    .loading-progress-fill::after {
+    .loading-progress-fill-v4::after,
+    .loading-progress-fill-v4 {
       animation: none;
     }
   }
@@ -295,19 +337,18 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
 
   // 加载阶段定义
   const STAGES = [
-    { id: 'init', text: '初始化应用...', weight: 10 },
-    { id: 'dom', text: '构建DOM结构...', weight: 15 },
-    { id: 'assets', text: '加载资源文件...', weight: 20 },
-    { id: 'scripts', text: '执行脚本...', weight: 15 },
-    { id: 'vue', text: '启动Vue应用...', weight: 20 },
-    { id: 'router', text: '初始化路由...', weight: 10 },
-    { id: 'render', text: '渲染页面内容...', weight: 10 }
+    { id: 'init', text: '初始化应用环境...', weight: 15, tips: '正在准备运行环境' },
+    { id: 'modules', text: '加载核心模块...', weight: 20, tips: '导入必要的依赖库' },
+    { id: 'vue', text: '启动Vue应用...', weight: 25, tips: '创建应用实例' },
+    { id: 'router', text: '配置路由系统...', weight: 15, tips: '初始化页面路由' },
+    { id: 'store', text: '初始化状态管理...', weight: 10, tips: '准备数据存储' },
+    { id: 'render', text: '渲染用户界面...', weight: 15, tips: '构建页面内容' }
   ];
 
   /**
-   * 现代化加载管理器
+   * 现代化加载管理器 v4.0
    */
-  class ModernLoadingManager {
+  class ModernLoadingManagerV4 {
     constructor() {
       this.state = {
         isActive: false,
@@ -315,18 +356,21 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
         startTime: Date.now(),
         currentStage: 0,
         progress: 0,
-        isAppReady: false
+        isAppReady: false,
+        readyPromise: null,
+        readyResolve: null
       };
 
       this.elements = {
         container: null,
         stage: null,
         progressFill: null,
-        percentage: null
+        percentage: null,
+        tips: null
       };
 
       this.timers = new Set();
-      this.observers = new Set();
+      this.eventListeners = new Set();
 
       this.init();
     }
@@ -335,64 +379,76 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
      * 初始化加载系统
      */
     init() {
+      this.createReadyPromise();
       this.createUI();
       this.startStageProgression();
-      this.startAppDetection();
       this.setupEventListeners();
+      this.setupGlobalAPI();
+    }
+
+    /**
+     * 创建准备就绪Promise
+     */
+    createReadyPromise() {
+      this.state.readyPromise = new Promise((resolve) => {
+        this.state.readyResolve = resolve;
+      });
     }
 
     /**
      * 创建用户界面
      */
     createUI() {
-      // 主加载界面
       const container = document.createElement('div');
-      container.className = 'modern-loading';
+      container.className = 'modern-loading-v4';
 
-      // 创建内容容器
       const content = document.createElement('div');
-      content.className = 'loading-content';
+      content.className = 'loading-content-v4';
 
       // 创建视觉元素
       const visual = document.createElement('div');
-      visual.className = 'loading-visual';
+      visual.className = 'loading-visual-v4';
 
       const rings = document.createElement('div');
-      rings.className = 'loading-rings';
+      rings.className = 'loading-rings-v4';
       for (let i = 0; i < 3; i++) {
         const ring = document.createElement('div');
-        ring.className = 'loading-ring';
+        ring.className = 'loading-ring-v4';
         rings.appendChild(ring);
       }
 
       const core = document.createElement('div');
-      core.className = 'loading-core';
+      core.className = 'loading-core-v4';
 
       visual.appendChild(rings);
       visual.appendChild(core);
 
       // 创建信息元素
       const info = document.createElement('div');
-      info.className = 'loading-info';
+      info.className = 'loading-info-v4';
 
       const stage = document.createElement('div');
-      stage.className = 'loading-stage';
-      stage.textContent = '初始化应用...';
+      stage.className = 'loading-stage-v4';
+      stage.textContent = '初始化应用环境...';
       info.appendChild(stage);
 
-      // 创建进度条（如果启用）
+      // 声明进度条相关元素
+      let progressFill = null;
+      let percentage = null;
+
+      // 创建进度条
       if (CONFIG.display.showProgress) {
         const progressContainer = document.createElement('div');
-        progressContainer.className = 'loading-progress-container';
+        progressContainer.className = 'loading-progress-container-v4';
 
         const progressBar = document.createElement('div');
-        progressBar.className = 'loading-progress-bar';
+        progressBar.className = 'loading-progress-bar-v4';
 
-        const progressFill = document.createElement('div');
-        progressFill.className = 'loading-progress-fill';
+        progressFill = document.createElement('div');
+        progressFill.className = 'loading-progress-fill-v4';
 
-        const percentage = document.createElement('div');
-        percentage.className = 'loading-percentage';
+        percentage = document.createElement('div');
+        percentage.className = 'loading-percentage-v4';
         percentage.textContent = '0%';
 
         progressBar.appendChild(progressFill);
@@ -400,6 +456,12 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
         progressContainer.appendChild(percentage);
         info.appendChild(progressContainer);
       }
+
+      // 创建提示文本
+      const tips = document.createElement('div');
+      tips.className = 'loading-tips-v4';
+      tips.textContent = '正在准备运行环境';
+      info.appendChild(tips);
 
       content.appendChild(visual);
       content.appendChild(info);
@@ -409,9 +471,10 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
 
       // 缓存元素引用
       this.elements.container = container;
-      this.elements.stage = container.querySelector('.loading-stage');
-      this.elements.progressFill = container.querySelector('.loading-progress-fill');
-      this.elements.percentage = container.querySelector('.loading-percentage');
+      this.elements.stage = stage;
+      this.elements.progressFill = progressFill;
+      this.elements.percentage = percentage;
+      this.elements.tips = tips;
 
       this.state.isActive = true;
     }
@@ -429,24 +492,28 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
             this.elements.stage.textContent = stage.text;
           }
 
+          if (this.elements.tips) {
+            this.elements.tips.textContent = stage.tips;
+          }
+
           // 计算进度
           const totalWeight = STAGES.reduce((sum, s) => sum + s.weight, 0);
           const completedWeight = STAGES.slice(0, this.state.currentStage + 1)
             .reduce((sum, s) => sum + s.weight, 0);
 
-          this.updateProgress(Math.min(85, (completedWeight / totalWeight) * 100));
+          this.updateProgress(Math.min(90, (completedWeight / totalWeight) * 100));
 
           this.state.currentStage++;
 
           // 调度下一个阶段
-          const delay = 300 + Math.random() * 400; // 300-700ms随机延迟
+          const delay = 400 + Math.random() * 600; // 400-1000ms随机延迟
           const timer = setTimeout(progressStage, delay);
           this.timers.add(timer);
         }
       };
 
       // 开始第一个阶段
-      const timer = setTimeout(progressStage, 200);
+      const timer = setTimeout(progressStage, 300);
       this.timers.add(timer);
     }
 
@@ -466,102 +533,82 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
     }
 
     /**
-     * 开始应用检测
+     * 设置事件监听器
      */
-    startAppDetection() {
-      let stableTime = null;
-      let lastCheck = Date.now();
-
-      const checkAppReady = () => {
-        const now = Date.now();
-
-        // 防抖检查
-        if (now - lastCheck < CONFIG.detection.debounce) {
-          const timer = setTimeout(checkAppReady, CONFIG.detection.debounce);
-          this.timers.add(timer);
-          return;
-        }
-
-        lastCheck = now;
-
-        const appElement = document.getElementById('app');
-        if (!appElement) {
-          const timer = setTimeout(checkAppReady, CONFIG.detection.debounce);
-          this.timers.add(timer);
-          return;
-        }
-
-        // 检查应用是否准备就绪 - 等待特定的Vue组件结构出现
-        const hasContent = appElement.children.length > 0;
-        const hasVisibleContent = appElement.offsetHeight > 100 && appElement.offsetWidth > 100;
-
-        // 检查特定的组件结构：.n-config-provider > .min-h-full
-        const configProvider = appElement.querySelector('.n-config-provider');
-        const hasTargetStructure = configProvider && configProvider.querySelector('.min-h-full');
-
-        // 确保目标结构不仅存在，还要有实际内容
-        const targetElement = hasTargetStructure ? configProvider.querySelector('.min-h-full') : null;
-        const hasRealContent = targetElement &&
-          targetElement.offsetHeight > 100 &&
-          targetElement.offsetWidth > 100 &&
-          targetElement.children.length > 0;
-
-        // 额外检查：确保页面内容已经完全渲染
-        const hasDeepContent = targetElement && (
-          targetElement.querySelector('nav, header, main, .content, .page, .layout') ||
-          targetElement.querySelectorAll('div, section, article').length > 3
-        );
-
-        // 检查是否有样式完全加载（避免FOUC）
-        const hasStyles = targetElement &&
-          getComputedStyle(targetElement).display !== 'none' &&
-          getComputedStyle(targetElement).visibility !== 'hidden' &&
-          getComputedStyle(targetElement).opacity !== '0';
-
-        const isReady = hasContent && hasVisibleContent && hasTargetStructure && hasRealContent && hasDeepContent && hasStyles;
-
-        if (isReady) {
-          if (!stableTime) {
-            stableTime = now;
-          } else if (now - stableTime >= CONFIG.detection.minStableTime) {
-            this.onAppReady();
-            return;
-          }
-        } else {
-          stableTime = null;
-        }
-
-        // 继续检测
-        if (!this.state.isAppReady && now - this.state.startTime < CONFIG.detection.timeout) {
-          const timer = setTimeout(checkAppReady, CONFIG.detection.debounce);
-          this.timers.add(timer);
-        } else if (!this.state.isAppReady) {
-          // 超时，强制完成
+    setupEventListeners() {
+      // 监听Vue应用准备就绪事件
+      const onAppReady = () => {
+        if (!this.state.isAppReady) {
           this.onAppReady();
         }
       };
 
-      // 使用MutationObserver监听DOM变化
-      if (window.MutationObserver) {
-        const observer = new MutationObserver(() => {
+      // 监听自定义事件
+      const readyListener = (event) => onAppReady();
+      document.addEventListener('vue-app-ready', readyListener);
+      document.addEventListener('app-mounted', readyListener);
+      window.addEventListener('app-ready', readyListener);
+      this.eventListeners.add(() => {
+        document.removeEventListener('vue-app-ready', readyListener);
+        document.removeEventListener('app-mounted', readyListener);
+        window.removeEventListener('app-ready', readyListener);
+      });
+
+      // 页面加载完成后的延迟检查
+      const onLoad = () => {
+        const timer = setTimeout(() => {
           if (!this.state.isAppReady) {
-            checkAppReady();
+            // 检查是否有Vue应用实例
+            if (window.Vue || window.__VUE__ || document.querySelector('[data-v-]') || document.querySelector('.vue-app')) {
+              this.onAppReady();
+            }
           }
-        });
+        }, 2000);
+        this.timers.add(timer);
+      };
 
-        observer.observe(document.body, {
-          childList: true,
-          subtree: true,
-          attributes: true,
-          attributeFilter: ['class', 'style']
-        });
-
-        this.observers.add(observer);
+      if (document.readyState === 'complete') {
+        onLoad();
+      } else {
+        window.addEventListener('load', onLoad, { once: true });
       }
 
-      // 开始检测
-      const timer = setTimeout(checkAppReady, 1000);
-      this.timers.add(timer);
+      // 页面可见性变化
+      const visibilityListener = () => {
+        if (document.visibilityState === 'visible' && !this.state.isAppReady) {
+          const timer = setTimeout(() => {
+            if (!this.state.isAppReady) {
+              this.onAppReady();
+            }
+          }, 1000);
+          this.timers.add(timer);
+        }
+      };
+      document.addEventListener('visibilitychange', visibilityListener);
+      this.eventListeners.add(() => {
+        document.removeEventListener('visibilitychange', visibilityListener);
+      });
+    }
+
+    /**
+     * 设置全局API
+     */
+    setupGlobalAPI() {
+      const api = {
+        ready: () => this.onAppReady(),
+        hide: () => this.onAppReady(),
+        setProgress: (progress) => this.updateProgress(progress),
+        setStage: (text, tips) => {
+          if (this.elements.stage) this.elements.stage.textContent = text;
+          if (this.elements.tips && tips) this.elements.tips.textContent = tips;
+        },
+        getState: () => ({ ...this.state }),
+        isActive: () => this.state.isActive,
+        whenReady: () => this.state.readyPromise
+      };
+
+      // 设置两种API方式以确保兼容性
+      window.$loading = api;
     }
 
     /**
@@ -574,17 +621,27 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
 
       // 更新显示
       if (this.elements.stage) {
-        this.elements.stage.textContent = '加载完成！';
+        this.elements.stage.textContent = '应用加载完成！';
+      }
+      if (this.elements.tips) {
+        this.elements.tips.textContent = '即将进入应用界面';
       }
 
       this.updateProgress(100);
+
+      // 解析准备就绪Promise
+      if (this.state.readyResolve) {
+        this.state.readyResolve();
+      }
 
       // 确保最小显示时间
       const elapsedTime = Date.now() - this.state.startTime;
       const remainingTime = Math.max(0, CONFIG.display.minShowTime - elapsedTime);
 
       const timer = setTimeout(() => {
-        this.startExitAnimation();
+        if (CONFIG.display.autoHide) {
+          this.startExitAnimation();
+        }
       }, remainingTime);
 
       this.timers.add(timer);
@@ -602,54 +659,24 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
       if (this.elements.stage) {
         this.elements.stage.textContent = '正在进入应用...';
       }
+      if (this.elements.tips) {
+        this.elements.tips.textContent = '欢迎使用！';
+      }
 
-      // 简单的淡出动画
+      // 开始退出动画
       const timer = setTimeout(() => {
         if (this.elements.container) {
-          this.elements.container.style.opacity = '0';
+          this.elements.container.classList.add('exiting');
 
           const cleanupTimer = setTimeout(() => {
             this.cleanup();
-          }, 300);
+          }, CONFIG.animation.exitDuration);
 
           this.timers.add(cleanupTimer);
         }
-      }, 500);
+      }, 600);
 
       this.timers.add(timer);
-    }
-
-    /**
-     * 设置事件监听器
-     */
-    setupEventListeners() {
-      // 页面加载完成保险
-      const onLoad = () => {
-        const timer = setTimeout(() => {
-          if (!this.state.isAppReady) {
-            this.onAppReady();
-          }
-        }, 1000);
-        this.timers.add(timer);
-      };
-
-      if (document.readyState === 'complete') {
-        onLoad();
-      } else {
-        window.addEventListener('load', onLoad, { once: true });
-      }
-
-      // 页面可见性变化
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible' && !this.state.isAppReady) {
-          const timer = setTimeout(() => {
-            if (!this.state.isAppReady) {
-              this.onAppReady();
-            }
-          }, 500);
-          this.timers.add(timer);
-        }
-      });
     }
 
     /**
@@ -660,38 +687,23 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
       this.timers.forEach(timer => clearTimeout(timer));
       this.timers.clear();
 
-      // 清理观察者
-      this.observers.forEach(observer => observer.disconnect());
-      this.observers.clear();
+      // 清理事件监听器
+      this.eventListeners.forEach(cleanup => cleanup());
+      this.eventListeners.clear();
 
       // 移除DOM元素
       if (this.elements.container && this.elements.container.parentNode) {
         this.elements.container.parentNode.removeChild(this.elements.container);
       }
 
-      if (this.elements.exitOverlay && this.elements.exitOverlay.parentNode) {
-        this.elements.exitOverlay.parentNode.removeChild(this.elements.exitOverlay);
-      }
-
       // 清理引用
       this.elements = {};
       this.state.isActive = false;
-    }
 
-    /**
-     * 手动隐藏加载界面
-     */
-    hide() {
-      if (!this.state.isExiting) {
-        this.onAppReady();
+      // 清理全局API
+      if (window.$loading) {
+        delete window.$loading;
       }
-    }
-
-    /**
-     * 获取当前状态
-     */
-    getState() {
-      return { ...this.state };
     }
   }
 
@@ -700,14 +712,7 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
 
   const initLoading = () => {
     if (!loadingManager) {
-      loadingManager = new ModernLoadingManager();
-
-      // 暴露全局API
-      window.ModernLoading = {
-        hide: () => loadingManager?.hide(),
-        getState: () => loadingManager?.getState() || {},
-        isActive: () => loadingManager?.state.isActive || false
-      };
+      loadingManager = new ModernLoadingManagerV4();
     }
   };
 

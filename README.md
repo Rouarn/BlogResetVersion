@@ -22,7 +22,7 @@
 ### 🎨 完整功能支持
 
 - **主题系统**：亮色/暗色/跟随系统，动态主题色
-- **加载动画**：智能加载动画，自动检测应用状态，零入侵集成
+- **现代化加载动画 v4.0**：Vue生命周期集成，事件驱动架构，零依赖检测，高性能渲染
 - **国际化**：Vue I18n 支持，动态语言切换
 - **自定义指令**：复制、拖拽、水印、防抖等实用指令
 - **HTTP 请求**：智能重试、请求取消、类型安全封装
@@ -178,16 +178,30 @@ src/views/
 └── _builtin/       # 自动排除：内置页面
 ```
 
-## 🎨 加载动画配置
+## 🎨 现代化加载动画系统 v4.0
 
-### 智能加载动画插件
+### 🚀 全新架构设计
 
-本模板集成了完全自动化的加载动画插件，具有以下特性：
+本模板集成了**现代化加载动画插件 v4.0**，采用全新架构设计，具有以下核心特性：
 
-- **零入侵**：无需修改业务代码，自动检测应用状态
-- **智能检测**：多层次检测Vue应用渲染完成状态
-- **高度可配置**：支持主题、进度、检测参数等全面配置
-- **响应式设计**：自适应桌面端和移动端显示
+#### 🎯 Vue生命周期集成
+
+- **精确控制**：基于Vue应用生命周期的精确状态管理
+- **事件驱动**：通过自定义事件与Vue应用无缝通信
+- **零依赖检测**：不依赖DOM结构检测，避免时机问题
+
+#### ⚡ 高性能优化
+
+- **智能状态管理**：基于Promise的异步状态控制
+- **最小化DOM操作**：优化渲染性能，减少重绘重排
+- **现代CSS特性**：使用最新动画技术和视觉效果
+
+#### 🎨 现代化设计
+
+- **多层环形动画**：三层旋转环形，渐变色彩效果
+- **智能进度显示**：6个预设加载阶段，实时进度反馈
+- **响应式适配**：完美支持桌面端和移动端显示
+- **无障碍支持**：支持减少动画偏好设置
 
 ### 配置选项
 
@@ -200,47 +214,86 @@ export default defineConfig({
   plugins: [
     // 其他插件...
     setupLoadingPlugin({
-      enabled: true, // 是否启用
-      minDisplayTime: 1500, // 最小显示时间（毫秒）
+      enabled: true, // 是否启用插件
       theme: {
-        primary: '#4bc0c8', // 主色调
-        secondary: '#c779d0', // 次要色调
-        background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.8) 100%)',
-        textColor: '#ffffff',
+        primary: 'hsl(200, 100%, 60%)', // 主环颜色
+        secondary: 'hsl(280, 100%, 70%)', // 次环颜色
+        accent: 'hsl(45, 100%, 65%)', // 内环颜色
+        background: 'hsl(220, 30%, 8%)', // 背景色
+        surface: 'hsl(220, 25%, 12%)', // 表面色
+        text: 'hsl(0, 0%, 95%)', // 文字颜色
       },
-      detection: {
-        checkInterval: 100, // 检测间隔
-        maxChecks: 120, // 最大检测次数
-        firstLoadDelay: 500, // 首次加载延迟
-        refreshDelay: 200, // 刷新加载延迟
+      animation: {
+        duration: 800, // 动画持续时间
+        easing: 'cubic-bezier(0.4, 0, 0.2, 1)', // 缓动函数
+        exitDuration: 800, // 退出动画时长
       },
-      progress: {
-        stageInterval: 400, // 阶段间隔
-        autoStageCount: 6, // 自动完成阶段数
-        customStages: [
-          { name: 'dom-ready', text: '正在加载DOM...' },
-          { name: 'vue-app', text: '正在初始化Vue应用...' },
-          // 更多自定义阶段...
-        ],
-      },
-      responsive: {
-        mobileSize: 120, // 移动端尺寸
-        desktopSize: 180, // 桌面端尺寸
+      display: {
+        minShowTime: 1500, // 最小显示时间
+        showProgress: true, // 显示进度条
+        showStages: true, // 显示阶段文本
+        autoHide: true, // 自动隐藏
       },
     }),
   ],
 })
 ```
 
-### 主要配置项说明
+### 🔧 API接口
 
-| 配置项                    | 类型    | 默认值    | 说明                 |
-| ------------------------- | ------- | --------- | -------------------- |
-| `enabled`                 | boolean | `true`    | 是否启用加载动画     |
-| `minDisplayTime`          | number  | `1500`    | 最小显示时间（毫秒） |
-| `theme.primary`           | string  | `#4bc0c8` | 主色调               |
-| `detection.checkInterval` | number  | `100`     | 检测间隔（毫秒）     |
-| `progress.customStages`   | array   | 预设阶段  | 自定义加载阶段       |
+插件提供了完整的JavaScript API，支持手动控制：
+
+```javascript
+// 全局API访问
+window.ModernLoading.ready() // 标记应用准备就绪
+window.ModernLoading.hide() // 隐藏加载动画
+window.ModernLoading.setProgress(75) // 设置进度百分比
+window.ModernLoading.setStage('加载完成', '即将进入应用') // 设置阶段信息
+window.ModernLoading.whenReady() // 返回Promise，等待准备就绪
+window.ModernLoading.isActive() // 检查是否激活
+window.ModernLoading.getState() // 获取当前状态
+```
+
+### 📊 配置项详解
+
+| 配置分类 | 配置项                   | 类型    | 默认值                         | 说明                 |
+| -------- | ------------------------ | ------- | ------------------------------ | -------------------- |
+| **基础** | `enabled`                | boolean | `true`                         | 是否启用加载动画     |
+| **主题** | `theme.primary`          | string  | `hsl(200, 100%, 60%)`          | 主环颜色（HSL格式）  |
+|          | `theme.secondary`        | string  | `hsl(280, 100%, 70%)`          | 次环颜色             |
+|          | `theme.accent`           | string  | `hsl(45, 100%, 65%)`           | 内环颜色             |
+|          | `theme.background`       | string  | `hsl(220, 30%, 8%)`            | 背景颜色             |
+| **动画** | `animation.duration`     | number  | `800`                          | 动画持续时间（毫秒） |
+|          | `animation.easing`       | string  | `cubic-bezier(0.4, 0, 0.2, 1)` | 缓动函数             |
+|          | `animation.exitDuration` | number  | `800`                          | 退出动画时长         |
+| **显示** | `display.minShowTime`    | number  | `1500`                         | 最小显示时间（毫秒） |
+|          | `display.showProgress`   | boolean | `true`                         | 是否显示进度条       |
+|          | `display.showStages`     | boolean | `true`                         | 是否显示阶段文本     |
+|          | `display.autoHide`       | boolean | `true`                         | 是否自动隐藏         |
+
+### 🎭 预设加载阶段
+
+插件内置6个智能加载阶段，自动模拟真实的应用启动过程：
+
+1. **初始化应用环境** (15%) - 准备运行环境
+2. **加载核心模块** (20%) - 导入必要依赖库
+3. **启动Vue应用** (25%) - 创建应用实例
+4. **配置路由系统** (15%) - 初始化页面路由
+5. **初始化状态管理** (10%) - 准备数据存储
+6. **渲染用户界面** (15%) - 构建页面内容
+
+### 🔗 Vue集成
+
+插件提供Vue插件用于无缝集成：
+
+```typescript
+// main.ts
+import { createLoadingIntegration } from './build/plugins/loading'
+
+const app = createApp(App)
+app.use(createLoadingIntegration()) // 自动集成加载系统
+app.mount('#app')
+```
 
 ## 📚 学习资源
 
