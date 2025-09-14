@@ -36,7 +36,6 @@ declare module 'vue-router/auto-routes' {
     '/directives/tooltip-direct/': RouteRecordInfo<'/directives/tooltip-direct/', '/directives/tooltip-direct', Record<never, never>, Record<never, never>>,
     '/directives/watermark-direct/': RouteRecordInfo<'/directives/watermark-direct/', '/directives/watermark-direct', Record<never, never>, Record<never, never>>,
     '/home/': RouteRecordInfo<'/home/', '/home', Record<never, never>, Record<never, never>>,
-    '/loading-demo/': RouteRecordInfo<'/loading-demo/', '/loading-demo', Record<never, never>, Record<never, never>>,
     '/user-center/': RouteRecordInfo<'/user-center/', '/user-center', Record<never, never>, Record<never, never>>,
   }
 
@@ -121,10 +120,6 @@ declare module 'vue-router/auto-routes' {
     }
     'src/views/home/index.vue': {
       routes: '/home/'
-      views: never
-    }
-    'src/views/loading-demo/index.vue': {
-      routes: '/loading-demo/'
       views: never
     }
     'src/views/user-center/index.vue': {
