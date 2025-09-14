@@ -35,8 +35,8 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
   const defaultConfig = {
     enabled: true,
     minTime: 600,
-    primaryColor: '#60a5fa',
-    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    primaryColor: '#3b82f6',
+    backgroundColor: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)',
     texts: {
       loading: '正在加载应用...',
       complete: '加载完成',
@@ -58,6 +58,8 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
   .loading-overlay {
     position: fixed;
     inset: 0;
+    width: 100vw;
+    height: 100vh;
     z-index: 999999;
     background: ${finalConfig.backgroundColor};
     display: flex;
@@ -75,8 +77,10 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, rgba(96, 165, 250, 0.06) 0%, transparent 70%);
-    animation: pulseBackground 3s ease-in-out infinite;
+    background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.1) 0%, transparent 60%),
+                radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.08) 0%, transparent 60%),
+                radial-gradient(circle at center, rgba(6, 182, 212, 0.05) 0%, transparent 80%);
+    animation: pulseBackground 6s ease-in-out infinite;
   }
 
   .loading-overlay.door-opening {
@@ -95,7 +99,7 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
      top: 0;
      width: 50%;
      height: 100%;
-     background: ${finalConfig.backgroundColor};
+     background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
      z-index: 10;
      transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
    }
@@ -131,17 +135,17 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
   .loading-container::before {
     content: '';
     position: absolute;
-    inset: -50px;
-    background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+    inset: -60px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, rgba(139, 92, 246, 0.06) 40%, rgba(6, 182, 212, 0.04) 70%, transparent 100%);
     border-radius: 50%;
-    animation: breathe 4s ease-in-out infinite;
+    animation: breathe 5s ease-in-out infinite;
   }
 
   .loading-spinner {
     position: relative;
-    width: 120px;
-    height: 120px;
-    animation: float 3s ease-in-out infinite;
+    width: 100px;
+    height: 100px;
+    animation: float 4s ease-in-out infinite;
   }
 
   .spinner-ring {
@@ -157,75 +161,85 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
     border-top-color: ${finalConfig.primaryColor};
     border-right-color: ${finalConfig.primaryColor};
     animation-duration: 2s;
-    opacity: 1;
+    opacity: 0.9;
+    border-width: 3px;
+    filter: drop-shadow(0 0 8px ${finalConfig.primaryColor}40);
   }
 
   .spinner-ring:nth-child(2) {
     border-bottom-color: #8b5cf6;
     border-left-color: #8b5cf6;
-    animation-duration: 2.5s;
+    animation-duration: 2.8s;
     animation-direction: reverse;
-    inset: 12px;
-    opacity: 0.8;
+    inset: 10px;
+    opacity: 0.7;
+    border-width: 2px;
+    filter: drop-shadow(0 0 6px #8b5cf640);
   }
 
   .spinner-ring:nth-child(3) {
     border-top-color: #06b6d4;
     border-bottom-color: #06b6d4;
-    animation-duration: 3s;
-    inset: 24px;
-    opacity: 0.6;
+    animation-duration: 3.5s;
+    inset: 20px;
+    opacity: 0.5;
+    border-width: 2px;
+    filter: drop-shadow(0 0 4px #06b6d440);
   }
 
   .spinner-ring:nth-child(4) {
-    border-right-color: #f59e0b;
-    border-left-color: #f59e0b;
-    animation-duration: 3.5s;
+    border-right-color: #10b981;
+    border-left-color: #10b981;
+    animation-duration: 4s;
     animation-direction: reverse;
-    inset: 36px;
-    opacity: 0.4;
+    inset: 30px;
+    opacity: 0.3;
+    border-width: 1px;
+    filter: drop-shadow(0 0 3px #10b98140);
   }
 
   .loading-core {
     position: absolute;
-    inset: 45px;
-    background: radial-gradient(circle, ${finalConfig.primaryColor}40, transparent 70%);
+    inset: 40px;
+    background: radial-gradient(circle, ${finalConfig.primaryColor}30, #8b5cf630, transparent 80%);
     border-radius: 50%;
-    animation: pulse 2s ease-in-out infinite;
+    animation: pulse 3s ease-in-out infinite;
+    filter: blur(0.5px);
   }
 
   .loading-text {
-    color: white;
-    font-size: 1.3rem;
-    font-weight: 600;
-    opacity: 0.95;
+    color: #e2e8f0;
+    font-size: 1.1rem;
+    font-weight: 500;
+    opacity: 0.9;
     text-align: center;
     transition: all 0.4s ease;
-    text-shadow: 0 2px 8px rgba(96, 165, 250, 0.2);
-    letter-spacing: 0.5px;
-    animation: textGlow 2s ease-in-out infinite alternate;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.3px;
+    animation: textFade 3s ease-in-out infinite alternate;
   }
 
   .loading-progress {
-    width: 280px;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 3px;
+    width: 240px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 2px;
     overflow: hidden;
     position: relative;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
   }
 
   .progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, ${finalConfig.primaryColor}, #8b5cf6, #06b6d4, #f59e0b);
+    background: linear-gradient(90deg, ${finalConfig.primaryColor}, #8b5cf6, #06b6d4, #10b981);
     background-size: 300% 100%;
-    border-radius: 3px;
+    border-radius: 2px;
     width: 0%;
-    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     animation: gradientFlow 3s ease-in-out infinite;
-    filter: drop-shadow(0 2px 6px rgba(96, 165, 250, 0.25));
+    filter: drop-shadow(0 1px 3px rgba(59, 130, 246, 0.3));
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
   .progress-bar::after {
@@ -238,11 +252,11 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
 
   .progress-percentage {
     position: absolute;
-    top: -25px;
+    top: -22px;
     right: 0;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
-    font-weight: 500;
+    color: rgba(226, 232, 240, 0.7);
+    font-size: 0.8rem;
+    font-weight: 400;
     font-variant-numeric: tabular-nums;
   }
 
@@ -271,38 +285,40 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
       transform: translateY(0) rotate(0deg);
     }
     50% {
-      transform: translateY(-10px) rotate(180deg);
+      transform: translateY(-6px) rotate(180deg);
     }
   }
 
   @keyframes pulse {
     0%, 100% {
-      opacity: 0.4;
-      transform: scale(0.8);
+      opacity: 0.3;
+      transform: scale(0.9);
     }
     50% {
-      opacity: 1;
-      transform: scale(1.2);
+      opacity: 0.6;
+      transform: scale(1.1);
     }
   }
 
   @keyframes breathe {
     0%, 100% {
       transform: scale(1);
-      opacity: 0.3;
+      opacity: 0.2;
     }
     50% {
-      transform: scale(1.1);
-      opacity: 0.6;
+      transform: scale(1.05);
+      opacity: 0.4;
     }
   }
 
-  @keyframes textGlow {
+  @keyframes textFade {
     from {
-      text-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+      opacity: 0.7;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     }
     to {
-      text-shadow: 0 2px 20px rgba(59, 130, 246, 0.6), 0 0 30px rgba(139, 92, 246, 0.3);
+      opacity: 0.9;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
     }
   }
 
@@ -317,8 +333,8 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
       transform: scale(1);
     }
     50% {
-      opacity: 0.6;
-      transform: scale(1.05);
+      opacity: 0.5;
+      transform: scale(1.02);
     }
   }
 
@@ -363,7 +379,7 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
   'use strict';
 
   const CONFIG = ${JSON.stringify(finalConfig)};
-  
+
   class LoadingManager {
     constructor() {
       this.startTime = Date.now();
@@ -375,7 +391,7 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
         progressBar: document.getElementById('loading-progress'),
         percentage: document.getElementById('progress-percentage')
       };
-      
+
       this.init();
     }
 
@@ -388,7 +404,7 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
     setupProgressTracking() {
       // 模拟智能进度
       this.updateProgress(10);
-      
+
       // DOM加载进度
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
@@ -409,22 +425,22 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
 
     detectAppMount() {
       const checkMount = () => {
-        if (document.querySelector('[data-v-]') || 
+        if (document.querySelector('[data-v-]') ||
             document.querySelector('.vue-app') ||
             window.Vue || window.__VUE__) {
           this.updateProgress(90);
           setTimeout(() => this.complete(), 200);
           return;
         }
-        
+
         if (Date.now() - this.startTime > 5000) {
           this.complete();
           return;
         }
-        
+
         setTimeout(checkMount, 100);
       };
-      
+
       setTimeout(checkMount, 500);
     }
 
@@ -434,7 +450,7 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
       events.forEach(event => {
         document.addEventListener(event, () => this.complete());
       });
-      
+
       window.addEventListener('app-ready', () => this.complete());
     }
 
@@ -464,36 +480,36 @@ export function setupLoadingPlugin(config: LoadingConfig = {}): PluginOption {
 
     complete() {
       if (this.isComplete) return;
-      
+
       const elapsed = Date.now() - this.startTime;
       const minTime = CONFIG.minTime;
-      
+
       const finish = () => {
          this.isComplete = true;
          this.updateProgress(100);
          this.setText(CONFIG.texts.complete);
-         
+
          // 等待加载完成动画结束后再开始开门
          setTimeout(() => {
            if (this.elements.overlay) {
              // 开始推拉门动画
              this.elements.overlay.classList.add('door-opening');
-             
+
              // 创建门的元素
              const doorLeft = this.elements.overlay.querySelector('.door-left');
              const doorRight = this.elements.overlay.querySelector('.door-right');
-             
+
              // 确保门有背景色
              if (doorLeft) doorLeft.style.background = CONFIG.backgroundColor;
              if (doorRight) doorRight.style.background = CONFIG.backgroundColor;
-             
+
              setTimeout(() => {
                this.elements.overlay?.remove();
              }, 800);
            }
          }, 400);
       };
-      
+
       if (elapsed < minTime) {
         setTimeout(finish, minTime - elapsed);
       } else {
