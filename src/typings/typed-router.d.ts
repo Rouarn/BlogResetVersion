@@ -20,7 +20,7 @@ declare module 'vue-router/auto-routes' {
   export interface RouteNamedMap {
     '/about/': RouteRecordInfo<'/about/', '/about', Record<never, never>, Record<never, never>>,
     '/demos/loading-demo/': RouteRecordInfo<'/demos/loading-demo/', '/demos/loading-demo', Record<never, never>, Record<never, never>>,
-    '/demos/socket-demo/': RouteRecordInfo<'/demos/socket-demo/', '/demos/socket-demo', Record<never, never>, Record<never, never>>,
+    '/demos/socket-test/': RouteRecordInfo<'/demos/socket-test/', '/demos/socket-test', Record<never, never>, Record<never, never>>,
     '/directives/animate-direct/': RouteRecordInfo<'/directives/animate-direct/', '/directives/animate-direct', Record<never, never>, Record<never, never>>,
     '/directives/clickoutside-direct/': RouteRecordInfo<'/directives/clickoutside-direct/', '/directives/clickoutside-direct', Record<never, never>, Record<never, never>>,
     '/directives/copy-direct/': RouteRecordInfo<'/directives/copy-direct/', '/directives/copy-direct', Record<never, never>, Record<never, never>>,
@@ -60,8 +60,8 @@ declare module 'vue-router/auto-routes' {
       routes: '/demos/loading-demo/'
       views: never
     }
-    'src/views/demos/socket-demo/index.vue': {
-      routes: '/demos/socket-demo/'
+    'src/views/demos/socket-test/index.vue': {
+      routes: '/demos/socket-test/'
       views: never
     }
     'src/views/directives/animate-direct/index.vue': {
