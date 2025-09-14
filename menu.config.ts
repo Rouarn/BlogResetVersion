@@ -12,7 +12,6 @@ const FOLDER_DISPLAY_CONFIG: Partial<Record<keyof App.I18n.Schema['route'], Rout
     icon: 'material-icon-theme:folder-vue-directives-open',
     order: 2,
     i18nKey: 'route.directives',
-    hidden: true,
   },
   demos: {
     title: '功能演示',
