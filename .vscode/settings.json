@@ -3,8 +3,8 @@
   "explorer.fileNesting.patterns": {
     "tsconfig.json": "tsconfig.*.json, env.d.ts",
     "vite.config.*": "jsconfig*, vitest.config.*, cypress.config.*, playwright.config.*,uno.config.ts",
-    "package.json": "package-lock.json, pnpm*, .yarnrc*, yarn*, .eslint*, eslint*, .oxlint*, oxlint*, .prettier*, prettier*, .editorconfig, lint-staged.config.json, commitlint.config.ts",
-    ".env": ".env,.env.production,.env.development"
+    "package.json": "package-lock.json, pnpm*, .yarnrc*, yarn*, .eslint*, eslint*, .oxlint*, oxlint*, .prettier*, prettier*, .editorconfig, commitlint.config.js,lint-staged.config.json,commitlint.config.ts",
+    ".env": ".env, .env.production, .env.development"
   },
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit"
