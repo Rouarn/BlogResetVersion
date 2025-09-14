@@ -491,14 +491,34 @@ export function setupLoadingPlugin(userConfig: LoadingPluginConfig = {}): Plugin
           return;
         }
 
-        // 检查应用是否准备就绪
+        // 检查应用是否准备就绪 - 等待特定的Vue组件结构出现
         const hasContent = appElement.children.length > 0;
         const hasVisibleContent = appElement.offsetHeight > 100 && appElement.offsetWidth > 100;
-        const hasInteractiveElements = appElement.querySelector('button, input, a, [role="button"]');
-        const hasNavigation = appElement.querySelector('nav, header, .nav, .header');
-        const hasMainContent = appElement.querySelector('main, .main, .content, .page');
 
-        const isReady = hasContent && hasVisibleContent && (hasInteractiveElements || hasNavigation || hasMainContent);
+        // 检查特定的组件结构：.n-config-provider > .min-h-full
+        const configProvider = appElement.querySelector('.n-config-provider');
+        const hasTargetStructure = configProvider && configProvider.querySelector('.min-h-full');
+
+        // 确保目标结构不仅存在，还要有实际内容
+        const targetElement = hasTargetStructure ? configProvider.querySelector('.min-h-full') : null;
+        const hasRealContent = targetElement &&
+          targetElement.offsetHeight > 100 &&
+          targetElement.offsetWidth > 100 &&
+          targetElement.children.length > 0;
+
+        // 额外检查：确保页面内容已经完全渲染
+        const hasDeepContent = targetElement && (
+          targetElement.querySelector('nav, header, main, .content, .page, .layout') ||
+          targetElement.querySelectorAll('div, section, article').length > 3
+        );
+
+        // 检查是否有样式完全加载（避免FOUC）
+        const hasStyles = targetElement &&
+          getComputedStyle(targetElement).display !== 'none' &&
+          getComputedStyle(targetElement).visibility !== 'hidden' &&
+          getComputedStyle(targetElement).opacity !== '0';
+
+        const isReady = hasContent && hasVisibleContent && hasTargetStructure && hasRealContent && hasDeepContent && hasStyles;
 
         if (isReady) {
           if (!stableTime) {
