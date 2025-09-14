@@ -12,8 +12,8 @@ const initialState = {
   token: '',
   userInfo: {
     userId: '',
-    userName: '夏季',
-    nickname: '用户',
+    userName: '',
+    nickname: '夏季',
     avatar: '',
     gender: '2' as const,
     mobile: '',
