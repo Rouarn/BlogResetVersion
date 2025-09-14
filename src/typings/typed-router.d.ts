@@ -19,6 +19,8 @@ declare module 'vue-router/auto-routes' {
    */
   export interface RouteNamedMap {
     '/about/': RouteRecordInfo<'/about/', '/about', Record<never, never>, Record<never, never>>,
+    '/demos/loading-demo/': RouteRecordInfo<'/demos/loading-demo/', '/demos/loading-demo', Record<never, never>, Record<never, never>>,
+    '/demos/socket-demo/': RouteRecordInfo<'/demos/socket-demo/', '/demos/socket-demo', Record<never, never>, Record<never, never>>,
     '/directives/animate-direct/': RouteRecordInfo<'/directives/animate-direct/', '/directives/animate-direct', Record<never, never>, Record<never, never>>,
     '/directives/clickoutside-direct/': RouteRecordInfo<'/directives/clickoutside-direct/', '/directives/clickoutside-direct', Record<never, never>, Record<never, never>>,
     '/directives/copy-direct/': RouteRecordInfo<'/directives/copy-direct/', '/directives/copy-direct', Record<never, never>, Record<never, never>>,
@@ -36,7 +38,6 @@ declare module 'vue-router/auto-routes' {
     '/directives/tooltip-direct/': RouteRecordInfo<'/directives/tooltip-direct/', '/directives/tooltip-direct', Record<never, never>, Record<never, never>>,
     '/directives/watermark-direct/': RouteRecordInfo<'/directives/watermark-direct/', '/directives/watermark-direct', Record<never, never>, Record<never, never>>,
     '/home/': RouteRecordInfo<'/home/', '/home', Record<never, never>, Record<never, never>>,
-    '/loading-demo/': RouteRecordInfo<'/loading-demo/', '/loading-demo', Record<never, never>, Record<never, never>>,
     '/user-center/': RouteRecordInfo<'/user-center/', '/user-center', Record<never, never>, Record<never, never>>,
   }
 
@@ -53,6 +54,14 @@ declare module 'vue-router/auto-routes' {
   export interface _RouteFileInfoMap {
     'src/views/about/index.vue': {
       routes: '/about/'
+      views: never
+    }
+    'src/views/demos/loading-demo/index.vue': {
+      routes: '/demos/loading-demo/'
+      views: never
+    }
+    'src/views/demos/socket-demo/index.vue': {
+      routes: '/demos/socket-demo/'
       views: never
     }
     'src/views/directives/animate-direct/index.vue': {
@@ -121,10 +130,6 @@ declare module 'vue-router/auto-routes' {
     }
     'src/views/home/index.vue': {
       routes: '/home/'
-      views: never
-    }
-    'src/views/loading-demo/index.vue': {
-      routes: '/loading-demo/'
       views: never
     }
     'src/views/user-center/index.vue': {

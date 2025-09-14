@@ -71,6 +71,7 @@ const local: App.I18n.Schema = {
     scrollDirect: '滚动指令',
     lazyDirect: '懒加载指令',
     highlightDirect: '高亮指令',
+    demos: '功能演示',
   },
   page: {
     about: {

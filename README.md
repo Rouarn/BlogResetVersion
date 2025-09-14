@@ -24,6 +24,7 @@
 - **主题系统**：亮色/暗色/跟随系统，动态主题色
 - **现代化 Loading 组件**：专为 HTTP 请求设计，智能计数管理，流畅视觉效果
 - **现代化加载动画 v5.0**：Vue生命周期集成，事件驱动架构，零依赖检测，高性能渲染
+- **实时通信**：Socket.IO 客户端集成，自动连接管理，断线重连，事件监听
 - **国际化**：Vue I18n 支持，动态语言切换
 - **自定义指令**：复制、拖拽、水印、防抖等实用指令
 - **HTTP 请求**：智能重试、请求取消、类型安全封装
@@ -61,6 +62,7 @@
 - **VueUse** - Vue Composition API 工具集
 - **Day.js** - 轻量级日期处理库
 - **Axios** - HTTP 客户端库
+- **Socket.IO Client** - 实时通信客户端库
 - **Localforage** - 离线存储库，支持 IndexedDB
 
 ### 开发工具
@@ -137,6 +139,9 @@ src/
 └── views/               # 页面组件（菜单自动生成的核心目录）
     ├── _builtin/        # 内置页面（自动排除）
     ├── about/           # 关于页面（单独菜单）
+    ├── demos/           # 功能演示（自动分组）
+    │   ├── loading-demo/ # Loading组件演示
+    │   └── socket-demo/  # Socket.IO演示页面
     ├── directives/      # 指令演示页面（自动分组）
     ├── home/            # 首页（单独菜单，优先排序）
     └── user-center/     # 用户中心（可设置隐藏）
@@ -173,6 +178,9 @@ src/
 src/views/
 ├── home/           # 单独菜单：首页
 ├── about/          # 单独菜单：关于
+├── demos/          # 自动分组：功能演示
+│   ├── loading-demo/ # Loading组件演示
+│   └── socket-demo/  # Socket.IO演示页面
 ├── directives/     # 自动分组：自定义指令
 │   ├── copy-direct/
 │   └── drag-direct/
@@ -491,6 +499,201 @@ window.addEventListener('app-ready', () => {
 window.$loading?.complete()
 ```
 
+## 🔌 Socket.IO 实时通信系统
+
+本模板集成了完整的 Socket.IO 客户端服务，提供开箱即用的实时通信解决方案。
+
+### ✨ 核心特性
+
+- 🔄 **自动连接管理** - 智能连接状态管理，自动处理连接生命周期
+- 🔁 **断线重连机制** - 网络异常时自动重连，保证连接稳定性
+- 📡 **事件监听和发送** - 完整的事件系统，支持自定义事件类型
+- 📊 **连接状态管理** - 实时连接状态监控和状态变更通知
+- 🔧 **TypeScript 类型支持** - 完整的类型定义，开发体验更佳
+- 🎯 **Vue 3 集成** - 专为 Vue 3 Composition API 设计的 Hook
+- 🛠️ **工具函数** - 丰富的工具函数，简化开发流程
+
+### 📁 文件结构
+
+```
+src/service/socket/
+├── index.ts          # Socket管理器主文件
+├── types.ts          # TypeScript类型定义
+├── utils.ts          # 工具函数和Vue Hook
+├── example.vue       # 使用示例组件
+└── README.md         # 详细文档
+```
+
+### 🚀 快速开始
+
+#### 环境配置
+
+在环境变量文件中配置Socket服务器地址：
+
+```bash
+# .env.development
+VITE_SOCKET_URL=ws://localhost:3001
+
+# .env.production
+VITE_SOCKET_URL=wss://your.socket.com
+```
+
+#### 基础使用
+
+```typescript
+import { SocketUtils } from '@/service/socket/utils'
+
+// 初始化连接
+await SocketUtils.initSocket()
+
+// 发送消息
+SocketUtils.sendMessage('Hello World!')
+
+// 监听消息
+SocketUtils.onMessage((message) => {
+  console.log('收到消息:', message)
+})
+
+// 断开连接
+SocketUtils.destroySocket()
+```
+
+#### 在Vue组件中使用
+
+```vue
+<template>
+  <div>
+    <div>连接状态: {{ connected ? '已连接' : '未连接' }}</div>
+    <button @click="sendMessage">发送消息</button>
+  </div>
+</template>
+
+<script setup>
+import { useSocketStatus, useSocketMessage } from '@/service/socket/utils'
+
+// 使用连接状态Hook
+const { status, connected, reconnect } = useSocketStatus()
+
+// 使用消息Hook
+const { messages, sendMessage } = useSocketMessage()
+</script>
+```
+
+### 🔧 主要API
+
+#### SocketManager 类
+
+- `connect(): Promise<void>` - 连接到Socket服务器
+- `disconnect(): void` - 断开连接
+- `emit<K>(event: K, data?: SocketEventMap[K]): void` - 发送事件
+- `on<K>(event: K, callback: Function): void` - 监听事件
+- `off<K>(event: K, callback?: Function): void` - 取消监听事件
+- `getStatus(): SocketStatus` - 获取连接状态
+- `isConnected(): boolean` - 检查是否已连接
+
+#### SocketUtils 工具类
+
+- `initSocket(): Promise<void>` - 初始化Socket连接
+- `destroySocket(): void` - 销毁Socket连接
+- `sendMessage(content: string): void` - 发送消息
+- `onMessage(callback: Function): void` - 监听消息
+- `joinRoom(roomId: string): void` - 加入房间
+- `leaveRoom(roomId: string): void` - 离开房间
+
+#### Vue Hooks
+
+**useSocketStatus()** - 监听Socket连接状态变化
+
+```typescript
+const { status, connected, reconnect } = useSocketStatus()
+```
+
+**useSocketMessage()** - 处理Socket消息
+
+```typescript
+const { messages, sendMessage, clearMessages } = useSocketMessage()
+```
+
+### 🎯 事件类型
+
+#### 系统事件
+
+- `connect` - 连接成功
+- `disconnect` - 连接断开
+- `connect_error` - 连接错误
+- `reconnect` - 重连成功
+- `reconnect_error` - 重连错误
+- `reconnect_failed` - 重连失败
+
+#### 业务事件
+
+- `message` - 消息事件
+- `notification` - 通知事件
+- `userOnline` / `userOffline` - 用户在线状态
+- `roomJoin` / `roomLeave` - 房间事件
+
+### ⚙️ 配置选项
+
+```typescript
+interface SocketConfig {
+  url?: string // Socket服务器URL
+  autoConnect?: boolean // 是否自动连接
+  reconnection?: boolean // 是否启用重连
+  reconnectionAttempts?: number // 最大重连次数
+  reconnectionDelay?: number // 重连延迟时间
+  timeout?: number // 连接超时时间
+  auth?: Record<string, any> // 认证信息
+}
+```
+
+### 🎯 最佳实践
+
+#### 应用启动时初始化
+
+```typescript
+// main.ts 或 App.vue
+import { SocketUtils } from '@/service/socket/utils'
+
+const initApp = async () => {
+  if (userStore.isLoggedIn) {
+    await SocketUtils.initSocket()
+  }
+}
+```
+
+#### 错误处理
+
+```typescript
+try {
+  await SocketUtils.initSocket()
+} catch (error) {
+  console.error('Socket连接失败:', error)
+}
+```
+
+#### 组件卸载时清理
+
+```typescript
+onUnmounted(() => {
+  SocketUtils.offMessage(handleMessage)
+  SocketUtils.offNotification(handleNotification)
+})
+```
+
+### 🔍 示例演示
+
+访问 `/demos/socket-demo` 查看完整的Socket.IO使用示例，包括：
+
+- 连接状态显示
+- 消息发送和接收
+- 通知处理
+- 错误处理
+- 房间管理
+
+### 📝 详细文档
+
+更多详细信息请查看 `src/service/socket/README.md` 文件，包含完整的API文档、配置选项、故障排除等内容。
+
 ## 📚 学习资源
 
 ### 官方文档
@@ -500,6 +703,7 @@ window.$loading?.complete()
 - [Naive UI 组件库](https://www.naiveui.com/)
 - [UnoCSS 文档](https://unocss.dev/)
 - [Pinia 状态管理](https://pinia.vuejs.org/)
+- [Socket.IO 官方文档](https://socket.io/docs/v4/)
 
 ## 🤝 参与贡献
 

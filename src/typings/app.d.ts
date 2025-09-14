@@ -154,6 +154,7 @@ declare namespace App {
         scrollDirect: string
         lazyDirect: string
         highlightDirect: string
+        demos: string
       }
       page: {
         about: {

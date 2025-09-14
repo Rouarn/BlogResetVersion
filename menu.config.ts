@@ -14,6 +14,12 @@ const FOLDER_DISPLAY_CONFIG: Partial<Record<keyof App.I18n.Schema['route'], Rout
     i18nKey: 'route.directives',
     hidden: true,
   },
+  demos: {
+    title: '功能演示',
+    icon: 'mdi:play-circle-outline',
+    order: 3,
+    i18nKey: 'route.demos',
+  },
 }
 
 export default FOLDER_DISPLAY_CONFIG

@@ -70,6 +70,7 @@ const local: App.I18n.Schema = {
     scrollDirect: 'Scroll Directive',
     lazyDirect: 'Lazy Loading Directive',
     highlightDirect: 'Highlight Directive',
+    demos: 'Demos',
   },
   page: {
     about: {
