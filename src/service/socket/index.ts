@@ -118,10 +118,10 @@ class SocketManager {
     if (!this.eventListeners.has(event as string)) {
       this.eventListeners.set(event as string, [])
     }
-    this.eventListeners.get(event as string)?.push(callback)
+    this.eventListeners.get(event as string)?.push(callback as (...args: unknown[]) => void)
 
     if (this.socket) {
-      this.socket.on(event as string, callback)
+      this.socket.on(event as string, callback as (data: unknown) => void)
     }
   }
 
@@ -131,11 +131,11 @@ class SocketManager {
   off<K extends keyof SocketEventMap>(event: K, callback?: (data: SocketEventMap[K]) => void): void {
     if (this.socket) {
       if (callback) {
-        this.socket.off(event as string, callback)
+        this.socket.off(event as string, callback as (data: unknown) => void)
         // 从本地监听器列表中移除
         const listeners = this.eventListeners.get(event as string)
         if (listeners) {
-          const index = listeners.indexOf(callback)
+          const index = listeners.indexOf(callback as (...args: unknown[]) => void)
           if (index > -1) {
             listeners.splice(index, 1)
           }

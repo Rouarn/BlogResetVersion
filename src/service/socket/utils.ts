@@ -117,7 +117,7 @@ export class SocketUtils {
   ): void {
     Object.entries(listeners).forEach(([event, callback]) => {
       if (callback) {
-        socketManager.on(event as keyof SocketEventMap, callback)
+        socketManager.on(event as keyof SocketEventMap, callback as (data: SocketEventMap[typeof event]) => void)
       }
     })
   }
