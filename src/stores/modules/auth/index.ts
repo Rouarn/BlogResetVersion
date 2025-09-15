@@ -12,7 +12,7 @@ const initialState = {
   token: '',
   userInfo: {
     userId: '',
-    userName: '',
+    useruame: '',
     nickname: '夏季',
     avatar: '',
     gender: '2' as const,
@@ -40,7 +40,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   const token = ref(getToken())
 
   // 用户信息
-  const userInfo: Api.Auth.UserInfo = reactive(initialState.userInfo)
+  const userInfo: Api.Auth.UserInfo = reactive(localStg.get('userInfo') ?? initialState.userInfo)
 
   // 是否已登录
   const isLogin = computed(() => Boolean(token.value))
@@ -52,28 +52,37 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
 
   const setUserInfo = (value: Api.Auth.UserInfo) => {
     Object.assign(userInfo, value)
+    localStg.set('userInfo', value)
   }
 
   /**
    * Login
    *
-   * @param userName User name
+   * @param useruame User name
    * @param password Password
    * @param [redirect=true]登录后是否重定向。默认为“true”
    */
-  async function login(userName: string, password: string, redirect = true) {
-    const { data } = await fetchLogin(userName, password)
-    setToken(data.accessToken)
-    const { data: userInfoData } = await fetchUserInfo()
-    setUserInfo(userInfoData)
+  async function login(useruame: string, password: string, redirect = true) {
+    const { data, error } = await fetchLogin(useruame.trim(), password.trim())
+    if (!error) {
+      setToken(data.accessToken)
+      const { data: userInfoData } = await fetchUserInfo()
+      setUserInfo(userInfoData)
 
-    await redirectFromLogin(redirect)
+      await redirectFromLogin(redirect)
 
-    window.$notification?.success({
-      title: '登录成功',
-      content: `欢迎回来：${userInfo.userName}`,
-      duration: 4500,
-    })
+      window.$notification?.success({
+        title: '登录成功',
+        content: `欢迎回来：${userInfo.nickname}`,
+        duration: 4500,
+      })
+    } else {
+      window.$notification?.error({
+        title: '登录失败',
+        content: error.message,
+        duration: 4500,
+      })
+    }
   }
 
   function $reset() {

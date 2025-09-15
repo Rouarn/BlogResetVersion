@@ -17,7 +17,7 @@ declare namespace Api {
 
     interface UserInfo {
       userId: string
-      userName: string
+      username: string
       nickname?: string
       avatar?: string
       gender?: '0' | '1' | '2' // 0: 女性, 1: 男性, 2: 未知

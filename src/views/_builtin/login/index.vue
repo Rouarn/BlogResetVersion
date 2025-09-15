@@ -7,8 +7,8 @@ defineOptions({
 
 const authStore = useAuthStore()
 
-const userName = ref('admin')
-const password = ref('123456')
+const userName = ref('newuser')
+const password = ref('password123')
 const isSuccess = ref(false)
 
 async function handleLogin() {

@@ -8,7 +8,6 @@ defineOptions({
 definePage({
   meta: {
     title: 'Loading 演示',
-    icon: 'mdi:loading',
   },
 })
 
