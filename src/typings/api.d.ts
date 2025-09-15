@@ -13,6 +13,8 @@ declare namespace Api {
     interface LoginToken {
       accessToken: string
       refreshToken: string
+      tokenType: string
+      expiresIn: number
     }
 
     interface UserInfo {
@@ -20,7 +22,7 @@ declare namespace Api {
       username: string
       nickname?: string
       avatar?: string
-      gender?: '0' | '1' | '2' // 0: 女性, 1: 男性, 2: 未知
+      gender?: 0 | 1 | 2 // 0: 男性, 1: 女性, 2: 未知
       mobile?: string
       email?: string
       bio?: string
@@ -28,6 +30,7 @@ declare namespace Api {
       city?: string
       profession?: string
       roles?: 'system_admin' | 'org_admin' | 'dept_admin' | 'project_admin' | 'power_user' | 'user' | 'viewer' | 'guest'
+      authId?: string
       lastLoginAt?: string
       lastLoginIp?: string
       loginAttempts?: number

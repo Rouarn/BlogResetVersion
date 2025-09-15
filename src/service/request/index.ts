@@ -9,7 +9,7 @@ import axios from 'axios'
 /* ---------------- 类型定义 ---------------- */
 export type ErrorType = 'overdue' | 'business' | 'network' | 'timeout' | 'cancel' | 'server'
 
-export type OptimizedResponse<T> = { error: true; errorType: ErrorType; data: null } | { error: false; errorType: null; data: T }
+export type OptimizedResponse<T> = { error: { message: string }; data: null } | { error: false | null; data: T }
 
 interface ExtendedAxiosResponse<T = unknown> extends AxiosResponse<App.Service.Response<T>> {
   __isError?: boolean
@@ -227,31 +227,30 @@ class RequestHttp {
   private transformResponse<T>(response: ExtendedAxiosResponse<T> | AxiosError<App.Service.Response>): OptimizedResponse<T> {
     if ('isAxiosError' in response) {
       // axios 层错误（超时、断网等）
-      return { data: null, error: true, errorType: 'network' }
+      return { data: null, error: { message: response.message || '网络错误' } }
     }
 
     if (response.__isError) {
-      // 业务错误（比如后端返回 code != 0）
-      return { data: null, error: true, errorType: response.__errorType ?? 'business' }
+      // 业务错误（比如后端返回 code != 200）
+      return { data: null, error: { message: response.data?.message || '请求失败' } }
     }
 
     if ((response.config as CustomAxiosRequestConfig)?.isDownload) {
       // 下载类请求，直接返回原始 response
-      return { data: response as unknown as T, error: false, errorType: null }
+      return { data: response as unknown as T, error: false }
     }
 
     const responseData = response.data?.data
 
     if (responseData === undefined || responseData === null) {
       // data 缺失，算业务错误
-      return { data: null, error: true, errorType: 'business' }
+      return { data: null, error: { message: '数据缺失' } }
     }
 
     // ✅ 此时 data 一定是 T
     return {
       data: responseData,
       error: false,
-      errorType: null,
     }
   }
 

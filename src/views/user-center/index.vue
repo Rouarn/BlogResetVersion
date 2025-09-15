@@ -26,7 +26,7 @@ const activeTab = ref('profile')
 const userForm = reactive({
   nickname: authStore.userInfo.nickname || '用户',
   avatar: authStore.userInfo.avatar || '',
-  gender: authStore.userInfo.gender || '2',
+  gender: (authStore.userInfo.gender ?? 2) as 0 | 1 | 2,
   mobile: authStore.userInfo.mobile || '',
   email: authStore.userInfo.email || '',
   bio: authStore.userInfo.bio || '',
@@ -37,16 +37,16 @@ const userForm = reactive({
 
 // 密码修改表单
 const passwordForm = reactive({
-  currentPassword: '',
+  oldPassword: '',
   newPassword: '',
   confirmPassword: '',
 })
 
 // 性别选项
 const genderOptions = [
-  { label: '女性', value: '0' },
-  { label: '男性', value: '1' },
-  { label: '保密', value: '2' },
+  { label: '男性', value: 0 },
+  { label: '女性', value: 1 },
+  { label: '保密', value: 2 },
 ]
 
 // 角色映射
@@ -74,7 +74,7 @@ const rules: FormRules = {
 
 // 密码验证规则
 const passwordRules: FormRules = {
-  currentPassword: [{ required: true, message: '请输入当前密码', trigger: 'blur' }],
+  oldPassword: [{ required: true, message: '请输入当前密码', trigger: 'blur' }],
   newPassword: [
     { required: true, message: '请输入新密码', trigger: 'blur' },
     { min: 6, message: '密码最少 6 个字符', trigger: 'blur' },
@@ -115,7 +115,7 @@ function handleCancel() {
   Object.assign(userForm, {
     nickname: authStore.userInfo.nickname || '用户',
     avatar: authStore.userInfo.avatar || '',
-    gender: authStore.userInfo.gender || '2',
+    gender: (authStore.userInfo.gender ?? 2) as 0 | 1 | 2,
     mobile: authStore.userInfo.mobile || '',
     email: authStore.userInfo.email || '',
     bio: authStore.userInfo.bio || '',
@@ -135,10 +135,11 @@ async function handleSave() {
     const saveData = {
       ...userForm,
       birthday: userForm.birthday ? new Date(userForm.birthday).toISOString().split('T')[0] : '',
+      gender: Number(userForm.gender) as 0 | 1 | 2, // 确保gender为正确的联合类型
     }
 
     // 调用更新用户信息的 API
-    await updateUserInfo(saveData)
+    await updateUserInfo(authStore.userInfo.userId, saveData)
 
     // 更新本地状态
     authStore.setUserInfo({
@@ -157,19 +158,23 @@ async function handleSave() {
 async function handlePasswordChange() {
   try {
     // 调用修改密码的 API
-    await changePassword({
-      currentPassword: passwordForm.currentPassword,
+    const result = await changePassword({
+      oldPassword: passwordForm.oldPassword,
       newPassword: passwordForm.newPassword,
+      confirmPassword: passwordForm.confirmPassword,
     })
 
-    // 清空表单
-    Object.assign(passwordForm, {
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
-    })
-
-    window.$message?.success('密码修改成功')
+    if (!result.error) {
+      // 清空表单
+      Object.assign(passwordForm, {
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      })
+      window.$message?.success(result.data?.message || '密码修改成功')
+    } else {
+      window.$message?.error(result.error.message || '密码修改失败')
+    }
   } catch (error) {
     console.error('密码修改失败:', error)
     window.$message?.error('密码修改失败，请检查当前密码是否正确')
@@ -178,45 +183,43 @@ async function handlePasswordChange() {
 
 // 头像上传
 function handleAvatarUpload(options: { file: UploadFileInfo }) {
-  const file = options.file.file
-  if (!file) return Promise.reject(new Error('文件不存在'))
+  console.log('file: ', options.file)
+  const file = options.file.file || options.file
+  if (!file) {
+    console.error('文件获取失败:', options)
+    return Promise.reject(new Error('文件不存在'))
+  }
 
   // 验证文件类型
-  if (!file.type.startsWith('image/')) {
+  if (!file.type?.startsWith('image/')) {
     window.$message?.error('请选择图片文件')
     return Promise.reject(new Error('文件类型错误'))
   }
 
-  // 验证文件大小 (2MB)
-  const maxSize = 2 * 1024 * 1024
-  if (file.size > maxSize) {
-    window.$message?.error('图片大小不能超过 2MB')
+  // 验证文件大小 (10MB)
+  const maxSize = 10 * 1024 * 1024
+  if ((file as File).size > maxSize) {
+    window.$message?.error('图片大小不能超过 10MB')
     return Promise.reject(new Error('文件大小超限'))
   }
-
-  // 立即预览图片，提升用户体验
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    if (e.target?.result) {
-      userForm.avatar = e.target.result as string
-    }
-  }
-  reader.readAsDataURL(file)
 
   // 上传到服务器
   return uploadAvatar(file)
     .then((res) => {
-      if (res.data?.avatarUrl) {
-        // 使用服务器返回的URL替换本地预览
-        userForm.avatar = res.data.avatarUrl
+      if (res.data && res.data.downloadUrl) {
+        // 使用服务器返回的URL
+        userForm.avatar = res.data.downloadUrl
+        authStore.setUserInfo({
+          ...authStore.userInfo,
+          avatar: res.data.downloadUrl,
+        })
         window.$message?.success('头像上传成功')
       }
     })
     .catch((error) => {
       console.error('头像上传失败:', error)
-      // 上传失败时保持本地预览
-      window.$message?.error('头像上传失败，但本地预览已保留')
-      // 不抛出错误，让用户可以继续操作
+      window.$message?.error('头像上传失败，请重试')
+      throw error
     })
 }
 
@@ -260,7 +263,7 @@ function formatDate(dateStr?: string) {
             <!-- 基本信息 -->
             <div class="space-y-2">
               <h3 class="text-xl font-semibold text-gray-800">{{ userForm.nickname }}</h3>
-              <p class="text-gray-600">@{{ authStore.userInfo.userName }}</p>
+              <p class="text-gray-600">@{{ authStore.userInfo.username }}</p>
               <NTag :type="statusType" size="small">
                 {{ statusText }}
               </NTag>
@@ -276,8 +279,8 @@ function formatDate(dateStr?: string) {
                 <NTag type="info" size="small">{{ userRoleName }}</NTag>
               </div>
               <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-600">用户ID</span>
-                <span class="text-xs text-gray-500 font-mono">{{ authStore.userInfo.userId }}</span>
+                <span class="text-sm text-gray-600 whitespace-nowrap mr-3">用户ID</span>
+                <span class="text-xs text-gray-500 font-mono ellipsis-text">{{ authStore.userInfo.userId }}</span>
               </div>
             </div>
           </div>
@@ -374,9 +377,9 @@ function formatDate(dateStr?: string) {
                 <h2 class="text-lg font-semibold text-gray-800 mb-6">修改密码</h2>
 
                 <NForm :model="passwordForm" :rules="passwordRules" label-placement="left" label-width="120">
-                  <NFormItem label="当前密码" path="currentPassword">
+                  <NFormItem label="当前密码" path="oldPassword">
                     <NInput
-                      v-model:value="passwordForm.currentPassword"
+                      v-model:value="passwordForm.oldPassword"
                       type="password"
                       show-password-on="click"
                       placeholder="请输入当前密码"
