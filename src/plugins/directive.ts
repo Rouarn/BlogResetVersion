@@ -8,6 +8,7 @@ import highlight from '@/directives/highlight'
 import lazy from '@/directives/lazy'
 import loading from '@/directives/loading'
 import longpress from '@/directives/longpress'
+import mask from '@/directives/mask'
 import permission from '@/directives/permission'
 import ripple from '@/directives/ripple'
 import scroll from '@/directives/scroll'
@@ -26,6 +27,7 @@ const directivesList: { [key: string]: Directive } = {
   focus,
   clickoutside,
   loading,
+  mask,
   permission,
   lazy,
   highlight,

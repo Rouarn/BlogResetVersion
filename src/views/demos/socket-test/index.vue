@@ -136,7 +136,7 @@ const addMessage = (message: string) => {
 
 // 计算属性
 const socketId = computed(() => socketManager.getSocketId())
-const socketUrl = computed(() => import.meta.env.VITE_WEBSOCKET_URL || 'http://localhost:8898')
+const socketUrl = computed(() => import.meta.env.VITE_SOCKET_URL || 'http://localhost:8898')
 
 const statusClass = computed(() => {
   switch (connectionStatus.value) {

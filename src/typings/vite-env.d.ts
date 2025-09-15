@@ -30,6 +30,8 @@ declare namespace Env {
     readonly VITE_ROUTER_MODE: RouterHistoryMode
     /** The prefix of the storage key */
     readonly VITE_STORAGE_PREFIX: string
+    /** The socket url */
+    readonly VITE_SOCKET_URL: string
     /** The node environment */
     readonly VITE_USER_NODE_ENV: 'development' | 'production'
     /** Whether to enable the Vue DevTools */

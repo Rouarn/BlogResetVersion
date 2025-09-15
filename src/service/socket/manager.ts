@@ -74,9 +74,13 @@ export class SocketManager {
       })
 
       // 创建 Socket 实例
-      const socketUrl = this.config.namespace ? `${this.config.url}${this.config.namespace}` : this.config.url
+      const socketUrl = this.config.url
+      const options = {
+        ...this.config.options,
+        ...(this.config.namespace && { forceNew: true }),
+      }
 
-      this.socket = io(socketUrl, this.config.options)
+      this.socket = this.config.namespace ? io(socketUrl + this.config.namespace, options) : io(socketUrl, options)
 
       // 设置事件监听器
       this.setupEventListeners()
@@ -515,7 +519,7 @@ export class SocketManager {
 
 // 创建全局 Socket 管理实例
 const defaultConfig: SocketConfig = {
-  url: import.meta.env.VITE_WEBSOCKET_URL || 'http://localhost:8898',
+  url: import.meta.env.VITE_SOCKET_URL || 'http://localhost:8898',
   namespace: '/ws',
   options: {
     autoConnect: false,

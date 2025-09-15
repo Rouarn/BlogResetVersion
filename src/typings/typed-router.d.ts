@@ -31,6 +31,7 @@ declare module 'vue-router/auto-routes' {
     '/directives/lazy-direct/': RouteRecordInfo<'/directives/lazy-direct/', '/directives/lazy-direct', Record<never, never>, Record<never, never>>,
     '/directives/loading-direct/': RouteRecordInfo<'/directives/loading-direct/', '/directives/loading-direct', Record<never, never>, Record<never, never>>,
     '/directives/longpress-direct/': RouteRecordInfo<'/directives/longpress-direct/', '/directives/longpress-direct', Record<never, never>, Record<never, never>>,
+    '/directives/mask-direct/': RouteRecordInfo<'/directives/mask-direct/', '/directives/mask-direct', Record<never, never>, Record<never, never>>,
     '/directives/permission-direct/': RouteRecordInfo<'/directives/permission-direct/', '/directives/permission-direct', Record<never, never>, Record<never, never>>,
     '/directives/ripple-direct/': RouteRecordInfo<'/directives/ripple-direct/', '/directives/ripple-direct', Record<never, never>, Record<never, never>>,
     '/directives/scroll-direct/': RouteRecordInfo<'/directives/scroll-direct/', '/directives/scroll-direct', Record<never, never>, Record<never, never>>,
@@ -102,6 +103,10 @@ declare module 'vue-router/auto-routes' {
     }
     'src/views/directives/longpress-direct/index.vue': {
       routes: '/directives/longpress-direct/'
+      views: never
+    }
+    'src/views/directives/mask-direct/index.vue': {
+      routes: '/directives/mask-direct/'
       views: never
     }
     'src/views/directives/permission-direct/index.vue': {
