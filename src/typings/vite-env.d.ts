@@ -32,6 +32,8 @@ declare namespace Env {
     readonly VITE_STORAGE_PREFIX: string
     /** The socket url */
     readonly VITE_SOCKET_URL: string
+    /** The socket namespace */
+    readonly VITE_SOCKET_NAMESPACE: string
     /** The node environment */
     readonly VITE_USER_NODE_ENV: 'development' | 'production'
     /** Whether to enable the Vue DevTools */

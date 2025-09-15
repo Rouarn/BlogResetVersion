@@ -11,7 +11,7 @@
 
     <div class="control-panel">
       <div class="connection-controls">
-        <NButton type="primary" :disabled="isConnected" :loading="connectionStatus === '连接中'" @click="connect"> 连接服务器 </NButton>
+        <NButton type="primary" :disabled="isConnected" :loading="isConnecting" @click="connect"> 连接服务器 </NButton>
         <NButton type="error" :disabled="!isConnected" @click="disconnect"> 断开连接 </NButton>
       </div>
 
@@ -49,9 +49,10 @@
         <span>消息日志</span>
         <NButton size="small" @click="clearMessages">清空</NButton>
       </div>
-      <div class="message-list" ref="messageListRef">
+      <div ref="messageListRef" class="message-list">
         <div v-for="(message, index) in messages" :key="index" class="message-item">
-          {{ message }}
+          <span class="message-time">{{ formatTime(message.timestamp) }}</span>
+          <span class="message-content">{{ message.content }}</span>
         </div>
         <div v-if="messages.length === 0" class="empty-message">暂无消息</div>
       </div>
@@ -67,23 +68,11 @@
             </div>
             <div class="debug-item">
               <span class="debug-label">命名空间:</span>
-              <span class="debug-value">/ws</span>
+              <span class="debug-value">{{ socketNamespace }}</span>
             </div>
             <div class="debug-item">
               <span class="debug-label">传输方式:</span>
               <span class="debug-value">websocket, polling</span>
-            </div>
-            <div class="debug-item">
-              <span class="debug-label">重连次数:</span>
-              <span class="debug-value">{{ connectionInfo.reconnectCount }}</span>
-            </div>
-            <div class="debug-item">
-              <span class="debug-label">连接时间:</span>
-              <span class="debug-value">{{ formatTime(connectionInfo.connectedAt) }}</span>
-            </div>
-            <div class="debug-item">
-              <span class="debug-label">最后活跃:</span>
-              <span class="debug-value">{{ formatTime(connectionInfo.lastActiveAt) }}</span>
             </div>
           </div>
         </NCollapseItem>
@@ -94,7 +83,6 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
-import type { ConnectionInfo, SendMessageData, WebSocketError, WebSocketMessage } from '@/service/socket'
 import { socketManager } from '@/service/socket'
 
 definePage({
@@ -104,27 +92,40 @@ definePage({
   },
 })
 
+// 响应式数据
 const isConnected = ref(false)
-const messages = ref<string[]>([])
+const isConnecting = ref(false)
+const messages = ref<Array<{ content: string; timestamp: number }>>([])
 const newMessage = ref('')
 const connectionStatus = ref('未连接')
 const currentRoom = ref('test-room')
 const joinedRooms = ref<string[]>([])
-const connectionInfo = ref<ConnectionInfo>({
-  status: 'disconnected',
-  reconnectCount: 0,
-})
 const messageListRef = ref<HTMLElement>()
 
-// 添加消息到列表
-const addMessage = (message: string) => {
-  const timestamp = new Date().toLocaleTimeString()
-  messages.value.push(`[${timestamp}] ${message}`)
+// 计算属性
+const socketId = computed(() => socketManager.getSocketId())
+const socketUrl = computed(() => import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000')
+const socketNamespace = computed(() => import.meta.env.VITE_SOCKET_NAMESPACE || '/ws')
 
-  // 限制消息数量
-  if (messages.value.length > 100) {
-    messages.value = messages.value.slice(-100)
+const statusClass = computed(() => {
+  switch (connectionStatus.value) {
+    case '已连接':
+      return 'status-connected'
+    case '连接中':
+      return 'status-connecting'
+    case '连接错误':
+      return 'status-error'
+    default:
+      return 'status-disconnected'
   }
+})
+
+// 添加消息到列表
+function addMessage(content: string) {
+  messages.value.push({
+    content,
+    timestamp: Date.now(),
+  })
 
   // 自动滚动到底部
   nextTick(() => {
@@ -134,217 +135,139 @@ const addMessage = (message: string) => {
   })
 }
 
-// 计算属性
-const socketId = computed(() => socketManager.getSocketId())
-const socketUrl = computed(() => import.meta.env.VITE_SOCKET_URL || 'http://localhost:8898')
+// 格式化时间
+function formatTime(timestamp?: number): string {
+  if (!timestamp) return '--'
+  return new Date(timestamp).toLocaleTimeString()
+}
 
-const statusClass = computed(() => {
-  switch (connectionStatus.value) {
-    case '已连接':
-      return 'status-connected'
-    case '连接中':
-      return 'status-connecting'
-    case '重连中':
-      return 'status-reconnecting'
-    case '连接错误':
-      return 'status-error'
-    default:
-      return 'status-disconnected'
-  }
-})
+// 设置事件监听
+function setupEventListeners() {
+  const socket = socketManager.getSocket()
+  if (!socket) return
 
-// 连接状态监听
-const updateConnectionStatus = () => {
-  isConnected.value = socketManager.isConnected()
-  const status = socketManager.getStatus()
+  // 监听服务器消息
+  socket.on('message', (data: unknown) => {
+    addMessage(`[服务器消息] ${JSON.stringify(data)}`)
+  })
 
-  switch (status) {
-    case 'connected':
-      connectionStatus.value = '已连接'
-      break
-    case 'connecting':
-      connectionStatus.value = '连接中'
-      break
-    case 'reconnecting':
-      connectionStatus.value = '重连中'
-      break
-    case 'error':
-      connectionStatus.value = '连接错误'
-      break
-    default:
-      connectionStatus.value = '未连接'
-  }
+  // 监听房间消息
+  socket.on('room_message', (data: { room: string; content: string }) => {
+    addMessage(`[房间消息] ${data.room}: ${data.content}`)
+  })
 
-  joinedRooms.value = socketManager.getJoinedRooms().map((room) => room.id)
-  connectionInfo.value = socketManager.getConnectionInfo()
+  // 监听房间事件
+  socket.on('room_joined', (data: { room: string }) => {
+    addMessage(`[房间事件] 加入房间成功: ${data.room}`)
+  })
+
+  socket.on('room_left', (data: { room: string }) => {
+    addMessage(`[房间事件] 离开房间: ${data.room}`)
+  })
+
+  // 监听通知
+  socket.on('notification', (data: { title: string; content: string }) => {
+    addMessage(`[通知] ${data.title}: ${data.content}`)
+  })
+
+  // 监听连接断开
+  socket.on('disconnect', (reason: string) => {
+    isConnected.value = false
+    connectionStatus.value = '未连接'
+    joinedRooms.value = []
+    addMessage(`连接断开: ${reason}`)
+  })
+
+  // 监听连接错误
+  socket.on('connect_error', (error: Error) => {
+    connectionStatus.value = '连接错误'
+    addMessage(`连接错误: ${error.message}`)
+  })
 }
 
 // 连接到服务器
-const connect = async () => {
+async function connect() {
   try {
-    console.log('尝试连接到 WebSocket 服务器...')
-    console.log('连接路径: /ws')
-    console.log('Socket URL:', socketUrl.value)
-    console.log('当前连接状态:', socketManager.getStatus())
-    console.log('Socket已连接:', socketManager.isConnected())
+    isConnecting.value = true
+    connectionStatus.value = '连接中'
+    addMessage('正在连接到服务器...')
 
     await socketManager.connect()
-    updateConnectionStatus()
-    addMessage('✅ 连接成功!')
-  } catch (error: unknown) {
+
+    isConnected.value = true
+    connectionStatus.value = '已连接'
+    addMessage(`连接成功！Socket ID: ${socketManager.getSocketId()}`)
+
+    // 设置事件监听
+    setupEventListeners()
+  } catch (error) {
+    connectionStatus.value = '连接错误'
+    addMessage(`连接失败: ${error}`)
     console.error('连接失败:', error)
-    addMessage(`❌ 连接失败: ${error instanceof Error ? error.message : String(error)}`)
-    updateConnectionStatus()
+  } finally {
+    isConnecting.value = false
   }
 }
 
 // 断开连接
-const disconnect = () => {
+function disconnect() {
   socketManager.disconnect()
-  updateConnectionStatus()
-  addMessage('🔌 已断开连接')
+  isConnected.value = false
+  connectionStatus.value = '未连接'
+  joinedRooms.value = []
+  addMessage('已断开连接')
 }
 
 // 加入房间
-const joinRoom = async () => {
-  if (!socketManager.isConnected()) {
-    addMessage('❌ 请先连接到服务器')
+function joinRoom() {
+  if (!currentRoom.value.trim()) return
+
+  const roomId = currentRoom.value.trim()
+  if (joinedRooms.value.includes(roomId)) {
+    addMessage(`已经在房间 ${roomId} 中`)
     return
   }
 
-  if (!currentRoom.value.trim()) {
-    addMessage('❌ 请输入房间名称')
-    return
-  }
-
-  try {
-    await socketManager.joinRoom({
-      roomId: currentRoom.value,
-      userId: 'test-user-' + Date.now(),
-      userInfo: {
-        name: '测试用户',
-        role: 'user',
-      },
-    })
-    addMessage(`🏠 成功加入房间: ${currentRoom.value}`)
-    updateConnectionStatus()
-  } catch (error: unknown) {
-    addMessage(`❌ 加入房间失败: ${error instanceof Error ? error.message : String(error)}`)
-  }
+  socketManager.joinRoom(roomId)
+  joinedRooms.value.push(roomId)
+  addMessage(`加入房间: ${roomId}`)
+  currentRoom.value = ''
 }
 
 // 离开房间
-const leaveRoom = async (roomId: string) => {
-  try {
-    await socketManager.leaveRoom({
-      roomId,
-      userId: 'test-user',
-    })
-    addMessage(`🚪 离开房间: ${roomId}`)
-    updateConnectionStatus()
-  } catch (error: unknown) {
-    addMessage(`❌ 离开房间失败: ${error instanceof Error ? error.message : String(error)}`)
-  }
+function leaveRoom(roomId: string) {
+  socketManager.leaveRoom(roomId)
+  joinedRooms.value = joinedRooms.value.filter((room) => room !== roomId)
+  addMessage(`离开房间: ${roomId}`)
 }
 
 // 发送消息
-const sendMessage = async () => {
-  if (!newMessage.value.trim()) return
+function sendMessage() {
+  if (!newMessage.value.trim() || joinedRooms.value.length === 0) return
 
-  if (!socketManager.isConnected()) {
-    addMessage('❌ 请先连接到服务器')
-    return
-  }
+  const message = newMessage.value.trim()
+  const room = joinedRooms.value[0] // 发送到第一个房间
 
-  if (joinedRooms.value.length === 0) {
-    addMessage('❌ 请先加入一个房间')
-    return
-  }
-
-  try {
-    const messageData: SendMessageData = {
-      content: newMessage.value,
-      room: joinedRooms.value[0], // 发送到第一个房间
-      messageType: 'text',
-      metadata: {
-        timestamp: Date.now(),
-      },
-    }
-
-    await socketManager.sendMessage(messageData)
-    addMessage(`📤 发送到 ${joinedRooms.value[0]}: ${newMessage.value}`)
-    newMessage.value = ''
-  } catch (error: unknown) {
-    addMessage(`❌ 发送失败: ${error instanceof Error ? error.message : String(error)}`)
-  }
+  socketManager.sendMessage(room, message)
+  addMessage(`[${room}] 我: ${message}`)
+  newMessage.value = ''
 }
 
 // 清空消息
-const clearMessages = () => {
+function clearMessages() {
   messages.value = []
 }
 
-// 格式化时间
-const formatTime = (date?: Date) => {
-  if (!date) return '-'
-  return date.toLocaleString('zh-CN')
-}
-
-// 组件挂载时设置事件监听
+// 组件挂载时的初始化
 onMounted(() => {
-  // 监听连接事件
-  socketManager.on('connect', () => {
-    addMessage('🔗 Socket 连接成功')
-    updateConnectionStatus()
-  })
-
-  socketManager.on('disconnect', (reason: string) => {
-    addMessage(`🔌 Socket 连接断开: ${reason}`)
-    updateConnectionStatus()
-  })
-
-  socketManager.on('connect_error', (error: Error) => {
-    addMessage(`❌ 连接错误: ${error.message}`)
-    updateConnectionStatus()
-  })
-
-  // 监听服务器消息
-  socketManager.on('connected', (data: WebSocketMessage) => {
-    addMessage(`📥 服务器连接确认: ${JSON.stringify(data.data)}`)
-  })
-
-  socketManager.on('error', (error: WebSocketError) => {
-    addMessage(`❌ 服务器错误: ${error.message}`)
-  })
-
-  // 监听房间事件
-  socketManager.on('room-joined', (data: { room: string; members: number }) => {
-    addMessage(`🏠 房间加入成功: ${data.room} (成员数: ${data.members})`)
-    updateConnectionStatus()
-  })
-
-  socketManager.on('room-left', (data: { room: string }) => {
-    addMessage(`🚪 房间离开成功: ${data.room}`)
-    updateConnectionStatus()
-  })
-
-  socketManager.on('room-message', (data: WebSocketMessage<SendMessageData>) => {
-    addMessage(`📥 房间消息: ${data.data.content} (来自: ${data.senderId})`)
-  })
-
-  // 监听通知
-  socketManager.on('notification', (data: unknown) => {
-    const notificationData = data as { title?: string; content?: string }
-    addMessage(`🔔 系统通知: ${notificationData.title || '未知'} - ${notificationData.content || '无内容'}`)
-  })
-
-  // 初始状态更新
-  updateConnectionStatus()
+  addMessage('WebSocket 测试页面已加载')
 })
 
 // 组件卸载时清理
 onUnmounted(() => {
-  socketManager.disconnect()
+  if (isConnected.value) {
+    socketManager.disconnect()
+  }
 })
 </script>
 
@@ -356,16 +279,13 @@ onUnmounted(() => {
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 20px;
   padding-bottom: 15px;
   border-bottom: 1px solid #e0e0e0;
 }
 
 .header h2 {
-  margin: 0;
+  margin: 0 0 10px 0;
   color: #333;
 }
 
@@ -383,8 +303,8 @@ onUnmounted(() => {
 .status-value {
   padding: 4px 8px;
   border-radius: 4px;
-  font-weight: 500;
   font-size: 12px;
+  font-weight: 500;
 }
 
 .status-connected {
@@ -399,12 +319,6 @@ onUnmounted(() => {
   border: 1px solid #91d5ff;
 }
 
-.status-reconnecting {
-  background-color: #fff7e6;
-  color: #fa8c16;
-  border: 1px solid #ffd591;
-}
-
 .status-error {
   background-color: #fff2f0;
   color: #ff4d4f;
@@ -413,14 +327,17 @@ onUnmounted(() => {
 
 .status-disconnected {
   background-color: #f5f5f5;
-  color: #8c8c8c;
+  color: #999;
   border: 1px solid #d9d9d9;
 }
 
 .socket-id {
-  font-size: 12px;
-  color: #999;
   font-family: monospace;
+  font-size: 12px;
+  color: #666;
+  background-color: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
 }
 
 .control-panel {
@@ -428,9 +345,6 @@ onUnmounted(() => {
   flex-direction: column;
   gap: 15px;
   margin-bottom: 20px;
-  padding: 20px;
-  background-color: #fafafa;
-  border-radius: 8px;
 }
 
 .connection-controls {
@@ -454,7 +368,6 @@ onUnmounted(() => {
 .rooms-label {
   font-size: 14px;
   color: #666;
-  font-weight: 500;
 }
 
 .message-controls {
@@ -463,6 +376,8 @@ onUnmounted(() => {
 }
 
 .message-panel {
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
   margin-bottom: 20px;
 }
 
@@ -470,33 +385,45 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  padding: 10px 15px;
+  background-color: #fafafa;
+  border-bottom: 1px solid #e0e0e0;
   font-weight: 500;
-  color: #333;
 }
 
 .message-list {
   height: 300px;
   overflow-y: auto;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
   padding: 10px;
-  background-color: #fff;
-  font-family: monospace;
-  font-size: 13px;
-  line-height: 1.4;
 }
 
 .message-item {
-  margin-bottom: 5px;
-  word-break: break-all;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+  padding: 8px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.message-time {
+  color: #999;
+  font-size: 12px;
+  white-space: nowrap;
+  min-width: 80px;
+}
+
+.message-content {
+  flex: 1;
+  word-break: break-word;
 }
 
 .empty-message {
   text-align: center;
   color: #999;
+  padding: 40px;
   font-style: italic;
-  margin-top: 50px;
 }
 
 .debug-panel {
@@ -504,51 +431,27 @@ onUnmounted(() => {
 }
 
 .debug-info {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .debug-item {
   display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px solid #f0f0f0;
+  gap: 10px;
 }
 
 .debug-label {
   font-weight: 500;
   color: #666;
+  min-width: 100px;
 }
 
 .debug-value {
   font-family: monospace;
   color: #333;
-  word-break: break-all;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .socket-test-container {
-    padding: 10px;
-  }
-
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .control-panel {
-    padding: 15px;
-  }
-
-  .connection-controls {
-    flex-direction: column;
-  }
-
-  .debug-info {
-    grid-template-columns: 1fr;
-  }
+  background-color: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
 }
 </style>
