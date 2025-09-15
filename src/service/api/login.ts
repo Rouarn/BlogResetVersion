@@ -11,12 +11,6 @@ export function fetchLogin(username: string, password: string) {
     username,
     password,
   })
-  // 开发环境模拟数据（生产环境请移除）
-  return Promise.resolve({
-    code: 200,
-    data: { accessToken: '123456', username, password },
-    message: 'success',
-  })
 }
 
 /**
@@ -24,13 +18,4 @@ export function fetchLogin(username: string, password: string) {
  */
 export function fetchUserInfo() {
   return request.get<Api.Auth.UserInfo>(`${servicePort.auth}/getUserInfo`)
-  // 开发环境模拟数据（生产环境请移除）
-  return Promise.resolve({
-    code: 200,
-    data: {
-      userId: '123456',
-      userName: 'admin',
-    },
-    message: 'success',
-  })
 }

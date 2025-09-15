@@ -12,7 +12,7 @@ const initialState = {
   token: '',
   userInfo: {
     userId: '',
-    useruame: '',
+    username: '',
     nickname: '夏季',
     avatar: '',
     gender: '2' as const,
@@ -67,19 +67,13 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     if (!error) {
       setToken(data.accessToken)
       const { data: userInfoData } = await fetchUserInfo()
-      setUserInfo(userInfoData)
+      setUserInfo(userInfoData ?? initialState.userInfo)
 
       await redirectFromLogin(redirect)
 
       window.$notification?.success({
         title: '登录成功',
         content: `欢迎回来：${userInfo.nickname}`,
-        duration: 4500,
-      })
-    } else {
-      window.$notification?.error({
-        title: '登录失败',
-        content: error.message,
         duration: 4500,
       })
     }
