@@ -2,15 +2,6 @@
 import { useRouter } from 'vue-router'
 import pkg from '~/package.json'
 
-definePage({
-  meta: {
-    title: '首页',
-    i18nKey: 'route.home',
-    order: 0,
-    icon: 'material-symbols:home-app-logo',
-  },
-})
-
 const router = useRouter()
 
 const features = [

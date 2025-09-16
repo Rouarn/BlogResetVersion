@@ -2,16 +2,11 @@ import { createMemoryHistory, createRouter, createWebHashHistory, createWebHisto
 import { errorRouter, staticRouter } from '@/router/modules/static-router'
 import { useAppStore } from '@/stores/modules/app'
 import { useAuthStore } from '@/stores/modules/auth'
-import { useRouteStore } from '@/stores/modules/route'
 import { GlobalConfig } from '@/enum'
 import { $t } from '@/locales'
 import { useFullscreen, useTitle } from '@vueuse/core'
-import { setupLayouts } from 'virtual:generated-layouts'
-import { handleHotUpdate, routes } from 'vue-router/auto-routes'
 
 const mode = import.meta.env.VITE_ROUTER_MODE as 'hash' | 'history' | 'memory'
-
-const layoutRoutes = setupLayouts(routes)
 
 const routerMode = {
   hash: () => createWebHashHistory(),
@@ -45,22 +40,18 @@ const routerMode = {
  * */
 const router = createRouter({
   history: routerMode[mode](),
-  routes: [...layoutRoutes, ...staticRouter, ...errorRouter],
+  routes: [...staticRouter, ...errorRouter],
   strict: false,
   scrollBehavior: () => ({ left: 0, top: 0 }),
 })
-
-// 热更新
-if (import.meta.hot) {
-  handleHotUpdate(router)
-}
 
 /**
  * @description 路由拦截 beforeEach
  * */
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
-  const routeStore = useRouteStore()
+
+  console.log('to: ', router.getRoutes())
 
   // 1.NProgress 开始
   window.NProgress?.start?.()
@@ -73,9 +64,6 @@ router.beforeEach(async (to, from, next) => {
   useTitle(documentTitle)
 
   // 3.初始化路由菜单 (提供给header菜单使用,路由使用的是基于文件自动生成的)
-  if (!routeStore.isInitConstantRoute) {
-    await routeStore.initRoute(layoutRoutes)
-  }
 
   // 4.检查是否需要授权
   if (to.meta.isAuth) {

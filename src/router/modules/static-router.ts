@@ -26,6 +26,25 @@ export const staticRouter: RouteRecordRaw[] = [
       title: 'iframe',
     },
   },
+  {
+    path: '/root',
+    name: 'root',
+    redirect: GlobalConfig.HOME_URL,
+    component: () => import('@/layouts/components/base-layout.vue'),
+    meta: {
+      title: '首页',
+    },
+    children: [
+      {
+        path: GlobalConfig.HOME_URL,
+        name: GlobalConfig.HOME_URL,
+        component: () => import('@/views/home/index.vue'),
+        meta: {
+          title: '首页',
+        },
+      },
+    ],
+  },
 ]
 
 /**

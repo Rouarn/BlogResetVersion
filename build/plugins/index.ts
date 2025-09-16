@@ -2,7 +2,6 @@ import { setupAutoImportPlugin } from './autoImport'
 import { setupComponentsPlugin } from './components'
 import { setupHtmlPlugin } from './htmlPlugin'
 import { setupIconsPlugin } from './icons'
-import { setupLayoutsPlugin } from './layouts'
 import { setupProgressPlugin } from './progress'
 import { setupPWAPlugin } from './pwa'
 import { setupSvgIconsPlugin } from './svgIcons'
@@ -10,7 +9,6 @@ import { setupUnocssPlugin } from './unocss'
 import { setupVuePlugin } from './vue'
 import { setupVueDevToolsPlugin } from './vueDevTools'
 import { setupVueJsxPlugin } from './vueJsx'
-import { setupVueRouterPlugin } from './vueRouter'
 import path from 'path'
 import type { PluginOption } from 'vite'
 
@@ -24,10 +22,8 @@ export function setupVitePlugins(viteEnv: Env.ImportMeta, buildTime: string): Pl
   const collectionName = VITE_ICON_LOCAL_PREFIX.replace(`${VITE_ICON_PREFIX}-`, '')
 
   const plugins: PluginOption[] = [
-    setupVueRouterPlugin(),
     setupVuePlugin(),
     setupVueJsxPlugin(),
-    setupLayoutsPlugin(),
     setupVueDevToolsPlugin(String(VITE_DEVTOOLS_LAUNCH_EDITOR)),
     setupUnocssPlugin(VITE_ICON_PREFIX, localIconPath, collectionName),
     setupProgressPlugin(),

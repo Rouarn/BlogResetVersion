@@ -1,5 +1,5 @@
 import { fetchGetUserRoutes } from '@/service/api'
-import { generateSimpleMenus, getCacheRouteNames, transformMenuToSearchMenus, updateMenuLocale } from './shared'
+import { generateMenus, getCacheRouteNames, transformMenuToSearchMenus, updateMenuLocale } from './shared'
 import { SetupStoreId } from '@/enum'
 import useBoolean from '@/hooks/common/use-boolean'
 import { defineStore } from 'pinia'
@@ -21,7 +21,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
    * @param routes Vue routes
    */
   function getGlobalMenus(routes: RouteRecordRaw[]) {
-    menus.value = generateSimpleMenus(routes)
+    menus.value = generateMenus(routes)
   }
 
   /** Update global menus by locale */
