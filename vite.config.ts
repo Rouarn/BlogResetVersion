@@ -42,8 +42,7 @@ export default defineConfig((configEnv) => {
       port: 9725,
     },
     esbuild: {
-      pure: [...(viteEnv.VITE_DROP_CONSOLE === 'Y' ? ['console.log'] : [])], // 只删除 console.log
-      drop: ['debugger' /** 'console' */], // 删除 所有的console 和 debugger
+      drop: ['debugger'], // 开发环境只删除 debugger
     },
     build: {
       outDir: 'dist',
@@ -52,6 +51,7 @@ export default defineConfig((configEnv) => {
       // terser 配置：生产环境下更好的代码压缩和清理
       terserOptions: {
         compress: {
+          // 根据环境变量控制是否移除 console
           drop_console: viteEnv.VITE_DROP_CONSOLE === 'Y',
           drop_debugger: true,
           // 移除未使用的代码
