@@ -42,6 +42,7 @@ export default defineConfig((configEnv) => {
       port: 9725,
     },
     esbuild: {
+      // 开发环境下保持简单配置，主要的调试代码清理由 terser 在生产环境处理
       drop: ['debugger'], // 开发环境只删除 debugger
     },
     build: {

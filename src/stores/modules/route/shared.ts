@@ -1,20 +1,13 @@
+import { GlobalConfig } from '@/enum'
 import { useSvgIcon } from '@/hooks/common/icon'
 import { $t, $te } from '@/locales'
-import FOLDER_DISPLAY_CONFIG from '~/menu.config'
+import FOLDER_DISPLAY_CONFIG, { MENU_DEFAULT_CONFIG } from '~/menu.config'
 import type { _RouteRecordBase, RouteMeta, RouteRecordRaw } from 'vue-router'
 
 /**
  * 自动菜单生成器
  * 基于文件夹结构自动生成菜单分组，零配置自动识别
  */
-
-/** 默认配置 */
-const DEFAULT_CONFIG = {
-  defaultIcon: 'material-symbols:folder',
-  defaultOrder: 999,
-  /** 自定义排除的文件夹（不显示在菜单中），默认排除_开头的文件夹 */
-  customExcludeFolders: [] as string[],
-}
 
 /**
  * 从路由路径提取文件夹信息
@@ -31,8 +24,8 @@ function getFolderDisplayConfig(folder: string): RouteMeta {
   return (
     (FOLDER_DISPLAY_CONFIG as Record<string, RouteMeta>)[folder] || {
       title: folder.charAt(0).toUpperCase() + folder.slice(1),
-      icon: DEFAULT_CONFIG.defaultIcon,
-      order: DEFAULT_CONFIG.defaultOrder,
+      icon: MENU_DEFAULT_CONFIG.defaultIcon,
+      order: MENU_DEFAULT_CONFIG.defaultOrder,
     }
   )
 }
@@ -42,12 +35,7 @@ function getFolderDisplayConfig(folder: string): RouteMeta {
  * 自动排除_开头的文件夹，同时支持自定义排除
  */
 function shouldExcludeFolder(folder: string): boolean {
-  // 排除_开头的文件夹
-  if (folder.startsWith('_')) {
-    return true
-  }
-  // 排除自定义配置的文件夹
-  return DEFAULT_CONFIG.customExcludeFolders.includes(folder)
+  return folder.startsWith('_') || MENU_DEFAULT_CONFIG.customExcludeFolders.includes(folder)
 }
 
 /**
@@ -62,18 +50,7 @@ function isSingleMenuFolder(_folder: string, routesInFolder: RouteRecordRaw[]): 
  * 判断文件夹是否应该分组显示
  */
 function shouldGroupFolder(folder: string, routesInFolder: RouteRecordRaw[]): boolean {
-  // 排除的文件夹不分组
-  if (shouldExcludeFolder(folder)) {
-    return false
-  }
-
-  // 单独菜单文件夹不分组
-  if (isSingleMenuFolder(folder, routesInFolder)) {
-    return false
-  }
-
-  // 有多个子路由的文件夹需要分组
-  return routesInFolder.length > 1
+  return !shouldExcludeFolder(folder) && !isSingleMenuFolder(folder, routesInFolder) && routesInFolder.length > 1
 }
 
 /**
@@ -91,7 +68,7 @@ function extractAllValidRoutes(routes: RouteRecordRaw[]): RouteRecordRaw[] {
       }
 
       // 递归处理children
-      if (route.children && route.children.length > 0) {
+      if (route.children?.length) {
         traverse(route.children)
       }
     })
@@ -108,12 +85,8 @@ function groupRoutesByFolder(routes: RouteRecordRaw[]): Record<string, RouteReco
   const folderGroups: Record<string, RouteRecordRaw[]> = {}
 
   routes.forEach((route) => {
-    // 使用 route.name 而不是 route.path 来提取文件夹信息
     const folder = extractFolderFromPath((route.name as string) || '')
-    if (!folderGroups[folder]) {
-      folderGroups[folder] = []
-    }
-    folderGroups[folder]?.push(route)
+    ;(folderGroups[folder] ??= []).push(route)
   })
 
   return folderGroups
@@ -123,17 +96,14 @@ function groupRoutesByFolder(routes: RouteRecordRaw[]): Record<string, RouteReco
  * 创建菜单图标
  */
 function createMenuIcon(iconName?: string, fontSize = 16, isLocalIcon = false) {
+  if (!iconName) return undefined
+
   const { SvgIconVNode } = useSvgIcon()
-
-  if (iconName) {
-    return SvgIconVNode({
-      icon: isLocalIcon ? undefined : iconName,
-      localIcon: isLocalIcon ? iconName : undefined,
-      fontSize,
-    })
-  }
-
-  return undefined
+  return SvgIconVNode({
+    icon: isLocalIcon ? undefined : iconName,
+    localIcon: isLocalIcon ? iconName : undefined,
+    fontSize,
+  })
 }
 
 /**
@@ -141,25 +111,13 @@ function createMenuIcon(iconName?: string, fontSize = 16, isLocalIcon = false) {
  */
 function routeToMenu(route: RouteRecordRaw): App.Global.Menu {
   const { name, path, meta } = route
-  const { title, i18nKey, order = DEFAULT_CONFIG.defaultOrder, icon, localIcon, iconFontSize } = meta || {}
+  const { title, i18nKey, order = MENU_DEFAULT_CONFIG.defaultOrder, icon, localIcon, iconFontSize } = meta || {}
 
   // 生成菜单标签 - 优先使用i18nKey
-  let label = '未知菜单'
-  if (i18nKey && $te(i18nKey)) {
-    label = $t(i18nKey)
-  } else if (title) {
-    label = title
-  } else if (name) {
-    label = name as string
-  }
+  const label = i18nKey && $te(i18nKey) ? $t(i18nKey) : ((title || name || '未知菜单') as string)
 
   // 处理图标 - 优先使用localIcon
-  let menuIcon
-  if (localIcon) {
-    menuIcon = createMenuIcon(localIcon, iconFontSize, true)
-  } else if (icon) {
-    menuIcon = createMenuIcon(icon, iconFontSize, false)
-  }
+  const menuIcon = localIcon ? createMenuIcon(localIcon, iconFontSize, true) : icon ? createMenuIcon(icon, iconFontSize, false) : undefined
 
   return {
     key: name as string,
@@ -167,7 +125,7 @@ function routeToMenu(route: RouteRecordRaw): App.Global.Menu {
     i18nKey,
     order: order != null ? Number(order) : undefined,
     routeKey: name as App.Global.RouteKey,
-    routePath: path as App.Global.RoutePath,
+    routePath: (path || name) as App.Global.RoutePath,
     icon: menuIcon,
   }
 }
@@ -182,7 +140,7 @@ function createGroupMenu(folder: string, children: App.Global.Menu[]): App.Globa
     key: `group-${folder}`,
     label: config.title,
     i18nKey: config.i18nKey,
-    order: config.order != null ? config.order : DEFAULT_CONFIG.defaultOrder,
+    order: config.order != null ? config.order : MENU_DEFAULT_CONFIG.defaultOrder,
     routeKey: `group-${folder}` as App.Global.RouteKey,
     routePath: `group-${folder}`,
     icon: createMenuIcon(config.icon, 20),
@@ -198,11 +156,11 @@ function sortMenuItems(menuItems: App.Global.Menu[]): App.Global.Menu[] {
   return menuItems
     .sort((a, b) => {
       // home菜单永远在最前面
-      if (a.key === '/home/' && b.key !== '/home/') return -1
-      if (b.key === '/home/' && a.key !== '/home/') return 1
+      if (a.key === GlobalConfig.HOME_URL && b.key !== GlobalConfig.HOME_URL) return -1
+      if (b.key === GlobalConfig.HOME_URL && a.key !== GlobalConfig.HOME_URL) return 1
 
       // 其他菜单按order排序，数字越小越靠前
-      return (a.order || DEFAULT_CONFIG.defaultOrder) - (b.order || DEFAULT_CONFIG.defaultOrder)
+      return (a.order || MENU_DEFAULT_CONFIG.defaultOrder) - (b.order || MENU_DEFAULT_CONFIG.defaultOrder)
     })
     .map((item) => ({
       ...item,
@@ -267,13 +225,13 @@ export function updateMenuLocale(menus: App.Global.Menu[]): App.Global.Menu[] {
  * @param menus - menus
  * @param treeMap
  */
-export function transformMenuToSearchMenus(menus: App.Global.Menu[], treeMap: App.Global.Menu[] = []) {
-  if (menus && menus.length === 0) return []
+export function transformMenuToSearchMenus(menus: App.Global.Menu[], treeMap: App.Global.Menu[] = []): App.Global.Menu[] {
+  if (!menus?.length) return []
+
   return menus.reduce((acc, cur) => {
     if (!cur.children) {
       acc.push(cur)
-    }
-    if (cur.children && cur.children.length > 0) {
+    } else {
       transformMenuToSearchMenus(cur.children, treeMap)
     }
     return acc
