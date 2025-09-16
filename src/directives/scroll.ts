@@ -8,6 +8,12 @@ declare global {
   }
 }
 
+// 扩展 CSSStyleDeclaration 接口以支持非标准 CSS 属性
+interface ExtendedCSSStyleDeclaration extends CSSStyleDeclaration {
+  scrollbarWidth?: string
+  msOverflowStyle?: string
+}
+
 // 滚动数据接口
 interface ScrollData {
   position: number
@@ -47,6 +53,14 @@ interface ScrollState {
   scrollEndTimer?: number
   autoScrollTimer?: number
   resizeObserver?: ResizeObserver
+}
+
+// 扩展元素类型
+interface ElType extends HTMLElement {
+  __scrollState?: ScrollState
+  __scrollHandler?: () => void
+  __wheelHandler?: (event: WheelEvent) => void
+  scrollbarWidth?: number
 }
 
 // 计算滚动百分比
@@ -204,9 +218,11 @@ function stopAutoScroll(state: ScrollState) {
 // 设置滚动条样式
 function setScrollbarStyle(element: HTMLElement, options: ScrollOptions) {
   if (options.showScrollbar === false) {
-    element.style.scrollbarWidth = 'none'
-    // 使用类型断言处理 IE/Edge 滚动条隐藏
-    element.style.msOverflowStyle = 'none'
+    // 使用扩展接口处理非标准 CSS 属性
+    const extendedStyle = element.style as ExtendedCSSStyleDeclaration
+    extendedStyle.scrollbarWidth = 'none'
+    // 处理 IE/Edge 滚动条隐藏
+    extendedStyle.msOverflowStyle = 'none'
 
     // 添加 webkit 滚动条隐藏样式
     const style = document.createElement('style')
@@ -341,7 +357,7 @@ const scroll: Directive<HTMLElement, ScrollOptions | undefined> = {
     }
 
     // 存储状态到元素上
-    ;(el as HTMLElement & { __scrollState?: ScrollState }).__scrollState = state
+    ;(el as ElType).__scrollState = state
 
     // 设置样式
     setScrollbarStyle(el, options)

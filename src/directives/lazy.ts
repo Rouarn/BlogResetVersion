@@ -63,16 +63,53 @@ function parseOptions(value: unknown): LazyOptions {
   throw new Error('v-lazy: 指令值必须是字符串或对象')
 }
 
+// 处理图片加载错误
+function handleImageError(el: LazyElement, options: LazyOptions) {
+  // 加载失败，设置错误占位图
+  if (options.error) {
+    el.src = options.error
+  } else {
+    // 设置默认的错误占位符
+    el.src = createPlaceholderDataURL(el.width || 300, el.height || 200, '#ffebee', '加载失败')
+  }
+
+  el.classList.remove('lazy-loading')
+  el.classList.add('lazy-error')
+
+  // 触发自定义事件
+  el.dispatchEvent(
+    new CustomEvent('lazy-error', {
+      detail: { src: options.src },
+    }),
+  )
+}
+
 function loadImage(el: LazyElement, binding: DirectiveBinding) {
   const options = parseOptions(binding.value)
+
+  // 防止重复加载
+  if (el.classList.contains('lazy-loading') || el.__lazyLoaded__) {
+    return
+  }
+
+  el.classList.add('lazy-loading')
 
   // 创建新的图片对象来预加载
   const img = new Image()
 
+  // 设置超时处理
+  const timeoutId = window.setTimeout(() => {
+    img.onload = null
+    img.onerror = null
+    handleImageError(el, options)
+  }, 10000) // 10秒超时
+
   img.onload = () => {
+    clearTimeout(timeoutId)
     // 加载成功，设置图片源
     el.src = options.src
     el.__lazyLoaded__ = true
+    el.classList.remove('lazy-loading')
 
     // 添加加载完成的类名，可用于 CSS 动画
     el.classList.add('lazy-loaded')
@@ -86,26 +123,39 @@ function loadImage(el: LazyElement, binding: DirectiveBinding) {
   }
 
   img.onerror = () => {
-    // 加载失败，设置错误占位图
-    if (options.error) {
-      el.src = options.error
-    } else {
-      // 设置默认的错误占位符
-      el.src = createPlaceholderDataURL(el.width || 300, el.height || 200, '#ffebee', '加载失败')
-    }
-
-    el.classList.add('lazy-error')
-
-    // 触发自定义事件
-    el.dispatchEvent(
-      new CustomEvent('lazy-error', {
-        detail: { src: options.src },
-      }),
-    )
+    clearTimeout(timeoutId)
+    handleImageError(el, options)
   }
 
   // 开始加载图片
   img.src = options.src
+}
+
+// 节流函数
+function throttle<T extends (...args: Parameters<T>) => void>(func: T, delay: number): T {
+  let timeoutId: number | null = null
+  let lastExecTime = 0
+
+  return ((...args: Parameters<T>) => {
+    const currentTime = Date.now()
+
+    if (currentTime - lastExecTime > delay) {
+      func(...args)
+      lastExecTime = currentTime
+    } else {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+      timeoutId = window.setTimeout(
+        () => {
+          func(...args)
+          lastExecTime = Date.now()
+          timeoutId = null
+        },
+        delay - (currentTime - lastExecTime),
+      )
+    }
+  }) as T
 }
 
 function setupLazyLoading(el: LazyElement, binding: DirectiveBinding) {
@@ -122,21 +172,21 @@ function setupLazyLoading(el: LazyElement, binding: DirectiveBinding) {
     el.src = createPlaceholderDataURL(el.width || 300, el.height || 200, '#f0f0f0', '加载中...')
   }
 
+  // 节流处理 IntersectionObserver 回调
+  const throttledCallback = throttle((entries: IntersectionObserverEntry[]) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting && !el.__lazyLoaded__) {
+        loadImage(el, binding)
+        el.__lazyObserver__?.unobserve(el)
+      }
+    })
+  }, 100) // 100ms 节流
+
   // 创建 IntersectionObserver
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting && !el.__lazyLoaded__) {
-          loadImage(el, binding)
-          observer.unobserve(el)
-        }
-      })
-    },
-    {
-      threshold: options.threshold || 0.1,
-      rootMargin: options.rootMargin || '50px',
-    },
-  )
+  const observer = new IntersectionObserver(throttledCallback, {
+    threshold: options.threshold || 0.1,
+    rootMargin: options.rootMargin || '50px',
+  })
 
   // 保存观察器引用
   el.__lazyObserver__ = observer
@@ -185,6 +235,11 @@ const lazy: Directive = {
       el.__lazyObserver__.disconnect()
       delete el.__lazyObserver__
     }
+
+    // 清理元素状态
+    el.classList.remove('lazy-loading', 'lazy-loaded', 'lazy-error')
+    delete el.__lazyLoaded__
+    delete el.__lazyOriginalSrc__
   },
 }
 
