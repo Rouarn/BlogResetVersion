@@ -1,7 +1,11 @@
 import { createMemoryHistory, createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
+import { layouts, views } from '@/router/_generated/imports'
+import { routes as elegantRoutes } from '@/router/_generated/routes'
+import { transformToVueRoutes } from '@/router/_generated/transformer'
 import { errorRouter, staticRouter } from '@/router/modules/static-router'
 import { useAppStore } from '@/stores/modules/app'
 import { useAuthStore } from '@/stores/modules/auth'
+import { useRouteStore } from '@/stores/modules/route'
 import { GlobalConfig } from '@/enum'
 import { $t } from '@/locales'
 import { useFullscreen, useTitle } from '@vueuse/core'
@@ -38,9 +42,13 @@ const routerMode = {
  * @default 'base-layout'
  * 分组中的多个路由最少需要 '一个' 路由声明 (i18nKey | title)
  * */
+
+// 转换elegant-router生成的路由为Vue Router格式
+const elegantVueRoutes = transformToVueRoutes(elegantRoutes, layouts, views)
+
 const router = createRouter({
   history: routerMode[mode](),
-  routes: [...staticRouter, ...errorRouter],
+  routes: [...staticRouter, ...errorRouter, ...elegantVueRoutes],
   strict: false,
   scrollBehavior: () => ({ left: 0, top: 0 }),
 })
@@ -50,6 +58,7 @@ const router = createRouter({
  * */
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
+  const routeStore = useRouteStore()
 
   console.log('to: ', router.getRoutes())
 
@@ -64,6 +73,7 @@ router.beforeEach(async (to, from, next) => {
   useTitle(documentTitle)
 
   // 3.初始化路由菜单 (提供给header菜单使用,路由使用的是基于文件自动生成的)
+  await routeStore.initAuthRoute()
 
   // 4.检查是否需要授权
   if (to.meta.isAuth) {

@@ -35,6 +35,7 @@
     "consola": "^3.4.2",
     "dayjs": "^1.11.18",
     "defu": "^6.1.4",
+    "elegant-router": "1.0.4-beta.10",
     "localforage": "^1.10.0",
     "naive-ui": "^2.42.0",
     "nprogress": "^0.2.0",
