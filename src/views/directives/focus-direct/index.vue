@@ -1,14 +1,6 @@
 <script setup lang="ts" name="focusDirect">
 import { ref } from 'vue'
 
-definePage({
-  meta: {
-    title: '聚焦指令',
-    i18nKey: 'route.focusDirect',
-    order: 7,
-  },
-})
-
 const focusEnabled = ref(true)
 const inputValue = ref('')
 const conditionalValue = ref('')

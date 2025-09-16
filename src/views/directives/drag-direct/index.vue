@@ -1,13 +1,6 @@
 <script setup lang="ts" name="dragDirect">
 import { ref } from 'vue'
 
-definePage({
-  meta: {
-    title: '拖拽指令',
-    i18nKey: 'route.dragDirect',
-  },
-})
-
 const dragCount = ref(0)
 const isDragging = ref(false)
 

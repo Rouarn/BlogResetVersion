@@ -5,12 +5,6 @@ defineOptions({
   name: 'LoadingDemo',
 })
 
-definePage({
-  meta: {
-    title: 'Loading 演示',
-  },
-})
-
 const requestLoading = ref(false)
 
 // 模拟基础加载

@@ -1,14 +1,6 @@
 <script setup lang="ts" name="maskDirect">
 import { reactive, ref } from 'vue'
 
-definePage({
-  meta: {
-    title: '遮罩指令',
-    i18nKey: 'route.maskDirect',
-    order: 10,
-  },
-})
-
 // 基础遮罩
 const showBasicMask = ref(false)
 

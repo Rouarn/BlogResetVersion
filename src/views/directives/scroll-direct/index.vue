@@ -1,14 +1,6 @@
 <script setup lang="ts" name="scrollDirect">
 import { ref } from 'vue'
 
-definePage({
-  meta: {
-    title: '滚动指令',
-    i18nKey: 'route.scrollDirect',
-    order: 16,
-  },
-})
-
 const scrollDirection = ref('vertical')
 const scrollSpeed = ref(50)
 const scrollThreshold = ref(100)

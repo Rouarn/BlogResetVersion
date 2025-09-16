@@ -4,15 +4,6 @@ import { changePassword, updateUserInfo, uploadAvatar } from '@/service/api'
 import { useAuthStore } from '@/stores/modules/auth'
 import type { FormInst, FormRules, UploadFileInfo } from 'naive-ui'
 
-definePage({
-  meta: {
-    title: 'User Center',
-    i18nKey: 'common.userCenter',
-    hideInMenu: true,
-    isAuth: true,
-  },
-})
-
 defineOptions({
   name: 'UserCenter',
 })
@@ -204,7 +195,7 @@ function handleAvatarUpload(options: { file: UploadFileInfo }) {
   }
 
   // 上传到服务器
-  return uploadAvatar(file)
+  return uploadAvatar(file as File)
     .then((res) => {
       if (res.data && res.data.downloadUrl) {
         // 使用服务器返回的URL

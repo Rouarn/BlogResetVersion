@@ -1,14 +1,6 @@
 <script setup lang="ts" name="rippleDirect">
 import { ref } from 'vue'
 
-definePage({
-  meta: {
-    title: '波纹指令',
-    i18nKey: 'route.rippleDirect',
-    order: 7,
-  },
-})
-
 const rippleDisabled = ref(false)
 const rippleCount = ref(0)
 
@@ -130,9 +122,9 @@ const resetCounter = () => {
             <div class="code-block">
               <h4>自定义配置</h4>
               <pre><code>&lt;!-- 自定义颜色和持续时间 --&gt;
-&lt;button v-ripple="{ 
-  color: '#ff6b6b', 
-  duration: 800 
+&lt;button v-ripple="{
+  color: '#ff6b6b',
+  duration: 800
 }"&gt;红色波纹&lt;/button&gt;
 
 &lt;!-- 禁用波纹 --&gt;

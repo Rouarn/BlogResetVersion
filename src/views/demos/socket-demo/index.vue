@@ -5,13 +5,6 @@ import type { RoomNotification } from '@/service/socket'
 import { useChatSocket, useSocket } from '@/service/socket'
 import { useAuthStore } from '@/stores/modules/auth'
 
-definePage({
-  meta: {
-    title: 'Socket 演示',
-    isAuth: true,
-  },
-})
-
 const message = useMessage()
 const authStore = useAuthStore()
 

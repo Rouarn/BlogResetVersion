@@ -1,14 +1,6 @@
 <script setup lang="ts" name="highlightDirect">
 import { ref } from 'vue'
 
-definePage({
-  meta: {
-    title: '高亮指令',
-    i18nKey: 'route.highlightDirect',
-    order: 12,
-  },
-})
-
 const searchText = ref('Vue')
 const highlightColor = ref('#ffeb3b')
 const textContent = ref(`Vue.js 是一个用于构建用户界面的渐进式 JavaScript 框架。

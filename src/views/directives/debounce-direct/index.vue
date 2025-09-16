@@ -1,13 +1,6 @@
 <script setup lang="ts" name="debounceDirect">
 import { ref } from 'vue'
 
-definePage({
-  meta: {
-    title: '防抖指令',
-    i18nKey: 'route.debounceDirect',
-  },
-})
-
 const clickCount = ref(0)
 const executeCount = ref(0)
 const isWaiting = ref(false)

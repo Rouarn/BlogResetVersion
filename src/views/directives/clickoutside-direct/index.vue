@@ -2,14 +2,6 @@
 import { ref } from 'vue'
 import { useMessage } from 'naive-ui'
 
-definePage({
-  meta: {
-    title: '点击外部指令',
-    i18nKey: 'route.clickoutsideDirect',
-    order: 8,
-  },
-})
-
 const message = useMessage()
 const isDropdownOpen = ref(false)
 const isModalOpen = ref(false)

@@ -1,13 +1,6 @@
 <script setup lang="ts" name="throttleDirect">
 import { ref } from 'vue'
 
-definePage({
-  meta: {
-    title: '节流指令',
-    i18nKey: 'route.throttleDirect',
-  },
-})
-
 const clickCount = ref(0)
 const throttleCount = ref(0)
 const isThrottling = ref(false)

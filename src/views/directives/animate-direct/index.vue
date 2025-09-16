@@ -1,14 +1,6 @@
 <script setup lang="ts" name="animateDirect">
 import { ref } from 'vue'
 
-definePage({
-  meta: {
-    title: '动画指令',
-    i18nKey: 'route.animateDirect',
-    order: 9,
-  },
-})
-
 const animationCount = ref(0)
 const selectedAnimation = ref('fadeIn')
 const animationDuration = ref(1000)

@@ -1,13 +1,6 @@
 <script setup lang="ts" name="longpressDirect">
 import { ref } from 'vue'
 
-definePage({
-  meta: {
-    title: '长按指令',
-    i18nKey: 'route.longpressDirect',
-  },
-})
-
 const longpressCount = ref(0)
 const isLongpressing = ref(false)
 const progress = ref(0)

@@ -17,3 +17,15 @@ export function getCacheRouteNames(routes: RouteRecordRaw[]): App.Global.RouteKe
     return [...current, ...children]
   })
 }
+
+export function generateMenus(routes: RouteRecordRaw[]) {
+  return routes
+}
+
+export function transformMenuToSearchMenus(menus: App.Global.Menu[]) {
+  return menus
+}
+
+export function updateMenuLocale(menus: App.Global.Menu[]) {
+  return menus
+}

@@ -1,14 +1,6 @@
 <script setup lang="ts" name="loadingDirect">
 import { ref } from 'vue'
 
-definePage({
-  meta: {
-    title: '加载指令',
-    i18nKey: 'route.loadingDirect',
-    order: 9,
-  },
-})
-
 const isLoading = ref(false)
 const isCustomLoading = ref(false)
 const isTableLoading = ref(false)

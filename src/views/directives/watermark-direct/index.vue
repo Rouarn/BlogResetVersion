@@ -1,13 +1,6 @@
 <script setup lang="ts" name="watermarkDirect">
 import { ref } from 'vue'
 
-definePage({
-  meta: {
-    title: '水印指令',
-    i18nKey: 'route.watermarkDirect',
-  },
-})
-
 const watermarkText = ref('frontend-template')
 const watermarkOpacity = ref(0.1)
 const watermarkSize = ref(16)

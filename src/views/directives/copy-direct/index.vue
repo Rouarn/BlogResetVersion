@@ -1,14 +1,6 @@
 <script setup lang="ts" name="copyDirect">
 import { ref } from 'vue'
 
-definePage({
-  meta: {
-    title: '复制指令',
-    i18nKey: 'route.copyDirect',
-    order: 1,
-  },
-})
-
 const data = ref<string>('我是被复制的内容 🍒 🍉 🍊')
 const copySuccess = ref(false)
 

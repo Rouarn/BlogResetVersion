@@ -1,14 +1,6 @@
 <script setup lang="ts" name="lazyDirect">
 import { ref } from 'vue'
 
-definePage({
-  meta: {
-    title: '懒加载指令',
-    i18nKey: 'route.lazyDirect',
-    order: 11,
-  },
-})
-
 const imageList = ref([
   {
     id: 1,

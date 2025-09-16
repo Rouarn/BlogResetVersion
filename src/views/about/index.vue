@@ -4,14 +4,6 @@ import { useAppStore } from '@/stores/modules/app'
 import { $t } from '@/locales'
 import pkg from '~/package.json'
 
-definePage({
-  meta: {
-    title: '关于',
-    i18nKey: 'route.about',
-    icon: 'material-symbols:info',
-  },
-})
-
 const appStore = useAppStore()
 
 const column = computed(() => (appStore.isMobile ? 1 : 2))

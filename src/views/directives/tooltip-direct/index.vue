@@ -1,14 +1,6 @@
 <script setup lang="ts" name="tooltipDirect">
 import { ref } from 'vue'
 
-definePage({
-  meta: {
-    title: '提示指令',
-    i18nKey: 'route.tooltipDirect',
-    order: 8,
-  },
-})
-
 const tooltipCount = ref(0)
 const customTooltip = ref('这是自定义的提示内容')
 const tooltipPosition = ref('top')

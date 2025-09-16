@@ -2,14 +2,6 @@
 import { nextTick, ref, watch } from 'vue'
 import { PermissionHelper } from '@/directives/permission'
 
-definePage({
-  meta: {
-    title: '权限指令',
-    i18nKey: 'route.permissionDirect',
-    order: 10,
-  },
-})
-
 const currentPermissions = ref<string[]>(['user'])
 const userRole = ref('user')
 
