@@ -3,7 +3,6 @@ import { setupComponentsPlugin } from './components'
 import { setupHtmlPlugin } from './htmlPlugin'
 import { setupIconsPlugin } from './icons'
 import { setupLayoutsPlugin } from './layouts'
-import { setupLoadingPlugin } from './loading'
 import { setupProgressPlugin } from './progress'
 import { setupPWAPlugin } from './pwa'
 import { setupSvgIconsPlugin } from './svgIcons'
@@ -25,7 +24,6 @@ export function setupVitePlugins(viteEnv: Env.ImportMeta, buildTime: string): Pl
   const collectionName = VITE_ICON_LOCAL_PREFIX.replace(`${VITE_ICON_PREFIX}-`, '')
 
   const plugins: PluginOption[] = [
-    setupLoadingPlugin(),
     setupVueRouterPlugin(),
     setupVuePlugin(),
     setupVueJsxPlugin(),
