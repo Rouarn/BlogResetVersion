@@ -1,8 +1,7 @@
 import { layouts, views } from '@/router/_generated/imports'
 import { routes as elegantRoutes } from '@/router/_generated/routes'
 import { transformToVueRoutes } from '@/router/_generated/transformer'
-import { builtinRoutes } from './builtin'
-import type { RouteRecordRaw } from 'vue-router'
+import type { AutoRouterRoute } from '@elegant-router/types'
 
 /**
  * @description 📚 路由参数配置简介
@@ -26,5 +25,16 @@ import type { RouteRecordRaw } from 'vue-router'
  * @param meta.query ==> 路由的查询参数
  * */
 
-/** 所有路由 */
-export const allRoutes = [...builtinRoutes, ...transformToVueRoutes(elegantRoutes, layouts, views)] as RouteRecordRaw[]
+/** create routes when the auth route mode is static */
+export function createStaticRoutes() {
+  return { routes: [...elegantRoutes] }
+}
+
+/**
+ * Get auth vue routes
+ *
+ * @param routes Elegant routes
+ */
+export function getAuthVueRoutes(routes: AutoRouterRoute[]) {
+  return transformToVueRoutes(routes, layouts, views)
+}

@@ -1,10 +1,9 @@
 import { nextTick } from 'vue'
-import { routes as elegantRoutes } from '@/router/_generated/routes'
 import { useAppStore } from '@/stores/modules/app'
 import { useAuthStore } from '@/stores/modules/auth'
 import { useRouteStore } from '@/stores/modules/route'
 import { useFullscreen } from '@vueuse/core'
-import type { Router } from 'vue-router'
+import type { RouteLocationRaw, Router } from 'vue-router'
 
 /**
  * 创建路由守卫
@@ -17,8 +16,20 @@ export function createRouteGuard(router: Router) {
     const routeStore = useRouteStore()
 
     // 初始化路由菜单 (提供给header菜单使用,路由使用的是基于文件自动生成的)
-    if (!routeStore.isInitConstantRoute) {
-      await routeStore.initAuthRoute(elegantRoutes)
+    if (!routeStore.isInitAuthRoute) {
+      await routeStore.initAuthRoute()
+
+      // the route is captured by the "not-found" route because the constant route is not initialized
+      // after the constant route is initialized, redirect to the original route
+      const path = to.fullPath
+      const location: RouteLocationRaw = {
+        path,
+        replace: true,
+        query: to.query,
+        hash: to.hash,
+      }
+
+      return next(location)
     }
 
     // 检查是否需要授权

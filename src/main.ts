@@ -15,13 +15,13 @@ async function setupApp() {
 
   const app = createApp(App)
 
-  setupDirectives(app)
-
   setupStore(app)
 
-  setupI18n(app)
-
   await setupRouter(app)
+
+  setupDirectives(app)
+
+  setupI18n(app)
 
   setupAppVersionNotification()
 
