@@ -2,7 +2,7 @@ import router from '@/router'
 import { useAuthStore } from '@/stores/modules/auth'
 import { AxiosCanceler, REQUEST_CANCEL_ERROR } from './axiosCancel'
 import { checkStatus, isServerError } from './checkStatus'
-import { GlobalConfig, ResultEnum } from '@/enum'
+import { ResultEnum } from '@/enum'
 import type { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import axios from 'axios'
 
@@ -128,7 +128,7 @@ class RequestHttp {
         // 登录过期
         if (data?.code === ResultEnum.OVERDUE) {
           useAuthStore().setToken('')
-          router.replace(GlobalConfig.LOGIN_URL)
+          router.replace('/_builtin/login')
 
           if (!config.skipErrorHandler) {
             window.$message?.error(data.message || '登录已过期，请重新登录')

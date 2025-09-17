@@ -21,7 +21,7 @@ export default defineConfig({
   // 根路由重定向
   rootRedirect: '/home',
   // 404路由组件
-  notFoundRouteComponent: '404',
+  notFoundRouteComponent: '_builtin404',
   // 默认布局
   getRouteLayout: () => 'base',
   // 路由元信息生成

@@ -13,7 +13,7 @@ declare module 'vue-router' {
      *
      * 用于国际化，如果设置了该字段，则标题字段将被忽略
      */
-    i18nKey?: App.I18n.I18nKey
+    i18nKey?: App.I18n.I18nKey | null
     /** 是否缓存该路由 */
     isKeepAlive?: boolean | null
     /**
@@ -59,10 +59,5 @@ declare module 'vue-router' {
     multiTab?: boolean | null
     /** 如果设置了查询参数，则在输入路由时自动携带 */
     query?: { key: string; value: string }[] | null
-    /**
-     * 菜单的布局，可选值有 base-layout 和 blank-layout
-     * @default 'base-layout'
-     */
-    layout?: 'base-layout' | 'blank-layout'
   }
 }

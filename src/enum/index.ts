@@ -10,14 +10,6 @@ export enum SetupStoreId {
 }
 
 /**
- * @description： 全局默认配置项
- */
-export enum GlobalConfig {
-  HOME_URL = '/home',
-  LOGIN_URL = '/login',
-}
-
-/**
  * @description：请求配置
  */
 export enum ResultEnum {

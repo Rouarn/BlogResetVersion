@@ -2,11 +2,10 @@ import { createMemoryHistory, createRouter, createWebHashHistory, createWebHisto
 import { layouts, views } from '@/router/_generated/imports'
 import { routes as elegantRoutes } from '@/router/_generated/routes'
 import { transformToVueRoutes } from '@/router/_generated/transformer'
-import { errorRouter, staticRouter } from '@/router/modules/static-router'
+import { staticRouter } from '@/router/modules/static-router'
 import { useAppStore } from '@/stores/modules/app'
 import { useAuthStore } from '@/stores/modules/auth'
 import { useRouteStore } from '@/stores/modules/route'
-import { GlobalConfig } from '@/enum'
 import { $t } from '@/locales'
 import { useFullscreen, useTitle } from '@vueuse/core'
 
@@ -47,7 +46,7 @@ const routerMode = {
  * */
 const router = createRouter({
   history: routerMode[mode](),
-  routes: [...staticRouter, ...errorRouter, ...elegantVueRoutes],
+  routes: [...staticRouter, ...elegantVueRoutes],
   strict: false,
   scrollBehavior: () => ({ left: 0, top: 0 }),
 })
@@ -81,12 +80,12 @@ router.beforeEach(async (to, from, next) => {
     // 检查是否登录
     if (!authStore.isLogin) {
       // 跳转到登陆页
-      return next({ path: GlobalConfig.LOGIN_URL, replace: false, query: { redirect: to.fullPath } })
+      return next({ path: '/_builtin/login', replace: false, query: { redirect: to.fullPath } })
     }
   }
 
   // 5.判断是否访问登陆页，有 Token 就在当前页面，没有 Token 重置路由到登陆页
-  if (to.path.toLocaleLowerCase() === GlobalConfig.LOGIN_URL) {
+  if (to.path.toLocaleLowerCase() === '/_builtin/login') {
     if (authStore.isLogin) return next(from.fullPath)
     return next()
   }

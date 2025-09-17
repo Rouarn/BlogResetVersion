@@ -135,27 +135,36 @@ declare namespace App {
         }
       }
       route: {
+        root: string
         home: string
+        notfound: string
+        _builtin403: string
+        _builtin404: string
+        _builtin500: string
+        _builtiniframepageurl: string
+        _builtinlogin: string
         about: string
-        directives: string
-        copyDirect: string
-        dragDirect: string
-        longpressDirect: string
-        throttleDirect: string
-        debounceDirect: string
-        watermarkDirect: string
-        focusDirect: string
-        rippleDirect: string
-        clickoutsideDirect: string
-        tooltipDirect: string
-        loadingDirect: string
-        permissionDirect: string
-        animateDirect: string
-        scrollDirect: string
-        lazyDirect: string
-        highlightDirect: string
-        maskDirect: string
+        demosloadingdemo: string
+        demossocketdemo: string
+        directivesanimatedirect: string
+        directivesclickoutsidedirect: string
+        directivescopydirect: string
+        directivesdebouncedirect: string
+        directivesdragdirect: string
+        directivesfocusdirect: string
+        directiveshighlightdirect: string
+        directiveslazydirect: string
+        directivesloadingdirect: string
+        directiveslongpressdirect: string
+        directivesmaskdirect: string
+        directivespermissiondirect: string
+        directivesscrolldirect: string
+        directivesthrottledirect: string
+        directivestooltipdirect: string
+        directiveswatermarkdirect: string
+        directivesrippledirect: string
         demos: string
+        directives: string
       }
       page: {
         about: {
@@ -217,43 +226,14 @@ declare namespace App {
   /** Global namespace */
   namespace Global {
     /** Route path */
-    type RouteKey = keyof import('vue-router/auto-routes').RouteNamedMap
+    type RouteKey = import('@elegant-router/types').RouteKey
     /** Route path */
-    type RoutePath = string
+    type RoutePath = import('@elegant-router/types').RoutePath
 
     /** The router push options */
     type RouterPushOptions = {
       query?: Record<string, string>
       params?: Record<string, string>
-    }
-
-    /** Base menu item properties */
-    type BaseMenuItem = {
-      /** The menu key */
-      key: string
-      /** The menu label */
-      label: string
-      /** The menu i18n key */
-      i18nKey?: I18n.I18nKey
-      /** The menu order */
-      order?: number
-      /** The menu icon */
-      icon?: () => VNode
-      /** The menu parent */
-      parent?: string
-    }
-
-    /** Menu group properties */
-    type MenuGroup = {
-      /** The menu group */
-      group?: {
-        enabled: boolean | string
-        title?: string
-        icon?: string
-        i18nKey?: I18n.I18nKey | null
-        order?: number
-        parent?: string
-      } | null
     }
 
     /** Route-related properties */
@@ -265,7 +245,26 @@ declare namespace App {
     }
 
     /** The global menu */
-    type Menu = BaseMenuItem & RouteProperties & MenuGroup & { children?: Menu[] }
+    type Menu = {
+      /**
+       * The menu key
+       *
+       * Equal to the route key
+       */
+      key: string
+      /** The menu label */
+      label: string
+      /** The menu i18n key */
+      i18nKey?: I18n.I18nKey | null
+      /** The route key */
+      routeKey: RouteKey
+      /** The route path */
+      routePath: RoutePath
+      /** The menu icon */
+      icon?: () => VNode
+      /** The menu children */
+      children?: Menu[]
+    }
   }
 
   /** Service namespace */

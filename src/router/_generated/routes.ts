@@ -25,7 +25,7 @@ export const routes: AutoRouterRoute[] = [
     name: 'NotFound',
     path: '/:pathMatch(.*)*',
     layout: 'base',
-    component: '404',
+    component: '_builtin404',
     meta: {
       title: 'Not Found',
       i18nKey: 'route.notfound',
@@ -433,12 +433,12 @@ export const routes: AutoRouterRoute[] = [
     component: 'UserCenter',
     meta: {
       title: 'User Center',
-      i18nKey: 'route.usercenter',
       icon: '',
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      i18nKey: 'common.userCenter',
     },
   },
 ]

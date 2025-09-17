@@ -1,6 +1,6 @@
 import { useRouter } from 'vue-router'
 import globalRouter from '@/router'
-import { GlobalConfig } from '@/enum'
+import type { RouteKey } from '@elegant-router/types'
 import type { RouteLocationRaw } from 'vue-router'
 
 /**
@@ -18,25 +18,25 @@ export function useRouterPush(inSetup = true) {
 
   const routerBack = router.back
 
-  async function routerPushByKey(key: App.Global.RouteKey, options?: App.Global.RouterPushOptions) {
+  async function routerPushByKey(key: RouteKey, options?: App.Global.RouterPushOptions) {
     const { query, params } = options || {}
 
-    const routeLocation: RouteLocationRaw & App.Global.RouterPushOptions = {
+    const routeLocation = {
       name: key,
-    }
+    } as RouteLocationRaw & App.Global.RouterPushOptions
 
-    if (Object.keys(query || {}).length) {
+    if (query && Object.keys(query).length > 0) {
       routeLocation.query = query
     }
 
-    if (Object.keys(params || {}).length) {
+    if (params && Object.keys(params).length > 0) {
       routeLocation.params = params
     }
 
     return routerPush(routeLocation)
   }
 
-  function routerPushByKeyWithMetaQuery(key: App.Global.RouteKey) {
+  function routerPushByKeyWithMetaQuery(key: RouteKey) {
     const allRoutes = router.getRoutes()
     const meta = allRoutes.find((item) => item.name === key)?.meta || null
 
@@ -50,7 +50,7 @@ export function useRouterPush(inSetup = true) {
   }
 
   async function toHome() {
-    return routerPushByKey(GlobalConfig.HOME_URL as unknown as App.Global.RouteKey)
+    return routerPushByKey('Root')
   }
 
   /**
@@ -68,7 +68,7 @@ export function useRouterPush(inSetup = true) {
       redirect,
     }
 
-    return routerPushByKey(GlobalConfig.LOGIN_URL as unknown as App.Global.RouteKey, options)
+    return routerPushByKey('_builtinLogin', options)
   }
 
   /**
