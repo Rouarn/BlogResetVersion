@@ -26,7 +26,7 @@ export default defineConfig({
   getRouteLayout: () => 'base',
   // 路由元信息生成
   getRouteMeta: (node) => {
-    const title = node.name.replace(/([A-Z])/g, ' $1').trim()
+    const title = node.name.replace(/([A-Z])/g, '$1').trim()
 
     return {
       title,

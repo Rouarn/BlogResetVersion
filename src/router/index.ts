@@ -58,8 +58,6 @@ router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
   const routeStore = useRouteStore()
 
-  console.log('router', router.getRoutes())
-
   // 1.NProgress 开始
   window.NProgress?.start?.()
 

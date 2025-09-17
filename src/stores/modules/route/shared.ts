@@ -1,8 +1,8 @@
 import { useSvgIcon } from '@/hooks/common/icon'
 import { $t } from '@/locales'
 import type { AutoRouterRoute } from '@elegant-router/types'
-import { PARENT_MENU_ICON_MAP } from '~/menu.config'
-import type { _RouteRecordBase, RouteMeta } from 'vue-router'
+import { PARENT_MENU_META_MAP } from '~/menu.config'
+import type { _RouteRecordBase } from 'vue-router'
 
 /**
  * 工具函数：kebab-case 转 PascalCase
@@ -27,13 +27,13 @@ function toMenuLabel(str: string): string {
 /**
  * 创建菜单图标
  */
-function createMenuIcon(iconName?: string, fontSize = 16, isLocalIcon = false) {
+function createMenuIcon(iconName?: string, fontSize = 16, localIcon?: string) {
   if (!iconName) return undefined
   const { SvgIconVNode } = useSvgIcon()
   return SvgIconVNode({
-    icon: isLocalIcon ? undefined : iconName,
-    localIcon: isLocalIcon ? iconName : undefined,
-    fontSize,
+    icon: iconName,
+    localIcon,
+    fontSize: fontSize ?? 20,
   })
 }
 
@@ -41,18 +41,21 @@ function createMenuIcon(iconName?: string, fontSize = 16, isLocalIcon = false) {
  * 创建实际路由菜单项
  */
 function createRouteMenu(route: AutoRouterRoute, pathSegments: string[], level: number): App.Global.Menu {
-  const routeName = route.name as App.Global.RouteKey
-  const meta = route.meta ?? ({} as RouteMeta)
+  const { title, i18nKey, icon = import.meta.env.VITE_MENU_ICON, localIcon, iconFontSize, order } = route.meta ?? {}
+  const { name, path } = route
+
+  const label = i18nKey ? $t(i18nKey) : title!
+
   const isLeaf = level === pathSegments.length - 1
 
   return {
-    key: routeName,
-    label: meta.title || routeName,
-    i18nKey: meta.i18nKey as App.I18n.I18nKey,
-    routeKey: routeName,
-    routePath: route.path as App.Global.RoutePath,
-    icon: createMenuIcon(meta.icon),
-    order: meta.order ?? 1,
+    key: name as App.Global.RouteKey,
+    label,
+    i18nKey: i18nKey as App.I18n.I18nKey,
+    routeKey: name as App.Global.RouteKey,
+    routePath: path as App.Global.RoutePath,
+    icon: createMenuIcon(icon, iconFontSize, localIcon),
+    order: order ?? 1,
     children: isLeaf ? undefined : [], // 非叶子节点要初始化 children
   }
 }
@@ -62,14 +65,20 @@ function createRouteMenu(route: AutoRouterRoute, pathSegments: string[], level: 
  */
 function createParentMenu(segment: string, fullPath: string): App.Global.Menu {
   const key = toPascalCase(segment) as App.Global.RouteKey
+  const segmentKey = segment as keyof App.I18n.Schema['route']
+  const i18nKey = `route.${segment}` as App.I18n.I18nKey
+
+  // 使用国际化键获取标签，如果没有对应的翻译则使用格式化的segment作为fallback
+  const label = $t(i18nKey) || toMenuLabel(segment)
+
   return {
     key,
-    label: toMenuLabel(segment),
-    i18nKey: `route.${segment}` as App.I18n.I18nKey,
+    label,
+    i18nKey,
     routeKey: key,
     routePath: fullPath as App.Global.RoutePath,
-    icon: createMenuIcon(PARENT_MENU_ICON_MAP[segment] || 'mdi:folder'),
-    order: 1,
+    icon: createMenuIcon(PARENT_MENU_META_MAP[segmentKey]?.icon || '', PARENT_MENU_META_MAP[segmentKey]?.iconFontSize),
+    order: PARENT_MENU_META_MAP[segmentKey]?.order ?? 1,
     children: [],
   }
 }
