@@ -12,6 +12,9 @@ import { useFullscreen, useTitle } from '@vueuse/core'
 
 const mode = import.meta.env.VITE_ROUTER_MODE as 'hash' | 'history' | 'memory'
 
+// 转换elegant-router生成的路由为Vue Router格式
+const elegantVueRoutes = transformToVueRoutes(elegantRoutes, layouts, views)
+
 const routerMode = {
   hash: () => createWebHashHistory(),
   history: () => createWebHistory(),
@@ -42,10 +45,6 @@ const routerMode = {
  * @default 'base-layout'
  * 分组中的多个路由最少需要 '一个' 路由声明 (i18nKey | title)
  * */
-
-// 转换elegant-router生成的路由为Vue Router格式
-const elegantVueRoutes = transformToVueRoutes(elegantRoutes, layouts, views)
-
 const router = createRouter({
   history: routerMode[mode](),
   routes: [...staticRouter, ...errorRouter, ...elegantVueRoutes],
@@ -60,7 +59,7 @@ router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
   const routeStore = useRouteStore()
 
-  console.log('to: ', router.getRoutes())
+  console.log('router', router.getRoutes())
 
   // 1.NProgress 开始
   window.NProgress?.start?.()
@@ -73,7 +72,9 @@ router.beforeEach(async (to, from, next) => {
   useTitle(documentTitle)
 
   // 3.初始化路由菜单 (提供给header菜单使用,路由使用的是基于文件自动生成的)
-  await routeStore.initAuthRoute()
+  if (!routeStore.isInitConstantRoute) {
+    await routeStore.initAuthRoute(elegantRoutes)
+  }
 
   // 4.检查是否需要授权
   if (to.meta.isAuth) {

@@ -27,11 +27,12 @@ export default defineConfig({
   // 路由元信息生成
   getRouteMeta: (node) => {
     const title = node.name.replace(/([A-Z])/g, ' $1').trim()
+
     return {
       title,
       i18nKey: `route.${node.name.toLowerCase()}`,
-      icon: 'mdi:home',
-      order: 1,
+      icon: '',
+      order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,

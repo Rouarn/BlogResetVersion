@@ -48,7 +48,7 @@ declare namespace Api {
 
     type MenuRoute = {
       id: string
-    } & RouteRecordRaw
+    } & import('@elegant-router/types').AutoRouterRoute
 
     interface UserRoute {
       routes: MenuRoute[]

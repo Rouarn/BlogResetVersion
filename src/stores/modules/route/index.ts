@@ -1,99 +1,90 @@
-import { routes as elegantRoutes } from '@/router/_generated/routes'
 import { fetchGetUserRoutes } from '@/service/api'
-import {
-  getAuthElegantRoutes,
-  getCacheRouteNames,
-  getCacheRouteNamesByElegantRoutes,
-  getGlobalMenusByAuthRoutes,
-  getGlobalMenusByElegantRoutes,
-} from './shared'
+import { getAuthElegantRoutes, getCacheRouteNames, transformMenuToSearchMenus, updateMenuLocale } from './shared'
 import { SetupStoreId } from '@/enum'
 import useBoolean from '@/hooks/common/use-boolean'
 import type { AutoRouterRoute } from '@elegant-router/types'
 import { defineStore } from 'pinia'
-import type { RouteRecordRaw } from 'vue-router'
 
 export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   const { bool: isInitConstantRoute, setBool: setIsInitConstantRoute } = useBoolean()
 
   /** route mode */
-  const _authRouteMode = ref(import.meta.env.VITE_AUTH_ROUTE_MODE)
+  const authRouteMode = ref(import.meta.env.VITE_AUTH_ROUTE_MODE)
 
   /** Global menus */
   const menus = ref<App.Global.Menu[]>([])
+  const searchMenus = computed(() => transformMenuToSearchMenus(menus.value))
 
-  // elegant-router相关状态
-  const elegantRoutesData = ref<AutoRouterRoute[]>(elegantRoutes)
-  const authElegantRoutes = ref<AutoRouterRoute[]>([])
+  /**
+   * Get global menus
+   *
+   * @param routes Vue routes
+   */
+  function getGlobalMenus(routes: AutoRouterRoute[]) {
+    menus.value = getAuthElegantRoutes(routes)
+  }
+
+  /** Update global menus by locale */
+  function updateGlobalMenusByLocale() {
+    menus.value = updateMenuLocale(menus.value)
+  }
 
   /** Cache routes */
   const cacheRoutes = ref<App.Global.RouteKey[]>([])
 
   /**
-   * Handle auth route for elegant router
+   * Get cache routes
    *
-   * @param routes Auth elegant routes
+   * @param routes Vue routes
    */
-  function handleAuthRoute(routes: AutoRouterRoute[]) {
-    menus.value = getGlobalMenusByElegantRoutes(routes)
-    cacheRoutes.value = getCacheRouteNamesByElegantRoutes(routes)
-  }
-
-  /**
-   * Handle auth route for vue router (legacy)
-   *
-   * @param routes Auth routes
-   */
-  function handleAuthRouteForVueRouter(routes: RouteRecordRaw[]) {
-    menus.value = getGlobalMenusByAuthRoutes(routes)
+  function getCacheRoutes(routes: AutoRouterRoute[]) {
     cacheRoutes.value = getCacheRouteNames(routes)
   }
 
-  /**
-   * Initialize static auth route
-   */
-  async function initStaticRoute() {
-    // 使用elegant-router生成的路由
-    const routes = getAuthElegantRoutes(elegantRoutesData.value, [])
-    authElegantRoutes.value = routes
-
-    handleAuthRoute(routes)
-  }
-
-  /**
-   * Initialize dynamic auth route
-   */
-  async function initDynamicRoute() {
-    const { data } = await fetchGetUserRoutes()
-
-    if (data) {
-      // 如果是动态路由，仍然使用传统方式
-      handleAuthRouteForVueRouter(data)
-    }
-  }
-
-  /**
-   * Initialize auth route
-   */
-  async function initAuthRoute() {
+  /** 初始化应用路由 */
+  async function initAuthRoute(routes: AutoRouterRoute[]) {
+    // 如果已经初始化则直接返回
     if (isInitConstantRoute.value) return
 
-    setIsInitConstantRoute(true)
+    try {
+      let routesToUse: AutoRouterRoute[] = routes
 
-    if (_authRouteMode.value === 'dynamic') {
-      await initDynamicRoute()
-    } else {
-      await initStaticRoute()
+      // 如果是动态模式则获取动态路由
+      if (authRouteMode.value === 'dynamic') {
+        const { data, error } = await fetchGetUserRoutes()
+
+        if (!error && data?.routes) {
+          routesToUse = data.routes
+        } else {
+          // 出错时回退到静态路由
+        }
+      }
+
+      // 处理选定的路由
+      getGlobalMenus(routesToUse)
+      getCacheRoutes(routesToUse)
+
+      // 标记初始化完成
+      setIsInitConstantRoute(true)
+    } catch (error) {
+      // 处理初始化过程中的意外错误
+
+      // 可选择重新抛出或优雅处理
+      if (error instanceof Error) {
+        throw new Error(`路由初始化失败: ${error.message}`)
+      } else {
+        throw new Error('路由初始化因未知错误而失败')
+      }
     }
   }
 
   return {
     menus,
+    searchMenus,
     cacheRoutes,
-    elegantRoutesData,
-    authElegantRoutes,
+    isInitConstantRoute,
     initAuthRoute,
-    handleAuthRoute,
-    handleAuthRouteForVueRouter,
+    getGlobalMenus,
+    updateGlobalMenusByLocale,
   }
 })
