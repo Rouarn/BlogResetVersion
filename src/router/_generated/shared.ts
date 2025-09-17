@@ -33,7 +33,7 @@ const routePathMap: RoutePathMap = {
   DirectivesTooltipDirect: '/directives/tooltip-direct',
   DirectivesWatermarkDirect: '/directives/watermark-direct',
   Home: '/home',
-  IframePageUrl: '/iframe-page/:url',
+  IframeUrl: '/iframe/:url',
   Login: '/login',
   UserCenter: '/user-center',
 }

@@ -37,7 +37,7 @@ export const views: Record<RouteFileKey, RawRouteComponent> = {
   DirectivesTooltipDirect: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/directives/tooltip-direct/index.vue'),
   DirectivesWatermarkDirect: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/directives/watermark-direct/index.vue'),
   Home: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/home/index.vue'),
-  IframePageUrl: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/(builtin)/iframe-page/[url].vue'),
+  IframeUrl: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/(builtin)/iframe/[url].vue'),
   Login: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/(builtin)/login/index.vue'),
   UserCenter: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/user-center/index.vue'),
 }

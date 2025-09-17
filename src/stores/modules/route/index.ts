@@ -86,7 +86,6 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     })
 
     authRoutes.value = Array.from(authRoutesMap.values())
-    console.log('authRoutes.value: ', authRoutes.value)
   }
 
   /** handle constant and auth routes */

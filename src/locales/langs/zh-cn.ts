@@ -58,7 +58,7 @@ const local: App.I18n.Schema = {
     403: '403',
     404: '404',
     500: '500',
-    iframepageurl: 'Iframe 页面',
+    iframeurl: 'Iframe 页面',
     login: '登录',
     about: '关于',
     demosloadingdemo: '加载示例',

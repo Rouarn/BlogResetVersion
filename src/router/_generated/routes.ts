@@ -397,13 +397,13 @@ export const routes: AutoRouterRoute[] = [
     },
   },
   {
-    name: 'IframePageUrl',
-    path: '/iframe-page/:url',
+    name: 'IframeUrl',
+    path: '/iframe/:url',
     layout: 'base',
-    component: 'IframePageUrl',
+    component: 'IframeUrl',
     meta: {
-      title: 'IframePageUrl',
-      i18nKey: 'route.iframepageurl',
+      title: 'IframeUrl',
+      i18nKey: 'route.iframeurl',
       icon: '',
       order: 2,
       hideInMenu: false,

@@ -109,7 +109,7 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>
     >
     Home: RouteRecordInfo<'Home', '/home', Record<never, never>, Record<never, never>>
-    IframePageUrl: RouteRecordInfo<'IframePageUrl', '/iframe-page/:url', { url: ParamValue<true> }, { url: ParamValue<false> }>
+    IframeUrl: RouteRecordInfo<'IframeUrl', '/iframe/:url', { url: ParamValue<true> }, { url: ParamValue<false> }>
     Login: RouteRecordInfo<'Login', '/login', Record<never, never>, Record<never, never>>
     UserCenter: RouteRecordInfo<'UserCenter', '/user-center', Record<never, never>, Record<never, never>>
   }

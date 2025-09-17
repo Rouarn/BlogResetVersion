@@ -37,12 +37,12 @@ export function createRouteGuard(router: Router) {
       // 检查是否登录
       if (!authStore.isLogin) {
         // 跳转到登陆页
-        return next({ path: '/_builtin/login', replace: false, query: { redirect: to.fullPath } })
+        return next({ path: '/login', replace: false, query: { redirect: to.fullPath } })
       }
     }
 
     // 判断是否访问登陆页，有 Token 就在当前页面，没有 Token 重置路由到登陆页
-    if (to.path.toLocaleLowerCase() === '/_builtin/login') {
+    if (to.path.toLocaleLowerCase() === '/login') {
       if (authStore.isLogin) return next(from.fullPath)
       return next()
     }
