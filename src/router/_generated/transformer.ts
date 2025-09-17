@@ -12,59 +12,59 @@ import type {
   AutoRouterSingleView,
   RawRouteComponent,
   RouteFileKey,
-  RouteLayoutKey,
-} from '@elegant-router/types'
+  RouteLayoutKey
+} from '@elegant-router/types';
 
 export function transformToVueRoutes(
   routes: AutoRouterRoute[],
   layouts: Record<RouteLayoutKey, RawRouteComponent>,
-  views: Record<RouteFileKey, RawRouteComponent>,
+  views: Record<RouteFileKey, RawRouteComponent>
 ) {
-  const { redirects, groupedRoutes } = getFormattedRoutes(routes)
+  const { redirects, groupedRoutes } = getFormattedRoutes(routes);
 
-  const vueRoutes: RouteRecordRaw[] = [...redirects]
+  const vueRoutes: RouteRecordRaw[] = [...redirects];
 
   groupedRoutes.forEach((items, layout) => {
     const layoutRoute: RouteRecordRaw = {
       path: `/${layout}-layout`,
       component: layouts[layout],
-      children: items.map((item) => {
-        const { layout: _, component, ...rest } = item
+      children: items.map(item => {
+        const { layout: _, component, ...rest } = item;
 
         return {
           component: views[component],
-          ...rest,
-        }
-      }),
-    }
+          ...rest
+        };
+      })
+    };
 
-    vueRoutes.push(layoutRoute)
-  })
+    vueRoutes.push(layoutRoute);
+  });
 
-  return vueRoutes
+  return vueRoutes;
 }
 
 function getFormattedRoutes(routes: AutoRouterRoute[]) {
-  const groupedRoutes = new Map<RouteLayoutKey, AutoRouterSingleView[]>()
-  const redirects: AutoRouterRedirect[] = []
+  const groupedRoutes = new Map<RouteLayoutKey, AutoRouterSingleView[]>();
+  const redirects: AutoRouterRedirect[] = [];
 
-  routes.forEach((route) => {
+  routes.forEach(route => {
     if (isAutoRouterRedirect(route)) {
-      redirects.push(route)
-      return
+      redirects.push(route);
+      return;
     }
 
-    const items = groupedRoutes.get(route.layout) || []
-    items.push(route)
-    groupedRoutes.set(route.layout, items)
-  })
+    const items = groupedRoutes.get(route.layout) || [];
+    items.push(route);
+    groupedRoutes.set(route.layout, items);
+  });
 
   return {
     redirects,
-    groupedRoutes,
-  }
+    groupedRoutes
+  };
 }
 
 function isAutoRouterRedirect(route: AutoRouterRoute): route is AutoRouterRedirect {
-  return 'redirect' in route
+  return 'redirect' in route;
 }

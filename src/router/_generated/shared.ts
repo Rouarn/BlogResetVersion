@@ -1,3 +1,4 @@
+ 
 /* prettier-ignore */
 /* oxlint-disable */
 // biome-ignore lint: disable
@@ -7,37 +8,37 @@
 import type { RouteKey, RoutePathMap } from '@elegant-router/types';
 
 const routePathMap: RoutePathMap = {
-  Root: '/',
-  NotFound: '/:pathMatch(.*)*',
-  '403': '/403',
-  '404': '/404',
-  '500': '/500',
-  About: '/about',
-  DemosLoadingDemo: '/demos/loading-demo',
-  DemosSocketDemo: '/demos/socket-demo',
-  DirectivesAnimateDirect: '/directives/animate-direct',
-  DirectivesClickoutsideDirect: '/directives/clickoutside-direct',
-  DirectivesCopyDirect: '/directives/copy-direct',
-  DirectivesDebounceDirect: '/directives/debounce-direct',
-  DirectivesDragDirect: '/directives/drag-direct',
-  DirectivesFocusDirect: '/directives/focus-direct',
-  DirectivesHighlightDirect: '/directives/highlight-direct',
-  DirectivesLazyDirect: '/directives/lazy-direct',
-  DirectivesLoadingDirect: '/directives/loading-direct',
-  DirectivesLongpressDirect: '/directives/longpress-direct',
-  DirectivesMaskDirect: '/directives/mask-direct',
-  DirectivesPermissionDirect: '/directives/permission-direct',
-  DirectivesRippleDirect: '/directives/ripple-direct',
-  DirectivesScrollDirect: '/directives/scroll-direct',
-  DirectivesThrottleDirect: '/directives/throttle-direct',
-  DirectivesTooltipDirect: '/directives/tooltip-direct',
-  DirectivesWatermarkDirect: '/directives/watermark-direct',
-  Home: '/home',
-  IframeUrl: '/iframe/:url',
-  Login: '/login',
-  UserCenter: '/user-center',
-}
+  "Root": "/",
+  "NotFound": "/:pathMatch(.*)*",
+  "403": "/403",
+  "404": "/404",
+  "500": "/500",
+  "About": "/about",
+  "DemosLoadingDemo": "/demos/loading-demo",
+  "DemosSocketDemo": "/demos/socket-demo",
+  "DirectivesAnimateDirect": "/directives/animate-direct",
+  "DirectivesClickoutsideDirect": "/directives/clickoutside-direct",
+  "DirectivesCopyDirect": "/directives/copy-direct",
+  "DirectivesDebounceDirect": "/directives/debounce-direct",
+  "DirectivesDragDirect": "/directives/drag-direct",
+  "DirectivesFocusDirect": "/directives/focus-direct",
+  "DirectivesHighlightDirect": "/directives/highlight-direct",
+  "DirectivesLazyDirect": "/directives/lazy-direct",
+  "DirectivesLoadingDirect": "/directives/loading-direct",
+  "DirectivesLongpressDirect": "/directives/longpress-direct",
+  "DirectivesMaskDirect": "/directives/mask-direct",
+  "DirectivesPermissionDirect": "/directives/permission-direct",
+  "DirectivesRippleDirect": "/directives/ripple-direct",
+  "DirectivesScrollDirect": "/directives/scroll-direct",
+  "DirectivesThrottleDirect": "/directives/throttle-direct",
+  "DirectivesTooltipDirect": "/directives/tooltip-direct",
+  "DirectivesWatermarkDirect": "/directives/watermark-direct",
+  "Home": "/home",
+  "IframeUrl": "/iframe/:url",
+  "Login": "/login",
+  "UserCenter": "/user-center",
+};
 
 export function getRoutePath(key: RouteKey) {
-  return routePathMap[key]
+  return routePathMap[key];
 }

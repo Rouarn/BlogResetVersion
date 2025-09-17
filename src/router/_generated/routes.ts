@@ -403,7 +403,7 @@ export const routes: AutoRouterRoute[] = [
     component: 'IframeUrl',
     meta: {
       title: 'IframeUrl',
-      i18nKey: 'route.iframeurl',
+      i18nKey: 'route.iframe',
       icon: '',
       order: 2,
       hideInMenu: false,

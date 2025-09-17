@@ -57,7 +57,7 @@ const local: App.I18n.Schema = {
     '403': '403',
     '404': '404',
     '500': '500',
-    iframeurl: 'Iframe Page',
+    iframe: 'Iframe Page',
     login: 'Login',
     about: 'About',
     demosloadingdemo: 'Loading Demo',

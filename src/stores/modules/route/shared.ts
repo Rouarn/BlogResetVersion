@@ -143,19 +143,23 @@ export function getAuthElegantRoutes(routes: AutoRouterRoute[]): App.Global.Menu
     const pathSegments = route.path.split('/').filter(Boolean)
     if (pathSegments.length === 0) return
 
-    if (pathSegments.length === 1) {
+    // 过滤掉路由参数（以:开头的段），只保留实际的路径段
+    const realPathSegments = pathSegments.filter((segment) => !segment.startsWith(':'))
+
+    if (realPathSegments.length === 0) return
+    if (realPathSegments.length === 1) {
       // 一级菜单
-      const menu = createRouteMenu(route, pathSegments, 0)
+      const menu = createRouteMenu(route, realPathSegments, 0)
       menuMap.set(route.name as string, menu)
       menus.push(menu)
     } else {
       // 多级菜单
       let parent: App.Global.Menu | null = null
-      for (let i = 0; i < pathSegments.length - 1; i++) {
-        parent = findOrCreateParent(menus, menuMap, pathSegments, i)
+      for (let i = 0; i < realPathSegments.length - 1; i++) {
+        parent = findOrCreateParent(menus, menuMap, realPathSegments, i)
       }
 
-      const finalMenu = createRouteMenu(route, pathSegments, pathSegments.length - 1)
+      const finalMenu = createRouteMenu(route, realPathSegments, realPathSegments.length - 1)
       parent?.children?.push(finalMenu)
       menuMap.set(route.name as string, finalMenu)
     }

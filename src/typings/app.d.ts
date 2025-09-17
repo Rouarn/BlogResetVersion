@@ -141,7 +141,7 @@ declare namespace App {
         '403': string
         '404': string
         '500': string
-        iframeurl: string
+        iframe: string
         login: string
         about: string
         demosloadingdemo: string
