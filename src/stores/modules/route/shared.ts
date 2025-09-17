@@ -42,7 +42,7 @@ function createMenuIcon(iconName?: string, fontSize = 16, isLocalIcon = false) {
  */
 function createRouteMenu(route: AutoRouterRoute, pathSegments: string[], level: number): App.Global.Menu {
   const routeName = route.name as App.Global.RouteKey
-  const meta = (route.meta as RouteMeta) ?? {}
+  const meta = route.meta ?? ({} as RouteMeta)
   const isLeaf = level === pathSegments.length - 1
 
   return {

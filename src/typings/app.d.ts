@@ -262,6 +262,8 @@ declare namespace App {
       routePath: RoutePath
       /** The menu icon */
       icon?: () => VNode
+      /** The menu order */
+      order?: number | null
       /** The menu children */
       children?: Menu[]
     }
