@@ -3,7 +3,7 @@ import App from './App.vue'
 import './plugins/assets'
 import { setupI18n } from './locales'
 import { setupAppVersionNotification, setupDayjs, setupDirectives, setupIconifyOffline, setupNProgress, setupPWARegister } from './plugins'
-import router from './router'
+import { setupRouter } from './router'
 import { setupStore } from './stores'
 
 async function setupApp() {
@@ -21,7 +21,7 @@ async function setupApp() {
 
   setupI18n(app)
 
-  app.use(router)
+  await setupRouter(app)
 
   setupAppVersionNotification()
 
