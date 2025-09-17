@@ -138,11 +138,11 @@ declare namespace App {
         root: string
         home: string
         notfound: string
-        _builtin403: string
-        _builtin404: string
-        _builtin500: string
-        _builtiniframepageurl: string
-        _builtinlogin: string
+        '403': string
+        '404': string
+        '500': string
+        iframepageurl: string
+        login: string
         about: string
         demosloadingdemo: string
         demossocketdemo: string

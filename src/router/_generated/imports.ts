@@ -13,11 +13,9 @@ export const layouts: Record<RouteLayoutKey, RawRouteComponent> = {
 }
 
 export const views: Record<RouteFileKey, RawRouteComponent> = {
-  _builtin403: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/_builtin/403/index.vue'),
-  _builtin404: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/_builtin/404/index.vue'),
-  _builtin500: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/_builtin/500/index.vue'),
-  _builtinIframePageUrl: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/_builtin/iframe-page/[url].vue'),
-  _builtinLogin: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/_builtin/login/index.vue'),
+  403: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/(builtin)/403/index.vue'),
+  404: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/(builtin)/404/index.vue'),
+  500: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/(builtin)/500/index.vue'),
   About: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/about/index.vue'),
   DemosLoadingDemo: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/demos/loading-demo/index.vue'),
   DemosSocketDemo: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/demos/socket-demo/index.vue'),
@@ -39,5 +37,7 @@ export const views: Record<RouteFileKey, RawRouteComponent> = {
   DirectivesTooltipDirect: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/directives/tooltip-direct/index.vue'),
   DirectivesWatermarkDirect: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/directives/watermark-direct/index.vue'),
   Home: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/home/index.vue'),
+  IframePageUrl: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/(builtin)/iframe-page/[url].vue'),
+  Login: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/(builtin)/login/index.vue'),
   UserCenter: () => import('C:/Rouarn/AlibabaCloud/frontend-template/src/views/user-center/index.vue'),
 }

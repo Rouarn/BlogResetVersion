@@ -68,7 +68,7 @@ export function useRouterPush(inSetup = true) {
       redirect,
     }
 
-    return routerPushByKey('_builtinLogin', options)
+    return routerPushByKey('Login', options)
   }
 
   /**

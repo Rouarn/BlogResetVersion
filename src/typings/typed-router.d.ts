@@ -25,16 +25,9 @@ declare module 'vue-router/auto-routes' {
   export interface RouteNamedMap {
     Root: RouteRecordInfo<'Root', '/', Record<never, never>, Record<never, never>>
     NotFound: RouteRecordInfo<'NotFound', '/:pathMatch(.*)*', Record<never, never>, Record<never, never>>
-    _builtin403: RouteRecordInfo<'_builtin403', '/_builtin/403', Record<never, never>, Record<never, never>>
-    _builtin404: RouteRecordInfo<'_builtin404', '/_builtin/404', Record<never, never>, Record<never, never>>
-    _builtin500: RouteRecordInfo<'_builtin500', '/_builtin/500', Record<never, never>, Record<never, never>>
-    _builtinIframePageUrl: RouteRecordInfo<
-      '_builtinIframePageUrl',
-      '/_builtin/iframe-page/:url',
-      { url: ParamValue<true> },
-      { url: ParamValue<false> }
-    >
-    _builtinLogin: RouteRecordInfo<'_builtinLogin', '/_builtin/login', Record<never, never>, Record<never, never>>
+    '403': RouteRecordInfo<'403', '/403', Record<never, never>, Record<never, never>>
+    '404': RouteRecordInfo<'404', '/404', Record<never, never>, Record<never, never>>
+    '500': RouteRecordInfo<'500', '/500', Record<never, never>, Record<never, never>>
     About: RouteRecordInfo<'About', '/about', Record<never, never>, Record<never, never>>
     DemosLoadingDemo: RouteRecordInfo<'DemosLoadingDemo', '/demos/loading-demo', Record<never, never>, Record<never, never>>
     DemosSocketDemo: RouteRecordInfo<'DemosSocketDemo', '/demos/socket-demo', Record<never, never>, Record<never, never>>
@@ -116,6 +109,8 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>
     >
     Home: RouteRecordInfo<'Home', '/home', Record<never, never>, Record<never, never>>
+    IframePageUrl: RouteRecordInfo<'IframePageUrl', '/iframe-page/:url', { url: ParamValue<true> }, { url: ParamValue<false> }>
+    Login: RouteRecordInfo<'Login', '/login', Record<never, never>, Record<never, never>>
     UserCenter: RouteRecordInfo<'UserCenter', '/user-center', Record<never, never>, Record<never, never>>
   }
 }

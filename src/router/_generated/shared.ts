@@ -9,11 +9,9 @@ import type { RouteKey, RoutePathMap } from '@elegant-router/types';
 const routePathMap: RoutePathMap = {
   Root: '/',
   NotFound: '/:pathMatch(.*)*',
-  _builtin403: '/_builtin/403',
-  _builtin404: '/_builtin/404',
-  _builtin500: '/_builtin/500',
-  _builtinIframePageUrl: '/_builtin/iframe-page/:url',
-  _builtinLogin: '/_builtin/login',
+  '403': '/403',
+  '404': '/404',
+  '500': '/500',
   About: '/about',
   DemosLoadingDemo: '/demos/loading-demo',
   DemosSocketDemo: '/demos/socket-demo',
@@ -35,6 +33,8 @@ const routePathMap: RoutePathMap = {
   DirectivesTooltipDirect: '/directives/tooltip-direct',
   DirectivesWatermarkDirect: '/directives/watermark-direct',
   Home: '/home',
+  IframePageUrl: '/iframe-page/:url',
+  Login: '/login',
   UserCenter: '/user-center',
 }
 
