@@ -1,4 +1,4 @@
- 
+/* eslint-disable */
 /* prettier-ignore */
 /* oxlint-disable */
 // biome-ignore lint: disable
@@ -25,7 +25,7 @@ export const routes: AutoRouterRoute[] = [
   {
     name: 'NotFound',
     path: '/:pathMatch(.*)*',
-    layout: 'base',
+    layout: 'blank',
     component: '404',
     meta: {
       title: "Not Found",
@@ -40,7 +40,7 @@ export const routes: AutoRouterRoute[] = [
   {
     name: '403',
     path: '/403',
-    layout: 'base',
+    layout: 'blank',
     component: '403',
     meta: {
       title: "403",
@@ -55,7 +55,7 @@ export const routes: AutoRouterRoute[] = [
   {
     name: '404',
     path: '/404',
-    layout: 'base',
+    layout: 'blank',
     component: '404',
     meta: {
       title: "404",
@@ -70,7 +70,7 @@ export const routes: AutoRouterRoute[] = [
   {
     name: '500',
     path: '/500',
-    layout: 'base',
+    layout: 'blank',
     component: '500',
     meta: {
       title: "500",
@@ -415,7 +415,7 @@ export const routes: AutoRouterRoute[] = [
   {
     name: 'Login',
     path: '/login',
-    layout: 'base',
+    layout: 'blank',
     component: 'Login',
     meta: {
       title: "Login",

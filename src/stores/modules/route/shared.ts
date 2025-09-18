@@ -128,7 +128,6 @@ function findOrCreateParent(
  * 获取菜单
  */
 export function getAuthElegantRoutes(routes: AutoRouterRoute[]): App.Global.Menu[] {
-  console.log('routes: ', routes)
   const menus: App.Global.Menu[] = []
   const menuMap = new Map<string, App.Global.Menu>()
 
