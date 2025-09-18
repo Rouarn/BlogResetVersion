@@ -10,7 +10,16 @@ export default defineConfigWithVueTs(
     files: ['**/*.{ts,mts,tsx,vue}'],
   },
 
-  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
+  globalIgnores([
+    '**/dist/**',
+    '**/dist-ssr/**',
+    '**/coverage/**',
+    // 从 .prettierignore 同步的忽略规则
+    'src/typings/auto-imports.d.ts',
+    'src/router/_generated/**',
+    'src/typings/elegant-router.d.ts',
+    'src/typings/typed-router.d.ts',
+  ]),
 
   pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,
