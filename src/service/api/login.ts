@@ -19,3 +19,20 @@ export function fetchLogin(username: string, password: string) {
 export function fetchUserInfo() {
   return request.get<Api.Auth.UserInfo>(`${servicePort.auth}/getUserInfo`)
 }
+
+/**
+ * 生成验证码
+ */
+export function fetchCaptcha() {
+  return request.get<Api.Auth.Captcha>(`${servicePort.auth}/captcha`, {}, { loading: false })
+}
+
+/**
+ * 验证码校验
+ * @param captcha 验证码
+ */
+export function fetchCaptchaCheck(captcha: string) {
+  return request.post<Api.Auth.LoginToken>(`${servicePort.auth}/loginCheck`, {
+    captcha,
+  })
+}

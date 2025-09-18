@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fetchCaptcha, fetchCaptchaCheck } from '@/service/api/login'
 import { useAuthStore } from '@/stores/modules/auth'
 
 defineOptions({
@@ -9,7 +10,30 @@ const authStore = useAuthStore()
 
 const userName = ref('newuser')
 const password = ref('password123')
+const captcha = ref('')
+const captchaCode = ref('')
 const isSuccess = ref(false)
+
+// 生成验证码
+async function generateCaptcha() {
+  const { data, error } = await fetchCaptcha()
+  if (error) {
+    window.$message?.error(error.message)
+    return
+  }
+  captchaCode.value = data.captcha
+}
+
+// 重置验证码
+async function resetCaptcha() {
+  captcha.value = ''
+  await generateCaptcha()
+}
+
+// 初始化验证码
+onMounted(() => {
+  generateCaptcha()
+})
 
 async function handleLogin() {
   if (isSuccess.value) {
@@ -17,10 +41,29 @@ async function handleLogin() {
   }
   userName.value = userName.value.trim()
   password.value = password.value.trim()
+  captcha.value = captcha.value.trim()
+
   if (!userName.value || !password.value) {
     window.$message?.error('请输入用户名和密码')
     return
   }
+
+  if (!captcha.value) {
+    window.$message?.error('请输入验证码')
+    return
+  }
+
+  try {
+    const { error } = await fetchCaptchaCheck(captcha.value)
+    if (error) {
+      window.$message?.error(error.message)
+      return resetCaptcha()
+    }
+  } catch (_) {
+    window.$message?.error('验证码校验失败')
+    return resetCaptcha()
+  }
+
   await authStore.login(userName.value, password.value)
   isSuccess.value = authStore.isLogin
 }
@@ -33,6 +76,13 @@ async function handleLogin() {
       <form class="form" @submit.prevent="handleLogin">
         <input type="text" placeholder="您的账号" v-model="userName" autofocus />
         <input type="password" placeholder="您的密码" v-model="password" />
+        <!-- 验证码 -->
+        <div class="captcha-container">
+          <input type="text" placeholder="请输入验证码" v-model="captcha" class="captcha-input" maxlength="4" />
+          <div class="captcha-display" @click="resetCaptcha">
+            <img :src="`data:image/png;base64,${captchaCode}`" alt="验证码" />
+          </div>
+        </div>
         <button class="btn-login" type="submit">登录</button>
       </form>
     </div>
@@ -62,7 +112,7 @@ async function handleLogin() {
 
 <style lang="scss" scoped>
 .login {
-  height: 100vh;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -119,6 +169,67 @@ async function handleLogin() {
           background-color: #fff;
           width: 300px;
           color: #ff719a;
+        }
+      }
+
+      .captcha-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 auto 10px auto;
+        width: 250px;
+
+        .captcha-input {
+          width: 170px;
+          outline: none;
+          border: 1px solid rgba(255, 255, 255, 0.4);
+          background-color: rgba(255, 255, 255, 0.2);
+          padding: 10px 15px;
+          border-radius: 3px;
+          text-align: center;
+          color: #fff;
+          font-size: 15px;
+          transition: 0.25s;
+          margin: 0;
+
+          &::placeholder {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 300;
+          }
+
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+          }
+
+          &:focus {
+            background-color: #fff;
+            color: #ff719a;
+            width: 200px;
+          }
+        }
+
+        .captcha-display {
+          width: 72px;
+          height: 40px;
+          background-color: rgba(255, 255, 255, 0.9);
+          border: 1px solid rgba(255, 255, 255, 0.4);
+          border-radius: 3px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 16px;
+          font-weight: bold;
+          color: #ff719a;
+          cursor: pointer;
+          user-select: none;
+          transition: 0.25s;
+          letter-spacing: 1px;
+
+          &:hover {
+            background-color: #fff;
+            transform: scale(1.02);
+          }
         }
       }
 
