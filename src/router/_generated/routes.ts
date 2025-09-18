@@ -1,3 +1,4 @@
+ 
 /* prettier-ignore */
 /* oxlint-disable */
 // biome-ignore lint: disable
@@ -12,13 +13,13 @@ export const routes: AutoRouterRoute[] = [
     path: '/',
     redirect: '/home',
     meta: {
-      title: 'Root',
-      i18nKey: 'route.root',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Root",
+      i18nKey: "route.root"
     },
   },
   {
@@ -27,13 +28,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: '404',
     meta: {
-      title: 'NotFound',
-      i18nKey: 'route.notfound',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Not Found",
+      i18nKey: "route.notFound"
     },
   },
   {
@@ -42,13 +43,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: '403',
     meta: {
-      title: '403',
-      i18nKey: 'route.403',
-      icon: '',
+      icon: "",
       order: 2,
-      hideInMenu: false,
+      hideInMenu: true,
       isKeepAlive: true,
       isAuth: false,
+      title: "403",
+      i18nKey: "route.403"
     },
   },
   {
@@ -57,13 +58,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: '404',
     meta: {
-      title: '404',
-      i18nKey: 'route.404',
-      icon: '',
+      icon: "",
       order: 2,
-      hideInMenu: false,
+      hideInMenu: true,
       isKeepAlive: true,
       isAuth: false,
+      title: "404",
+      i18nKey: "route.404"
     },
   },
   {
@@ -72,13 +73,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: '500',
     meta: {
-      title: '500',
-      i18nKey: 'route.500',
-      icon: '',
+      icon: "",
       order: 2,
-      hideInMenu: false,
+      hideInMenu: true,
       isKeepAlive: true,
       isAuth: false,
+      title: "500",
+      i18nKey: "route.500"
     },
   },
   {
@@ -87,13 +88,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'About',
     meta: {
-      title: 'About',
-      i18nKey: 'route.about',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "About",
+      i18nKey: "route.about"
     },
   },
   {
@@ -102,13 +103,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DemosLoadingDemo',
     meta: {
-      title: 'DemosLoadingDemo',
-      i18nKey: 'route.demosloadingdemo',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Demos Loading Demo",
+      i18nKey: "route.demosLoadingDemo"
     },
   },
   {
@@ -117,13 +118,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DemosSocketDemo',
     meta: {
-      title: 'DemosSocketDemo',
-      i18nKey: 'route.demossocketdemo',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Demos Socket Demo",
+      i18nKey: "route.demosSocketDemo"
     },
   },
   {
@@ -132,13 +133,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DirectivesAnimateDirect',
     meta: {
-      title: 'DirectivesAnimateDirect',
-      i18nKey: 'route.directivesanimatedirect',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Directives Animate Direct",
+      i18nKey: "route.directivesAnimateDirect"
     },
   },
   {
@@ -147,13 +148,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DirectivesClickoutsideDirect',
     meta: {
-      title: 'DirectivesClickoutsideDirect',
-      i18nKey: 'route.directivesclickoutsidedirect',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Directives Clickoutside Direct",
+      i18nKey: "route.directivesClickoutsideDirect"
     },
   },
   {
@@ -162,13 +163,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DirectivesCopyDirect',
     meta: {
-      title: 'DirectivesCopyDirect',
-      i18nKey: 'route.directivescopydirect',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Directives Copy Direct",
+      i18nKey: "route.directivesCopyDirect"
     },
   },
   {
@@ -177,13 +178,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DirectivesDebounceDirect',
     meta: {
-      title: 'DirectivesDebounceDirect',
-      i18nKey: 'route.directivesdebouncedirect',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Directives Debounce Direct",
+      i18nKey: "route.directivesDebounceDirect"
     },
   },
   {
@@ -192,13 +193,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DirectivesDragDirect',
     meta: {
-      title: 'DirectivesDragDirect',
-      i18nKey: 'route.directivesdragdirect',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Directives Drag Direct",
+      i18nKey: "route.directivesDragDirect"
     },
   },
   {
@@ -207,13 +208,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DirectivesFocusDirect',
     meta: {
-      title: 'DirectivesFocusDirect',
-      i18nKey: 'route.directivesfocusdirect',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Directives Focus Direct",
+      i18nKey: "route.directivesFocusDirect"
     },
   },
   {
@@ -222,13 +223,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DirectivesHighlightDirect',
     meta: {
-      title: 'DirectivesHighlightDirect',
-      i18nKey: 'route.directiveshighlightdirect',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Directives Highlight Direct",
+      i18nKey: "route.directivesHighlightDirect"
     },
   },
   {
@@ -237,13 +238,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DirectivesLazyDirect',
     meta: {
-      title: 'DirectivesLazyDirect',
-      i18nKey: 'route.directiveslazydirect',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Directives Lazy Direct",
+      i18nKey: "route.directivesLazyDirect"
     },
   },
   {
@@ -252,13 +253,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DirectivesLoadingDirect',
     meta: {
-      title: 'DirectivesLoadingDirect',
-      i18nKey: 'route.directivesloadingdirect',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Directives Loading Direct",
+      i18nKey: "route.directivesLoadingDirect"
     },
   },
   {
@@ -267,13 +268,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DirectivesLongpressDirect',
     meta: {
-      title: 'DirectivesLongpressDirect',
-      i18nKey: 'route.directiveslongpressdirect',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Directives Longpress Direct",
+      i18nKey: "route.directivesLongpressDirect"
     },
   },
   {
@@ -282,13 +283,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DirectivesMaskDirect',
     meta: {
-      title: 'DirectivesMaskDirect',
-      i18nKey: 'route.directivesmaskdirect',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Directives Mask Direct",
+      i18nKey: "route.directivesMaskDirect"
     },
   },
   {
@@ -297,13 +298,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DirectivesPermissionDirect',
     meta: {
-      title: 'DirectivesPermissionDirect',
-      i18nKey: 'route.directivespermissiondirect',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Directives Permission Direct",
+      i18nKey: "route.directivesPermissionDirect"
     },
   },
   {
@@ -312,13 +313,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DirectivesRippleDirect',
     meta: {
-      title: 'DirectivesRippleDirect',
-      i18nKey: 'route.directivesrippledirect',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Directives Ripple Direct",
+      i18nKey: "route.directivesRippleDirect"
     },
   },
   {
@@ -327,13 +328,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DirectivesScrollDirect',
     meta: {
-      title: 'DirectivesScrollDirect',
-      i18nKey: 'route.directivesscrolldirect',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Directives Scroll Direct",
+      i18nKey: "route.directivesScrollDirect"
     },
   },
   {
@@ -342,13 +343,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DirectivesThrottleDirect',
     meta: {
-      title: 'DirectivesThrottleDirect',
-      i18nKey: 'route.directivesthrottledirect',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Directives Throttle Direct",
+      i18nKey: "route.directivesThrottleDirect"
     },
   },
   {
@@ -357,13 +358,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DirectivesTooltipDirect',
     meta: {
-      title: 'DirectivesTooltipDirect',
-      i18nKey: 'route.directivestooltipdirect',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Directives Tooltip Direct",
+      i18nKey: "route.directivesTooltipDirect"
     },
   },
   {
@@ -372,13 +373,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'DirectivesWatermarkDirect',
     meta: {
-      title: 'DirectivesWatermarkDirect',
-      i18nKey: 'route.directiveswatermarkdirect',
-      icon: '',
+      icon: "",
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Directives Watermark Direct",
+      i18nKey: "route.directivesWatermarkDirect"
     },
   },
   {
@@ -387,13 +388,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'Home',
     meta: {
-      title: 'Home',
-      i18nKey: 'route.home',
-      icon: '',
-      order: 2,
+      icon: "",
+      order: 1,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false,
+      title: "Home",
+      i18nKey: "route.home"
     },
   },
   {
@@ -402,13 +403,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'IframeUrl',
     meta: {
-      title: 'IframeUrl',
-      i18nKey: 'route.iframe',
-      icon: '',
+      icon: "",
       order: 2,
-      hideInMenu: false,
+      hideInMenu: true,
       isKeepAlive: true,
       isAuth: false,
+      title: "Iframe Url",
+      i18nKey: "route.iframe"
     },
   },
   {
@@ -417,13 +418,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'Login',
     meta: {
-      title: 'Login',
-      i18nKey: 'route.login',
-      icon: '',
+      icon: "",
       order: 2,
-      hideInMenu: false,
+      hideInMenu: true,
       isKeepAlive: true,
       isAuth: false,
+      title: "Login",
+      i18nKey: "route.login"
     },
   },
   {
@@ -432,13 +433,13 @@ export const routes: AutoRouterRoute[] = [
     layout: 'base',
     component: 'UserCenter',
     meta: {
-      title: 'UserCenter',
-      i18nKey: 'common.userCenter',
-      icon: '',
+      icon: "",
       order: 2,
-      hideInMenu: false,
+      hideInMenu: true,
       isKeepAlive: true,
       isAuth: false,
+      title: "User Center",
+      i18nKey: "route.userCenter"
     },
   }
-]
+];

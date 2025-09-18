@@ -1,4 +1,44 @@
+import type { RouteKey } from '@elegant-router/types'
 import { defineConfig } from 'elegant-router'
+import type { RouteMeta } from 'vue-router'
+
+// 常量路由配置
+const CONSTANT_ROUTES: RouteKey[] = ['Login', '403', '404', '500', 'IframeUrl', 'UserCenter']
+
+// 默认路由元信息
+const DEFAULT_ROUTE_META: Partial<RouteMeta> = {
+  icon: '',
+  order: 2,
+  hideInMenu: false,
+  isKeepAlive: true,
+  isAuth: false,
+}
+
+/**
+ * 生成路由键名
+ * @param name 路由名称
+ * @param path 路由路径
+ * @returns 处理后的路由键名（小驼峰格式）
+ */
+function generateRouteKey(name: string, path?: string): string {
+  // 将首字母转为小写，保持小驼峰格式
+  const camelCaseKey = name.charAt(0).toLowerCase() + name.slice(1)
+
+  // 如果路径包含参数，提取非参数部分作为键名
+  if (path?.includes(':')) {
+    const nonParamParts = path
+      .split('/')
+      .filter((part) => part && !part.startsWith(':'))
+      .join('')
+
+    // 将提取的部分转换为小驼峰格式
+    if (nonParamParts) {
+      return nonParamParts.charAt(0).toLowerCase() + nonParamParts.slice(1)
+    }
+  }
+
+  return camelCaseKey
+}
 
 export default defineConfig({
   // 页面目录
@@ -26,16 +66,29 @@ export default defineConfig({
   getRouteLayout: () => 'base',
   // 路由元信息生成
   getRouteMeta: (node) => {
-    const title = node.name.replace(/([A-Z])/g, '$1').trim()
+    // 生成标题：将驼峰命名转换为带空格的标题
+    const title = node.name.replace(/([A-Z])/g, ' $1').trim()
 
-    return {
+    // 生成路由键名
+    const routeKey = generateRouteKey(node.name, node.path)
+
+    // 创建基础元信息
+    const meta: Partial<RouteMeta> = {
       title,
-      i18nKey: `route.${node.name.toLowerCase()}`,
-      icon: '',
-      order: 2,
-      hideInMenu: false,
-      isKeepAlive: true,
-      isAuth: false,
+      i18nKey: `route.${routeKey}` as App.I18n.I18nKey,
+      ...DEFAULT_ROUTE_META,
     }
+
+    // 特殊路由处理：隐藏常量路由
+    if (CONSTANT_ROUTES.includes(node.name as RouteKey)) {
+      meta.hideInMenu = true
+    }
+
+    // 首页特殊处理：设置最高优先级
+    if (node.name.toLowerCase() === 'home') {
+      meta.order = 1
+    }
+
+    return meta
   },
 })

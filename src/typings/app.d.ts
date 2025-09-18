@@ -137,34 +137,35 @@ declare namespace App {
       route: {
         root: string
         home: string
-        notfound: string
+        notFound: string
         '403': string
         '404': string
         '500': string
         iframe: string
         login: string
         about: string
-        demosloadingdemo: string
-        demossocketdemo: string
-        directivesanimatedirect: string
-        directivesclickoutsidedirect: string
-        directivescopydirect: string
-        directivesdebouncedirect: string
-        directivesdragdirect: string
-        directivesfocusdirect: string
-        directiveshighlightdirect: string
-        directiveslazydirect: string
-        directivesloadingdirect: string
-        directiveslongpressdirect: string
-        directivesmaskdirect: string
-        directivespermissiondirect: string
-        directivesscrolldirect: string
-        directivesthrottledirect: string
-        directivestooltipdirect: string
-        directiveswatermarkdirect: string
-        directivesrippledirect: string
+        demosLoadingDemo: string
+        demosSocketDemo: string
+        directivesAnimateDirect: string
+        directivesClickoutsideDirect: string
+        directivesCopyDirect: string
+        directivesDebounceDirect: string
+        directivesDragDirect: string
+        directivesFocusDirect: string
+        directivesHighlightDirect: string
+        directivesLazyDirect: string
+        directivesLoadingDirect: string
+        directivesLongpressDirect: string
+        directivesMaskDirect: string
+        directivesPermissionDirect: string
+        directivesScrollDirect: string
+        directivesThrottleDirect: string
+        directivesTooltipDirect: string
+        directivesWatermarkDirect: string
+        directivesRippleDirect: string
         demos: string
         directives: string
+        userCenter: string
       }
       page: {
         about: {
