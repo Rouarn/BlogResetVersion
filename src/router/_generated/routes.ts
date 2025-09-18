@@ -91,7 +91,7 @@ export const routes: AutoRouterRoute[] = [
       title: "About",
       i18nKey: "route.about",
       icon: "",
-      order: 2,
+      order: 999,
       hideInMenu: false,
       isKeepAlive: true,
       isAuth: false

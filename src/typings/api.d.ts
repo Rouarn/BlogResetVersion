@@ -17,6 +17,11 @@ declare namespace Api {
       expiresIn: number
     }
 
+    interface Captcha {
+      captcha: string
+      captchaId: string
+    }
+
     interface UserInfo {
       userId: string
       username: string
