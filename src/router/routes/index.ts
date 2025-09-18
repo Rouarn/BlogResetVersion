@@ -20,7 +20,6 @@ import type { AutoRouterRoute } from '@elegant-router/types'
  * @param meta.isKeepAlive ==> 当前路由是否缓存
  * @param meta.isAuth ==> 当前路由是否需要登录
  * @param meta.hideInMenu ==> 是否在菜单中隐藏该路由
- * @param meta.multiTab ==> 相同路径不同参数是否使用不同标签页
  * @param meta.query ==> 路由的查询参数
  * */
 
