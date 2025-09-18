@@ -15,7 +15,6 @@ import type { AutoRouterRoute } from '@elegant-router/types'
  * @param meta.iconFontSize ==> 图标大小 (宽度和高度相同)
  * @param meta.title ==> 路由标题 (用作 document.title || 菜单的名称)
  * @param meta.i18nKey ==> 路由国际化键 (设置后 title 字段将被忽略)
- * todo 由于当前是静态静态路由方案,暂时不用填写设置,使用时在页面内引入iframe-page组件
  * @param meta.isLink ==> 路由外链时填写的访问地址
  * @param meta.isFull ==> 菜单是否全屏 (示例：数据大屏页面)
  * @param meta.isKeepAlive ==> 当前路由是否缓存

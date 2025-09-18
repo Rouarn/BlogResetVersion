@@ -33,6 +33,14 @@ export function useRouterPush(inSetup = true) {
       routeLocation.params = params
     }
 
+    const toRoute = router.getRoutes().find((item) => item.name === key)
+    const link = toRoute?.meta?.isLink
+
+    if (link) {
+      window.open(link)
+      return
+    }
+
     return routerPush(routeLocation)
   }
 

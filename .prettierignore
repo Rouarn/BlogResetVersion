@@ -1,2 +1,4 @@
-/src/typings/auto-imports.d.ts
+auto-imports.d.ts
 _generated
+elegant-router.d.ts
+typed-router.d.ts
