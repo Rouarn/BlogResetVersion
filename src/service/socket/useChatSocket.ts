@@ -1,6 +1,9 @@
 import { computed, onUnmounted, readonly, ref, watch } from 'vue'
 import { useSocket, type UseSocketOptions } from '@/service/socket/useSocket'
 
+type RoomNotificationType = 'join' | 'leave' | 'user_count'
+type ChatMessageStatus = 'sending' | 'sent' | 'failed'
+
 export interface ChatMessage {
   id: string
   room: string
@@ -8,14 +11,14 @@ export interface ChatMessage {
   content: string
   ts: number
   self?: boolean
-  status?: 'sending' | 'sent' | 'failed'
+  status?: ChatMessageStatus
   retryCount?: number
 }
 
 export interface RoomNotification {
   id: string
   room: string
-  type: 'join' | 'leave' | 'user_count'
+  type: RoomNotificationType
   user?: string
   userCount?: number
   ts: number
@@ -35,6 +38,14 @@ export interface UseChatSocketOptions extends UseSocketOptions {
   enableMessagePersistence?: boolean
   messageRetryAttempts?: number
 }
+
+// 消息更新操作类型
+export type MessageUpdateOperation =
+  | { type: 'update'; messageId: string; updates: Partial<ChatMessage> }
+  | { type: 'add'; message: ChatMessage }
+  | { type: 'remove'; messageId: string }
+  | { type: 'clear'; roomId?: string }
+  | { type: 'replace'; messages: ChatMessage[] }
 
 export function useChatSocket(options: UseChatSocketOptions = {}) {
   const {
@@ -71,18 +82,6 @@ export function useChatSocket(options: UseChatSocketOptions = {}) {
     return room?.unreadCount || 0
   })
 
-  // 更新消息状态的辅助函数
-  function updateMessageStatus(messageId: string, status: 'sending' | 'sent' | 'failed') {
-    const messageIndex = messages.value.findIndex((msg) => msg.id === messageId)
-    if (messageIndex !== -1) {
-      // 使用响应式更新方式
-      messages.value[messageIndex] = {
-        ...messages.value[messageIndex],
-        status,
-      } as ChatMessage
-    }
-  }
-
   // 消息持久化
   function saveMessages() {
     if (enableMessagePersistence) {
@@ -90,21 +89,6 @@ export function useChatSocket(options: UseChatSocketOptions = {}) {
         localStorage.setItem('chat_messages', JSON.stringify(messages.value))
       } catch (error) {
         console.warn('保存消息失败:', error)
-      }
-    }
-  }
-
-  function loadMessages() {
-    if (enableMessagePersistence) {
-      try {
-        const saved = localStorage.getItem('chat_messages')
-        if (saved) {
-          const parsedMessages = JSON.parse(saved)
-          messages.value = parsedMessages
-          parsedMessages.forEach((msg: ChatMessage) => messageIds.add(msg.id))
-        }
-      } catch (error) {
-        console.warn('加载消息失败:', error)
       }
     }
   }
@@ -120,26 +104,100 @@ export function useChatSocket(options: UseChatSocketOptions = {}) {
     }
   }
 
-  // 添加消息（带去重）
-  function addMessage(message: ChatMessage) {
-    if (messageIds.has(message.id)) {
-      return // 消息已存在，跳过
-    }
+  // 更新消息的辅助函数
+  function updateMessage(operation: MessageUpdateOperation) {
+    switch (operation.type) {
+      case 'update': {
+        const messageIndex = messages.value.findIndex((msg) => msg.id === operation.messageId)
+        if (messageIndex !== -1) {
+          // 使用响应式更新方式
+          messages.value[messageIndex] = {
+            ...messages.value[messageIndex],
+            ...operation.updates,
+          } as ChatMessage
+        }
+        break
+      }
+      case 'add': {
+        if (messageIds.has(operation.message.id)) {
+          return // 消息已存在，跳过
+        }
+        messageIds.add(operation.message.id)
+        messages.value.push(operation.message)
 
-    messageIds.add(message.id)
-    messages.value.push(message)
+        // 限制消息数量
+        if (messages.value.length > maxMessages) {
+          const removed = messages.value.shift()
+          if (removed) {
+            messageIds.delete(removed.id)
+          }
+        }
 
-    // 限制消息数量
-    if (messages.value.length > maxMessages) {
-      const removed = messages.value.shift()
-      if (removed) {
-        messageIds.delete(removed.id)
+        // 更新房间信息
+        updateRoomLastMessage(operation.message.room, operation.message)
+        saveMessages()
+        break
+      }
+      case 'remove': {
+        const messageIndex = messages.value.findIndex((msg) => msg.id === operation.messageId)
+        if (messageIndex !== -1) {
+          const removed = messages.value.splice(messageIndex, 1)[0]
+          if (removed) {
+            messageIds.delete(removed.id)
+          }
+          saveMessages()
+        }
+        break
+      }
+      case 'clear': {
+        if (operation.roomId) {
+          // 清理指定房间的消息
+          const roomMessages = messages.value.filter((msg) => msg.room === operation.roomId)
+          roomMessages.forEach((msg) => messageIds.delete(msg.id))
+          messages.value = messages.value.filter((msg) => msg.room !== operation.roomId)
+        } else {
+          // 清理所有消息
+          messages.value = []
+          messageIds.clear()
+        }
+        saveMessages()
+        break
+      }
+      case 'replace': {
+        // 清理旧的消息ID
+        messageIds.clear()
+        // 设置新的消息列表
+        messages.value = operation.messages
+        // 重新构建消息ID集合
+        operation.messages.forEach((msg) => messageIds.add(msg.id))
+        saveMessages()
+        break
       }
     }
+  }
 
-    // 更新房间信息
-    updateRoomLastMessage(message.room, message)
-    saveMessages()
+  // 为了向后兼容，保留updateMessageStatus函数
+  function updateMessageStatus(messageId: string, status: ChatMessageStatus) {
+    updateMessage({ type: 'update', messageId, updates: { status } })
+  }
+
+  function loadMessages() {
+    if (enableMessagePersistence) {
+      try {
+        const saved = localStorage.getItem('chat_messages')
+        if (saved) {
+          const parsedMessages = JSON.parse(saved)
+          updateMessage({ type: 'replace', messages: parsedMessages })
+        }
+      } catch (error) {
+        console.warn('加载消息失败:', error)
+      }
+    }
+  }
+
+  // 添加消息（带去重）- 使用updateMessage函数
+  function addMessage(message: ChatMessage) {
+    updateMessage({ type: 'add', message })
   }
 
   // 添加通知（带去重）
@@ -186,15 +244,15 @@ export function useChatSocket(options: UseChatSocketOptions = {}) {
 
     const newRetryCount = (message.retryCount || 0) + 1
 
-    // 使用响应式更新状态和重试次数
-    const messageIndex = messages.value.findIndex((msg) => msg.id === messageId)
-    if (messageIndex !== -1) {
-      messages.value[messageIndex] = {
-        ...messages.value[messageIndex],
+    // 使用updateMessage函数更新状态和重试次数
+    updateMessage({
+      type: 'update',
+      messageId,
+      updates: {
         status: 'sending',
         retryCount: newRetryCount,
-      }
-    }
+      },
+    })
 
     try {
       await socket.sendMessage(message.room, message.content)
@@ -252,17 +310,12 @@ export function useChatSocket(options: UseChatSocketOptions = {}) {
 
   // 清理指定房间的消息
   function clearRoomMessages(roomId: string) {
-    const roomMessages = messages.value.filter((msg) => msg.room === roomId)
-    roomMessages.forEach((msg) => messageIds.delete(msg.id))
-    messages.value = messages.value.filter((msg) => msg.room !== roomId)
-    saveMessages()
+    updateMessage({ type: 'clear', roomId })
   }
 
   // 清理所有消息
   function clearAllMessages() {
-    messages.value = []
-    messageIds.clear()
-    saveMessages()
+    updateMessage({ type: 'clear' })
   }
 
   // 事件监听器
@@ -297,7 +350,7 @@ export function useChatSocket(options: UseChatSocketOptions = {}) {
       const notification: RoomNotification = {
         id: (data.id as string) || crypto.randomUUID(),
         room: data.room as string,
-        type: data.type as 'join' | 'leave' | 'user_count',
+        type: data.type as RoomNotificationType,
         user: data.user as string,
         userCount: data.userCount as number,
         ts: (data.ts as number) || Date.now(),

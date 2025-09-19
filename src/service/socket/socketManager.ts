@@ -1,6 +1,8 @@
 import { useAuthStore } from '@/stores/modules/auth'
 import { io, type Socket } from 'socket.io-client'
 
+type ChatSocketStatus = 'connected' | 'connecting' | 'disconnected' | 'error'
+
 interface SocketConfig {
   url: string
   namespace?: string
@@ -16,7 +18,7 @@ interface SocketConfig {
 }
 
 interface ConnectionInfo {
-  status: 'connected' | 'connecting' | 'disconnected' | 'error'
+  status: ChatSocketStatus
   socketId?: string
   reconnectCount: number
   lastConnectedAt?: number
