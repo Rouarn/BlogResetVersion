@@ -1,7 +1,7 @@
 import { useSvgIcon } from '@/hooks/common/icon'
 import { $t } from '@/locales'
 import type { AutoRouterRoute } from '@elegant-router/types'
-import { PARENT_MENU_META_MAP } from '~/menu.config'
+import { PARENT_MENU_META_MAP } from '~/er.menu.config'
 import type { _RouteRecordBase } from 'vue-router'
 
 /**
