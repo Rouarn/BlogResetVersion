@@ -20,7 +20,7 @@ declare namespace Api {
      * - "1": female
      * - "2": unknown
      */
-    type Gender = '0' | '1' | '2'
+    type Gender = 0 | 1 | 2
   }
   /**
    * namespace Auth
@@ -36,8 +36,15 @@ declare namespace Api {
     }
 
     interface Captcha {
-      captcha: string
-      captchaId: string
+      image: string
+      token: string
+      expiresIn: number
+      nonce: string
+    }
+
+    interface CaptchaVerify {
+      token: string
+      code: string
     }
 
     type UserRole = 'system_admin' | 'org_admin' | 'dept_admin' | 'project_admin' | 'power_user' | 'user' | 'viewer' | 'guest'
@@ -60,6 +67,10 @@ declare namespace Api {
       lastLoginIp?: string
       loginAttempts?: number
       status?: Common.EnableStatus // 0: 禁用, 1: 启用
+    }
+
+    interface RegisterUser extends Omit<UserInfo, 'userId' | 'status'> {
+      password: string
     }
   }
 

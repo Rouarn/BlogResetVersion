@@ -1,90 +1,76 @@
 <script setup lang="ts">
-import { fetchCaptcha, fetchCaptchaCheck } from '@/service/api/login'
-import { useAuthStore } from '@/stores/modules/auth'
+import CodeLogin from './modules/code-login.vue'
+import PwdLogin from './modules/pwd-login.vue'
+import UserRegister from './modules/register.vue'
 
 defineOptions({
   name: 'GlobalLogin',
 })
 
-const authStore = useAuthStore()
+type LoginMode = 'pwd' | 'code' | 'register'
 
-const userName = ref('newuser')
-const password = ref('password123')
-const captcha = ref('')
-const captchaCode = ref('')
+// 登录模式：'pwd' | 'code' | 'register'
+const loginMode = ref<LoginMode>('pwd')
 const isSuccess = ref(false)
 
-// 生成验证码
-async function generateCaptcha() {
-  const { data, error } = await fetchCaptcha()
-  if (error) {
-    window.$message?.error(error.message)
-    return
-  }
-  captchaCode.value = data.captcha
+// 切换登录模式
+function switchMode(mode: LoginMode) {
+  loginMode.value = mode
 }
 
-// 重置验证码
-async function resetCaptcha() {
-  captcha.value = ''
-  await generateCaptcha()
+// 登录成功处理
+function handleLoginSuccess() {
+  isSuccess.value = true
 }
 
-// 初始化验证码
-onMounted(() => {
-  generateCaptcha()
-})
+// 注册成功处理
+function handleRegisterSuccess() {
+  window.$message?.success('注册成功！请登录')
+  switchMode('pwd')
+}
 
-async function handleLogin() {
-  if (isSuccess.value) {
-    return
-  }
-  userName.value = userName.value.trim()
-  password.value = password.value.trim()
-  captcha.value = captcha.value.trim()
-
-  if (!userName.value || !password.value) {
-    window.$message?.error('请输入用户名和密码')
-    return
-  }
-
-  if (!captcha.value) {
-    window.$message?.error('请输入验证码')
-    return
-  }
-
-  try {
-    const { error } = await fetchCaptchaCheck(captcha.value)
-    if (error) {
-      window.$message?.error(error.message)
-      return resetCaptcha()
-    }
-  } catch (_) {
-    window.$message?.error('验证码校验失败')
-    return resetCaptcha()
-  }
-
-  await authStore.login(userName.value, password.value)
-  isSuccess.value = authStore.isLogin
+// 从注册切换到登录
+function handleSwitchToLogin() {
+  switchMode('pwd')
 }
 </script>
 
 <template>
   <div class="login">
     <div class="container" :class="{ success: isSuccess }">
-      <NH1 class="text-unset">Welcome</NH1>
-      <form class="form" @submit.prevent="handleLogin">
-        <input type="text" placeholder="您的账号" v-model="userName" autofocus />
-        <input type="password" placeholder="您的密码" v-model="password" />
-        <!-- 验证码 -->
-        <div class="captcha-container">
-          <input type="text" placeholder="请输入验证码" v-model="captcha" class="captcha-input" maxlength="4" />
-          <div class="captcha-display" @click="resetCaptcha">
-            <img :src="`data:image/png;base64,${captchaCode}`" alt="验证码" />
-          </div>
+      <NH1 class="text-unset">
+        {{ loginMode === 'register' ? '用户注册' : 'Welcome' }}
+      </NH1>
+
+      <!-- 表单卡片容器 -->
+      <div class="form-card" v-if="!isSuccess">
+        <!-- 模式切换标签页 -->
+        <div class="mode-tabs">
+          <button type="button" class="mode-tab" :class="{ active: loginMode === 'pwd' }" @click="switchMode('pwd')">
+            <i class="i-carbon-password"></i>
+            <span>密码登录</span>
+          </button>
+          <button type="button" class="mode-tab" :class="{ active: loginMode === 'code' }" @click="switchMode('code')">
+            <i class="i-carbon-mobile"></i>
+            <span>验证码登录</span>
+          </button>
+          <button type="button" class="mode-tab" :class="{ active: loginMode === 'register' }" @click="switchMode('register')">
+            <i class="i-carbon-user-plus"></i>
+            <span>用户注册</span>
+          </button>
         </div>
-        <button class="btn-login" type="submit">登录</button>
-      </form>
+
+        <!-- 动态组件 -->
+        <div class="form-container">
+          <PwdLogin v-if="loginMode === 'pwd'" @login-success="handleLoginSuccess" />
+          <CodeLogin v-else-if="loginMode === 'code'" @login-success="handleLoginSuccess" />
+          <UserRegister
+            v-else-if="loginMode === 'register'"
+            @register-success="handleRegisterSuccess"
+            @switch-to-login="handleSwitchToLogin"
+          />
+        </div>
+      </div>
     </div>
 
     <!-- 背景方块 -->
@@ -132,123 +118,80 @@ async function handleLogin() {
       transition: 1s ease-in-out;
     }
 
-    .form {
+    .form-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0;
+      margin: 20px auto;
+      max-width: 400px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 2;
+    }
+
+    .mode-tabs {
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+      .mode-tab {
+        flex: 1;
+        outline: none;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.7);
+        border: none;
+        padding: 16px 12px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 300;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        position: relative;
+
+        i {
+          font-size: 18px;
+          margin-bottom: 2px;
+        }
+
+        span {
+          font-size: 12px;
+        }
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.1);
+          color: rgba(255, 255, 255, 0.9);
+        }
+
+        &.active {
+          background: rgba(255, 255, 255, 0.15);
+          color: #fff;
+          font-weight: 500;
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #ff719a, #ffc371);
+          }
+        }
+      }
+    }
+
+    .form-container {
+      padding: 30px;
       position: relative;
       z-index: 2;
       opacity: 1;
-      /* 不透明度改变时的过渡效果 */
       transition: opacity 0.5s;
-
-      input {
-        outline: none;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        background-color: rgba(255, 255, 255, 0.2);
-        width: 250px;
-        padding: 10px 15px;
-        border-radius: 3px;
-        margin: 0 auto 10px auto;
-        text-align: center;
-        color: #fff;
-        font-size: 15px;
-        transition: 0.25s;
-
-        &::placeholder {
-          color: #fff;
-          font-size: 14px;
-          font-weight: 300;
-        }
-
-        &:hover {
-          background-color: rgba(255, 255, 255, 0.4);
-        }
-
-        &:focus {
-          background-color: #fff;
-          width: 300px;
-          color: #ff719a;
-        }
-      }
-
-      .captcha-container {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin: 0 auto 10px auto;
-        width: 250px;
-
-        .captcha-input {
-          width: 170px;
-          outline: none;
-          border: 1px solid rgba(255, 255, 255, 0.4);
-          background-color: rgba(255, 255, 255, 0.2);
-          padding: 10px 15px;
-          border-radius: 3px;
-          text-align: center;
-          color: #fff;
-          font-size: 15px;
-          transition: 0.25s;
-          margin: 0;
-
-          &::placeholder {
-            color: #fff;
-            font-size: 14px;
-            font-weight: 300;
-          }
-
-          &:hover {
-            background-color: rgba(255, 255, 255, 0.4);
-          }
-
-          &:focus {
-            background-color: #fff;
-            color: #ff719a;
-            width: 200px;
-          }
-        }
-
-        .captcha-display {
-          width: 72px;
-          height: 40px;
-          background-color: rgba(255, 255, 255, 0.9);
-          border: 1px solid rgba(255, 255, 255, 0.4);
-          border-radius: 3px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 16px;
-          font-weight: bold;
-          color: #ff719a;
-          cursor: pointer;
-          user-select: none;
-          transition: 0.25s;
-          letter-spacing: 1px;
-
-          &:hover {
-            background-color: #fff;
-            transform: scale(1.02);
-          }
-        }
-      }
-
-      .btn-login {
-        outline: none;
-        background-color: #fff;
-        color: #ff719a;
-        border: none;
-        width: 250px;
-        padding: 10px 15px;
-        border-radius: 3px;
-        font-size: 15px;
-        cursor: pointer;
-        transition: 0.25s;
-
-        &:hover {
-          background-color: #f5f7f9;
-        }
-      }
     }
 
     &.success {
@@ -256,9 +199,10 @@ async function handleLogin() {
         transform: translateY(75px);
       }
 
-      .form {
+      .form-card {
         opacity: 0;
         visibility: hidden;
+        transform: translateY(20px);
       }
     }
   }

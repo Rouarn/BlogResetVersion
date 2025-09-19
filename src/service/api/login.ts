@@ -21,6 +21,15 @@ export function fetchUserInfo() {
 }
 
 /**
+ * 注册用户
+ * @param username 用户名
+ * @param password 密码
+ */
+export function fetchRegister(user: Api.Auth.RegisterUser) {
+  return request.post<Api.Auth.LoginToken>(`${servicePort.auth}/register`, user)
+}
+
+/**
  * 生成验证码
  */
 export function fetchCaptcha() {
@@ -29,10 +38,12 @@ export function fetchCaptcha() {
 
 /**
  * 验证码校验
- * @param captcha 验证码
+ * @param token 验证码token
+ * @param code 验证码
  */
-export function fetchCaptchaCheck(captcha: string) {
-  return request.post<Api.Auth.LoginToken>(`${servicePort.auth}/loginCheck`, {
-    captcha,
+export function fetchCaptchaCheck({ token, code }: Api.Auth.CaptchaVerify) {
+  return request.post<Api.Auth.LoginToken>(`${servicePort.auth}/captcha/verify`, {
+    token,
+    code,
   })
 }

@@ -71,6 +71,18 @@ export function useChatSocket(options: UseChatSocketOptions = {}) {
     return room?.unreadCount || 0
   })
 
+  // 更新消息状态的辅助函数
+  function updateMessageStatus(messageId: string, status: 'sending' | 'sent' | 'failed') {
+    const messageIndex = messages.value.findIndex((msg) => msg.id === messageId)
+    if (messageIndex !== -1) {
+      // 使用响应式更新方式
+      messages.value[messageIndex] = {
+        ...messages.value[messageIndex],
+        status,
+      } as ChatMessage
+    }
+  }
+
   // 消息持久化
   function saveMessages() {
     if (enableMessagePersistence) {
@@ -172,15 +184,24 @@ export function useChatSocket(options: UseChatSocketOptions = {}) {
     const message = messages.value.find((msg) => msg.id === messageId)
     if (!message || message.status !== 'failed') return
 
-    message.status = 'sending'
-    message.retryCount = (message.retryCount || 0) + 1
+    const newRetryCount = (message.retryCount || 0) + 1
+
+    // 使用响应式更新状态和重试次数
+    const messageIndex = messages.value.findIndex((msg) => msg.id === messageId)
+    if (messageIndex !== -1) {
+      messages.value[messageIndex] = {
+        ...messages.value[messageIndex],
+        status: 'sending',
+        retryCount: newRetryCount,
+      }
+    }
 
     try {
       await socket.sendMessage(message.room, message.content)
-      message.status = 'sent'
+      updateMessageStatus(messageId, 'sent')
     } catch (error) {
-      message.status = 'failed'
-      if (message.retryCount >= messageRetryAttempts) {
+      updateMessageStatus(messageId, 'failed')
+      if (newRetryCount >= messageRetryAttempts) {
         console.error('消息重试次数已达上限:', error)
       }
     }
@@ -207,9 +228,12 @@ export function useChatSocket(options: UseChatSocketOptions = {}) {
 
     try {
       await socket.sendMessage(room, content)
-      message.status = 'sent'
+      console.log('消息发送成功:', message)
+      // 使用响应式更新状态
+      updateMessageStatus(message.id, 'sent')
     } catch (error) {
-      message.status = 'failed'
+      // 使用响应式更新状态
+      updateMessageStatus(message.id, 'failed')
       throw error
     }
   }
