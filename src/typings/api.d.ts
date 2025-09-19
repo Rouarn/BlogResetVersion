@@ -4,6 +4,24 @@
  * All backend api type
  */
 declare namespace Api {
+  namespace Common {
+    /**
+     * enable status
+     *
+     * - "1": enabled
+     * - "2": disabled
+     */
+    type EnableStatus = '1' | '2'
+
+    /**
+     * gender
+     *
+     * - "0": male
+     * - "1": female
+     * - "2": unknown
+     */
+    type Gender = '0' | '1' | '2'
+  }
   /**
    * namespace Auth
    *
@@ -22,24 +40,26 @@ declare namespace Api {
       captchaId: string
     }
 
+    type UserRole = 'system_admin' | 'org_admin' | 'dept_admin' | 'project_admin' | 'power_user' | 'user' | 'viewer' | 'guest'
+
     interface UserInfo {
       userId: string
       username: string
       nickname?: string
       avatar?: string
-      gender?: 0 | 1 | 2 // 0: 男性, 1: 女性, 2: 未知
+      gender?: Common.Gender
       mobile?: string
       email?: string
       bio?: string
       birthday?: string
       city?: string
       profession?: string
-      roles?: 'system_admin' | 'org_admin' | 'dept_admin' | 'project_admin' | 'power_user' | 'user' | 'viewer' | 'guest'
+      roles?: UserRole
       authId?: string
       lastLoginAt?: string
       lastLoginIp?: string
       loginAttempts?: number
-      status?: '0' | '1' // 0: 禁用, 1: 启用
+      status?: Common.EnableStatus // 0: 禁用, 1: 启用
     }
   }
 
