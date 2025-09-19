@@ -140,8 +140,7 @@ async function handleSave() {
 
     isEditing.value = false
     window.$message?.success('保存成功')
-  } catch (error) {
-    console.error('保存失败:', error)
+  } catch (_) {
     window.$message?.error('保存失败，请重试')
   }
 }
@@ -163,21 +162,18 @@ async function handlePasswordChange() {
         confirmPassword: '',
       })
       window.$message?.success(result.data?.message || '密码修改成功')
-    } else {
-      window.$message?.error(result.error.message || '密码修改失败')
+
+      authStore.resetStore()
     }
-  } catch (error) {
-    console.error('密码修改失败:', error)
+  } catch (_) {
     window.$message?.error('密码修改失败，请检查当前密码是否正确')
   }
 }
 
 // 头像上传
 function handleAvatarUpload(options: { file: UploadFileInfo }) {
-  console.log('file: ', options.file)
   const file = options.file.file || options.file
   if (!file) {
-    console.error('文件获取失败:', options)
     return Promise.reject(new Error('文件不存在'))
   }
 
@@ -207,10 +203,9 @@ function handleAvatarUpload(options: { file: UploadFileInfo }) {
         window.$message?.success('头像上传成功')
       }
     })
-    .catch((error) => {
-      console.error('头像上传失败:', error)
+    .catch((_) => {
       window.$message?.error('头像上传失败，请重试')
-      throw error
+      throw _
     })
 }
 

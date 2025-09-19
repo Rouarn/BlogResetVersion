@@ -197,9 +197,15 @@ class RequestHttp {
               window.$message?.error('网络异常，请稍后重试')
             }
           } else {
-            // 有响应；安全访问 status
+            // 有响应；优先使用后端返回的message，如果没有则使用状态码对应的message
+            const backendMessage = error.response.data?.message
             const status = error.response && typeof error.response.status === 'number' ? error.response.status : undefined
-            if (typeof status === 'number') {
+
+            if (backendMessage) {
+              // 如果后端返回了message，直接使用
+              window.$message?.error(backendMessage)
+            } else if (typeof status === 'number') {
+              // 如果没有后端message，使用状态码对应的message
               checkStatus(status, config?.customErrorMessage)
             }
           }
@@ -227,12 +233,17 @@ class RequestHttp {
   private transformResponse<T>(response: ExtendedAxiosResponse<T> | AxiosError<App.Service.Response>): OptimizedResponse<T> {
     if ('isAxiosError' in response) {
       // axios 层错误（超时、断网等）
-      return { data: null, error: { message: response.message || '网络错误' } }
+      // 优先使用后端返回的message，如果没有则使用axios错误信息
+      const backendMessage = response.response?.data?.message
+      const fallbackMessage = response.message || '网络错误'
+      return { data: null, error: { message: backendMessage || fallbackMessage } }
     }
 
     if (response.__isError) {
       // 业务错误（比如后端返回 code != 200）
-      return { data: null, error: { message: response.data?.message || '请求失败' } }
+      // 优先使用后端返回的message
+      const backendMessage = response.data?.message
+      return { data: null, error: { message: backendMessage || '请求失败' } }
     }
 
     if ((response.config as CustomAxiosRequestConfig)?.isDownload) {
@@ -244,7 +255,9 @@ class RequestHttp {
 
     if (responseData === undefined || responseData === null) {
       // data 缺失，算业务错误
-      return { data: null, error: { message: '数据缺失' } }
+      // 如果后端有返回message，优先使用后端的message
+      const backendMessage = response.data?.message
+      return { data: null, error: { message: backendMessage || '数据缺失' } }
     }
 
     // ✅ 此时 data 一定是 T
@@ -294,6 +307,7 @@ class RequestHttp {
         ...(isParams ? { params: dataOrParams } : { data: dataOrParams }),
         ...config,
       })
+
       return this.transformResponse<T>(response)
     } catch (error) {
       return this.transformResponse<T>(error as AxiosError<App.Service.Response>)
