@@ -21,6 +21,7 @@ import type { AutoRouterRoute } from '@elegant-router/types'
  * @param meta.isAuth ==> 当前路由是否需要登录
  * @param meta.hideInMenu ==> 是否在菜单中隐藏该路由
  * @param meta.query ==> 路由的查询参数
+ * @param meta.menuType ==> 菜单类型 (1: 目录; 2: 菜单)
  * */
 
 /** create routes when the auth route mode is static */

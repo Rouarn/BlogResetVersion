@@ -245,6 +245,9 @@ declare namespace App {
       routePath: RoutePath
     }
 
+    /** Menu type */
+    type MenuType = 1 | 2
+
     /** The global menu */
     type Menu = {
       /**
@@ -267,6 +270,8 @@ declare namespace App {
       order?: number | null
       /** The menu children */
       children?: Menu[]
+      /** The menu type */
+      menuType?: MenuType
     }
   }
 

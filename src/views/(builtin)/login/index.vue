@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import CodeLogin from './modules/code-login.vue'
 import PwdLogin from './modules/pwd-login.vue'
 import UserRegister from './modules/register.vue'
 
@@ -50,10 +49,6 @@ function handleSwitchToLogin() {
             <i class="i-carbon-password"></i>
             <span>密码登录</span>
           </button>
-          <button type="button" class="mode-tab" :class="{ active: loginMode === 'code' }" @click="switchMode('code')">
-            <i class="i-carbon-mobile"></i>
-            <span>验证码登录</span>
-          </button>
           <button type="button" class="mode-tab" :class="{ active: loginMode === 'register' }" @click="switchMode('register')">
             <i class="i-carbon-user-plus"></i>
             <span>用户注册</span>
@@ -63,7 +58,6 @@ function handleSwitchToLogin() {
         <!-- 动态组件 -->
         <div class="form-container">
           <PwdLogin v-if="loginMode === 'pwd'" @login-success="handleLoginSuccess" />
-          <CodeLogin v-else-if="loginMode === 'code'" @login-success="handleLoginSuccess" />
           <UserRegister
             v-else-if="loginMode === 'register'"
             @register-success="handleRegisterSuccess"

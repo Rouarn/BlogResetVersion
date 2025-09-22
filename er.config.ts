@@ -12,6 +12,7 @@ const DEFAULT_ROUTE_META: Partial<RouteMeta> = {
   hideInMenu: false,
   isKeepAlive: true,
   isAuth: false,
+  menuType: 2,
 }
 
 /**

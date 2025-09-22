@@ -19,7 +19,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -34,7 +35,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -49,7 +51,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: true,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -64,7 +67,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: true,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -79,7 +83,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: true,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -94,7 +99,8 @@ export const routes: AutoRouterRoute[] = [
       order: 999,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -109,7 +115,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -124,7 +131,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -139,7 +147,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -154,7 +163,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -169,7 +179,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -184,7 +195,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -199,7 +211,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -214,7 +227,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -229,7 +243,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -244,7 +259,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -259,7 +275,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -274,7 +291,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -289,7 +307,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -304,7 +323,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -319,7 +339,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -334,7 +355,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -349,7 +371,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -364,7 +387,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -379,7 +403,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -394,7 +419,8 @@ export const routes: AutoRouterRoute[] = [
       order: 1,
       hideInMenu: false,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -409,7 +435,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: true,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -424,7 +451,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: true,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   },
   {
@@ -439,7 +467,8 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: true,
       isKeepAlive: true,
-      isAuth: false
+      isAuth: false,
+      menuType: 2
     },
   }
 ];

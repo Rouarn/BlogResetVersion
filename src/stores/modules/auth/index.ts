@@ -15,7 +15,7 @@ const initialState = {
     username: '',
     nickname: '夏季',
     avatar: '',
-    gender: '2' as Api.Common.Gender,
+    gender: 2 as Api.Common.Gender,
     mobile: '',
     email: '',
     bio: '',

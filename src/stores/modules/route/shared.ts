@@ -41,7 +41,7 @@ function createMenuIcon(iconName?: string, fontSize = 16, localIcon?: string) {
  * 创建实际路由菜单项
  */
 function createRouteMenu(route: AutoRouterRoute, pathSegments: string[], level: number): App.Global.Menu {
-  const { title, i18nKey, icon = import.meta.env.VITE_MENU_ICON, localIcon, iconFontSize, order } = route.meta ?? {}
+  const { title, i18nKey, icon = import.meta.env.VITE_MENU_ICON, localIcon, iconFontSize, order, menuType } = route.meta ?? {}
   const { name, path } = route
 
   const label = i18nKey ? $t(i18nKey) : title!
@@ -57,6 +57,7 @@ function createRouteMenu(route: AutoRouterRoute, pathSegments: string[], level: 
     icon: createMenuIcon(icon, iconFontSize, localIcon),
     order: order ?? 1,
     children: isLeaf ? undefined : [], // 非叶子节点要初始化 children
+    menuType: menuType ?? 2,
   }
 }
 
@@ -80,6 +81,7 @@ function createParentMenu(segment: string, fullPath: string): App.Global.Menu {
     icon: createMenuIcon(PARENT_MENU_META_MAP[segmentKey]?.icon || '', PARENT_MENU_META_MAP[segmentKey]?.iconFontSize),
     order: PARENT_MENU_META_MAP[segmentKey]?.order ?? 1,
     children: [],
+    menuType: 1,
   }
 }
 

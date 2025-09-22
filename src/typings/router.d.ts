@@ -55,5 +55,7 @@ declare module 'vue-router' {
     activeMenu?: App.Global.RouteKey | null
     /** 如果设置了查询参数，则在输入路由时自动携带 */
     query?: { key: string; value: string }[] | null
+    /** 菜单类型 (1: 目录; 2: 菜单) */
+    menuType?: App.Global.MenuType | null
   }
 }

@@ -27,6 +27,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
    */
   function getGlobalMenus(routes: AutoRouterRoute[]) {
     menus.value = getAuthElegantRoutes(routes)
+    console.log('menus.value: ', menus.value)
   }
 
   /** Update global menus by locale */
@@ -124,6 +125,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   /** Init static auth route */
   function initStaticAuthRoute() {
     const { routes: staticAuthRoutes } = createStaticRoutes()
+    console.log('staticAuthRoutes: ', staticAuthRoutes)
 
     addAuthRoutes(staticAuthRoutes)
 
