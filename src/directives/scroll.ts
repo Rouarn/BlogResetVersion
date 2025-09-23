@@ -9,7 +9,7 @@ declare global {
 }
 
 // 扩展 CSSStyleDeclaration 接口以支持非标准 CSS 属性
-interface ExtendedCSSStyleDeclaration extends CSSStyleDeclaration {
+type ExtendedCSSStyleDeclaration = CSSStyleDeclaration & {
   scrollbarWidth?: string
   msOverflowStyle?: string
 }

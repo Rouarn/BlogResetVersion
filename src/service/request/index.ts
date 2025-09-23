@@ -260,7 +260,7 @@ class RequestHttp {
       return { data: null, error: { message: backendMessage || '数据缺失' } }
     }
 
-    // ✅ 此时 data 一定是 T
+    // 此时 data 一定是 T
     return {
       data: responseData,
       error: false,
