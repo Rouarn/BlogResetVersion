@@ -125,7 +125,6 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   /** Init static auth route */
   function initStaticAuthRoute() {
     const { routes: staticAuthRoutes } = createStaticRoutes()
-    console.log('staticAuthRoutes: ', staticAuthRoutes)
 
     addAuthRoutes(staticAuthRoutes)
 
@@ -162,7 +161,6 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     cacheRoutes,
     isInitAuthRoute,
     initAuthRoute,
-    getGlobalMenus,
     updateGlobalMenusByLocale,
   }
 })

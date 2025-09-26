@@ -6,9 +6,9 @@ defineOptions({
   name: 'GlobalLogin',
 })
 
-type LoginMode = 'pwd' | 'code' | 'register'
+type LoginMode = 'pwd' | 'register'
 
-// 登录模式：'pwd' | 'code' | 'register'
+// 登录模式：'pwd' | 'register'
 const loginMode = ref<LoginMode>('pwd')
 const isSuccess = ref(false)
 

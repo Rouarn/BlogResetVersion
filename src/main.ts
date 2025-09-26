@@ -6,7 +6,7 @@ import { setupAppVersionNotification, setupDayjs, setupDirectives, setupIconifyO
 import { setupRouter } from './router'
 import { setupStore } from './stores'
 
-async function setupApp() {
+async function setupApp(): Promise<void> {
   setupNProgress()
 
   setupIconifyOffline()

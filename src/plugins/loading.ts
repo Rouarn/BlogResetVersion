@@ -194,20 +194,20 @@ class ModernLoading implements LoadingAPI {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
-      
+
       .modern-loading-container {
         user-select: none;
         pointer-events: auto;
       }
-      
+
       .modern-loading-spinner {
         filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
       }
-      
+
       .modern-loading-text {
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
       }
-      
+
       @media (prefers-reduced-motion: reduce) {
         .modern-loading-spinner,
         .modern-loading-spinner > div {

@@ -28,8 +28,8 @@ export function createViteProxy(viteEnv: Env.ImportMeta, enable: boolean) {
       target: target,
       changeOrigin: true,
       // ws: true,
-      configure: (_proxy) => {
-        _proxy.on('proxyReq', (_proxyReq, req, _res) => {
+      configure: (proxy) => {
+        proxy.on('proxyReq', (_proxyReq, req, _res) => {
           if (!isEnableProxyLog) return
 
           const requestUrl = `${lightBlue('[proxy url]')}: ${bgYellow(` ${req.method} `)} ${green(`${prefix}${req.url}`)}`
@@ -38,7 +38,7 @@ export function createViteProxy(viteEnv: Env.ImportMeta, enable: boolean) {
 
           consola.log(`${requestUrl}\n${proxyUrl}`)
         })
-        _proxy.on('error', (_err, req, _res) => {
+        proxy.on('error', (_err, req, _res) => {
           if (!isEnableProxyLog) return
           consola.log(bgRed(`Error: ${req.method} `), green(`${target}${req.url}`))
         })

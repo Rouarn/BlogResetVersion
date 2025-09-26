@@ -13,7 +13,7 @@ const initialState = {
   userInfo: {
     userId: '',
     username: '',
-    nickname: '夏季',
+    nickname: '',
     avatar: '',
     gender: 2 as Api.Common.Gender,
     mobile: '',
