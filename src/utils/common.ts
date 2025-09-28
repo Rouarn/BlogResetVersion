@@ -1,7 +1,7 @@
 /**
- * Toggle html class
+ * 切换 html 的类名
  *
- * @param className
+ * @param className 类名
  */
 export function toggleHtmlClass(className: string) {
   function add() {

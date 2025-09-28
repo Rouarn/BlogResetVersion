@@ -13,35 +13,34 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   const authStore = useAuthStore()
   const { bool: isInitAuthRoute, setBool: setIsInitAuthRoute } = useBoolean()
 
-  /** route mode */
+  /** 路由模式 */
   const authRouteMode = ref(import.meta.env.VITE_AUTH_ROUTE_MODE)
 
-  /** Global menus */
+  /** 全局菜单 */
   const menus = ref<App.Global.Menu[]>([])
   const searchMenus = computed(() => transformMenuToSearchMenus(menus.value))
 
   /**
-   * Get global menus
+   * 获取全局菜单
    *
-   * @param routes Vue routes
+   * @param routes Vue 路由
    */
   function getGlobalMenus(routes: AutoRouterRoute[]) {
     menus.value = getAuthElegantRoutes(routes)
-    console.log('menus.value: ', menus.value)
   }
 
-  /** Update global menus by locale */
+  /** 根据语言更新全局菜单 */
   function updateGlobalMenusByLocale() {
     menus.value = updateMenuLocale(menus.value)
   }
 
-  /** Cache routes */
+  /** 缓存路由 */
   const cacheRoutes = ref<App.Global.RouteKey[]>([])
 
   /**
-   * Get cache routes
+   * 获取缓存路由
    *
-   * @param routes Vue routes
+   * @param routes Vue 路由
    */
   function getCacheRoutes(routes: AutoRouterRoute[]) {
     cacheRoutes.value = getCacheRouteNames(routes)
@@ -49,14 +48,14 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
 
   const removeRouteFns: (() => void)[] = []
 
-  /** Reset vue routes */
+  /** 重置 Vue 路由 */
   function resetVueRoutes() {
     removeRouteFns.forEach((fn) => fn())
     removeRouteFns.length = 0
   }
 
   /**
-   * Add remove route fn
+   * 添加移除路由的方法
    *
    * @param fn
    */
@@ -65,9 +64,9 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   }
 
   /**
-   * Add routes to vue router
+   * 将路由添加到 Vue Router
    *
-   * @param routes Vue routes
+   * @param routes Vue 路由
    */
   function addRoutesToVueRouter(routes: RouteRecordRaw[]) {
     routes.forEach((route) => {
@@ -76,7 +75,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     })
   }
 
-  /** auth routes */
+  /** 鉴权路由 */
   const authRoutes = shallowRef<AutoRouterRoute[]>([])
 
   function addAuthRoutes(routes: AutoRouterRoute[]) {
@@ -89,7 +88,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     authRoutes.value = Array.from(authRoutesMap.values())
   }
 
-  /** handle constant and auth routes */
+  /** 处理常量路由与鉴权路由 */
   function handleConstantAndAuthRoutes() {
     const allRoutes = [...authRoutes.value]
 
@@ -104,7 +103,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     getCacheRoutes(allRoutes)
   }
 
-  /** Init dynamic auth route */
+  /** 初始化动态鉴权路由 */
   async function initDynamicAuthRoute() {
     const { data, error } = await fetchGetUserRoutes()
 
@@ -117,12 +116,12 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
 
       setIsInitAuthRoute(true)
     } else {
-      // if fetch user routes failed, reset store
+      // 如果获取用户路由失败，重置存储
       authStore.resetStore()
     }
   }
 
-  /** Init static auth route */
+  /** 初始化静态鉴权路由 */
   function initStaticAuthRoute() {
     const { routes: staticAuthRoutes } = createStaticRoutes()
 

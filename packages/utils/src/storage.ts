@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import lf from 'localforage'
 
-/** The storage type */
+/** 存储类型 */
 type StorageType = 'local' | 'session'
 
 export function createStorage<T extends object>(type: StorageType, storagePrefix: string) {
@@ -9,10 +9,10 @@ export function createStorage<T extends object>(type: StorageType, storagePrefix
 
   const storage = {
     /**
-     * Set session
+     * 设置存储项
      *
-     * @param key Session key
-     * @param value Session value
+     * @param key 存储键
+     * @param value 存储值
      */
     set<K extends keyof T>(key: K, value: T[K]) {
       const json = JSON.stringify(value)
@@ -20,9 +20,9 @@ export function createStorage<T extends object>(type: StorageType, storagePrefix
       stg.setItem(`${storagePrefix}${key as string}`, json)
     },
     /**
-     * Get session
+     * 获取存储项
      *
-     * @param key Session key
+     * @param key 存储键
      */
     get<K extends keyof T>(key: K): T[K] | null {
       const json = stg.getItem(`${storagePrefix}${key as string}`)

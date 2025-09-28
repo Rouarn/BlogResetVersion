@@ -1,4 +1,4 @@
-/* fade */
+/* 淡入淡出 */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease-in-out;
@@ -8,7 +8,7 @@
   opacity: 0;
 }
 
-/* fade-slide */
+/* 淡入滑动 */
 .fade-slide-leave-active,
 .fade-slide-enter-active {
   transition: all 0.3s;
@@ -22,7 +22,7 @@
   transform: translateX(30px);
 }
 
-/* fade-bottom */
+/* 自下而上淡入 */
 .fade-bottom-enter-active,
 .fade-bottom-leave-active {
   transition:
@@ -38,7 +38,7 @@
   transform: translateY(10%);
 }
 
-/* fade-scale */
+/* 透明度与缩放过渡 */
 .fade-scale-leave-active,
 .fade-scale-enter-active {
   transition: all 0.28s;
@@ -52,7 +52,7 @@
   transform: scale(0.8);
 }
 
-/* zoom-fade */
+/* 缩放与淡入淡出 */
 .zoom-fade-enter-active,
 .zoom-fade-leave-active {
   transition:
@@ -68,7 +68,7 @@
   transform: scale(1.06);
 }
 
-/* zoom-out */
+/* 缩小淡出 */
 .zoom-out-enter-active,
 .zoom-out-leave-active {
   transition:

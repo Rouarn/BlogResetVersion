@@ -1,4 +1,4 @@
-/** Default theme settings */
+/** 默认主题设置 */
 export const themeSettings: App.Theme.ThemeSetting = {
   themeScheme: 'light',
   grayscale: false,
@@ -37,8 +37,8 @@ export const themeSettings: App.Theme.ThemeSetting = {
 }
 
 /**
- * Override theme settings
+ * 覆盖主题设置
  *
- * If publish new version, use `overrideThemeSettings` to override certain theme settings
+ * 发布新版本时，可使用 `overrideThemeSettings` 覆盖部分主题设置
  */
 export const overrideThemeSettings: Partial<App.Theme.ThemeSetting> = {}

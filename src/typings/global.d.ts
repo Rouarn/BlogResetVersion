@@ -2,20 +2,20 @@ export {}
 
 declare global {
   export interface Window {
-    /** NProgress instance */
+    /** NProgress 实例 */
     NProgress?: import('nprogress').NProgress
-    /** Loading bar instance */
+    /** 加载进度条实例 */
     $loadingBar?: import('naive-ui').LoadingBarProviderInst
-    /** Dialog instance */
+    /** 加载动画实例 */
     $dialog?: import('naive-ui').DialogProviderInst
-    /** Message instance */
+    /** 消息实例 */
     $message?: import('naive-ui').MessageProviderInst
-    /** Notification instance */
+    /** 通知实例 */
     $notification?: import('naive-ui').NotificationProviderInst
-    /** Modern loading instance */
+    /** 加载实例 */
     $loading?: import('@/plugins/loading').LoadingAPI
   }
 
-  /** Build time of the project */
+  /** 项目构建时间 */
   export const BUILD_TIME: string
 }

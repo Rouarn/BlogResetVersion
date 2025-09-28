@@ -1,4 +1,4 @@
-# Logs
+# 日志
 logs
 *.log
 npm-debug.log*
@@ -17,7 +17,7 @@ coverage
 /cypress/videos/
 /cypress/screenshots/
 
-# Editor directories and files
+# 编辑器目录与文件
 .idea
 *.suo
 *.ntvs*

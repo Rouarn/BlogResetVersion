@@ -44,7 +44,7 @@ export function createViteProxy(viteEnv: Env.ImportMeta, enable: boolean) {
         })
       },
       rewrite: (path) => path.replace(new RegExp(`^${prefix}`), ''),
-      // https is require secure=false
+      // 使用 https 时需要设置 secure=false
       ...(isHttps ? { secure: false } : {}),
     }
   }

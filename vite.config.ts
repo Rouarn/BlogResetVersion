@@ -89,7 +89,7 @@ export default defineConfig((configEnv) => {
       chunkSizeWarningLimit: 1000,
       rollupOptions: {
         output: {
-          // Static resource classification and packaging
+          // 静态资源分类与打包
           chunkFileNames: 'assets/js/[name]-[hash].js',
           entryFileNames: 'assets/js/[name]-[hash].js',
           assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',

@@ -1,6 +1,6 @@
-/** The global namespace for the app */
+/** 应用的全局命名空间 */
 declare namespace App {
-  /** Theme namespace */
+  /** 主题命名空间 */
   namespace Theme {
     type ColorPaletteNumber = 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950
 
@@ -11,24 +11,24 @@ declare namespace App {
       error: string
     }
 
-    /** Theme setting */
+    /** 主题设置 */
     interface ThemeSetting {
-      /** Theme scheme */
+      /** 主题方案 */
       themeScheme: UnionKey.ThemeScheme
-      /** grayscale mode */
+      /** 灰度模式 */
       grayscale: boolean
-      /** colour weakness mode */
+      /** 色弱模式 */
       colourWeakness: boolean
-      /** Theme color */
+      /** 主题颜色 */
       themeColor: string
-      /** Other color */
+      /** 其他颜色 */
       otherColor: OtherColor
-      /** Whether the info color is followed by the primary color */
+      /** 信息色是否跟随主色 */
       isInfoFollowPrimary: boolean
-      /** Whether to recommend color */
+      /** 是否推荐颜色 */
       recommendColor: boolean
 
-      /** define some theme settings tokens, will transform to css variables */
+      /** 定义部分主题设置的 tokens，将转换为 CSS 变量 */
       tokens: {
         light: ThemeSettingToken
         dark?: {
@@ -50,7 +50,7 @@ declare namespace App {
     type BaseToken = Record<string, Record<string, string>>
 
     interface ThemeSettingTokenColor {
-      /** the progress bar color, if not set, will use the primary color */
+      /** 进度条颜色，未设置则使用主色 */
       nprogress?: string
       container: string
       layout: string
@@ -71,7 +71,7 @@ declare namespace App {
       boxShadow: ThemeSettingTokenBoxShadow
     }
 
-    /** Theme token CSS variables */
+    /** 主题 Token 的 CSS 变量 */
     type ThemeTokenCSSVars = {
       colors: ThemeTokenColor & { [key: string]: string }
       boxShadow: ThemeSettingTokenBoxShadow & { [key: string]: string }
@@ -79,9 +79,9 @@ declare namespace App {
   }
 
   /**
-   * I18n namespace
+   * I18n 命名空间
    *
-   * Locales type
+   * 语言类型
    */
   namespace I18n {
     type LangType = 'en-US' | 'zh-CN'
@@ -224,73 +224,73 @@ declare namespace App {
     }
   }
 
-  /** Global namespace */
+  /** 全局命名空间 */
   namespace Global {
-    /** Route path */
+    /** 路由键 */
     type RouteKey = import('@elegant-router/types').RouteKey
-    /** Route path */
+    /** 路由路径 */
     type RoutePath = import('@elegant-router/types').RoutePath
 
-    /** The router push options */
+    /** 路由跳转参数 */
     type RouterPushOptions = {
       query?: Record<string, string>
       params?: Record<string, string>
     }
 
-    /** Route-related properties */
+    /** 路由相关属性 */
     type RouteProperties = {
-      /** The route key */
+      /** 路由键 */
       routeKey: RouteKey
-      /** The route path */
+      /** 路由路径 */
       routePath: RoutePath
     }
 
-    /** Menu type */
+    /** 菜单类型 */
     type MenuType = 1 | 2
 
-    /** The global menu */
+    /** 全局菜单 */
     type Menu = {
       /**
-       * The menu key
+       * 菜单键
        *
-       * Equal to the route key
+       * 等同于路由键
        */
       key: string
-      /** The menu label */
+      /** 菜单标签 */
       label: string
-      /** The menu i18n key */
+      /** 菜单的 i18n 键 */
       i18nKey?: I18n.I18nKey | null
-      /** The route key */
+      /** 路由键 */
       routeKey: RouteKey
-      /** The route path */
+      /** 路由路径 */
       routePath: RoutePath
-      /** The menu icon */
+      /** 菜单图标 */
       icon?: () => VNode
-      /** The menu order */
+      /** 菜单排序 */
       order?: number | null
-      /** The menu children */
+      /** 子菜单 */
       children?: Menu[]
-      /** The menu type */
+      /** 菜单类型 */
       menuType?: MenuType
     }
   }
 
-  /** Service namespace */
+  /** 服务命名空间 */
   namespace Service {
     interface ServiceConfigItem {
-      /** The backend service base url */
+      /** 后端服务基础地址 */
       baseURL: string
-      /** The proxy pattern of the backend service base url */
+      /** 后端服务基础地址的代理匹配模式 */
       proxyPattern: string
     }
 
-    /** The backend service response data */
+    /** 后端服务响应数据 */
     type Response<T = unknown> = {
-      /** The backend service response code */
+      /** 响应码 */
       code: number
-      /** The backend service response message */
+      /** 响应消息 */
       message: string
-      /** The backend service response data */
+      /** 响应数据 */
       data: T
     }
   }

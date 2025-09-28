@@ -1,4 +1,4 @@
-/* Make clicks pass-through */
+/* 让点击事件穿透（不可交互） */
 #nprogress {
   pointer-events: none;
 }
@@ -15,7 +15,7 @@
   height: 2px;
 }
 
-/* Fancy blur effect */
+/* 炫酷的模糊光晕效果 */
 #nprogress .peg {
   display: block;
   position: absolute;
@@ -32,7 +32,7 @@
   transform: rotate(3deg) translate(0px, -4px);
 }
 
-/* Remove these to get rid of the spinner */
+/* 删除以下样式可移除旋转加载图标 */
 #nprogress .spinner {
   display: block;
   position: fixed;
