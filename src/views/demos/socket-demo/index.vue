@@ -104,8 +104,8 @@ const handleLeaveRoom = async (roomId: string) => {
     await chatSocket.leaveRoom(roomId)
     message.success(`已离开房间: ${roomId}`)
     if (currentRoom.value === roomId) {
-      const rooms = chatSocket.getRoomList()
-      currentRoom.value = rooms.length > 0 ? rooms[0].id : null
+      const rooms = chatSocket.getRoomList() || []
+      currentRoom.value = rooms.length > 0 ? rooms?.[0]?.id || null : null
     }
   } catch (error) {
     message.error(`离开房间失败: ${error}`)
