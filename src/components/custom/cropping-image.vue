@@ -1,18 +1,24 @@
 <template>
+  <!--
+    组件：CroppingImage（基于 vue-cropper 的图片裁剪弹窗）
+    结构：模态框 -> 工作台（左：裁剪器 | 右：实时预览） -> 工具栏
+    交互：选择图片 -> 设置比例/旋转/缩放 -> 实时预览 -> 确认裁剪
+    事件：done（完成）、preview（预览）、error（错误）、clear（清空）、v-model 同步
+  -->
   <NModal v-model:show="modalShow" :mask-closable="maskClosable">
     <div class="cutter flex-col gap-12px">
       <NSpace justify="space-between">
         <!-- 弹窗标题 -->
         <div class="croppertitle text-14px font-medium">{{ croppertitle }}</div>
         <!-- 关闭按钮 -->
-        <NButton type="primary" size="small" block ghost :bordered="false" @click="modalShow = false"
+        <NButton type="primary" size="small" block ghost :bordered="false" @click="closeCropper"
           ><icon-mdi-close class="text-20px"
         /></NButton>
       </NSpace>
 
       <!-- 裁剪与预览区 -->
       <div class="workbench grid gap-12px md:grid-cols-[1fr_minmax(220px,0.35fr)]">
-        <!-- 裁剪器容器 -->
+        <!-- 裁剪器容器：当存在图片时渲染裁剪器，否则展示占位提示 -->
         <div class="cropper-wrap">
           <VueCropper
             v-if="option.img"
@@ -45,7 +51,7 @@
           </div>
         </div>
 
-        <!-- 实时预览 -->
+        <!-- 实时预览：与裁剪区域同步展示当前裁剪结果和尺寸信息 -->
         <div v-if="showPreview" class="preview-wrap">
           <div class="preview-card">
             <div class="preview-header">裁剪预览</div>
@@ -60,7 +66,7 @@
         </div>
       </div>
 
-      <!-- 操作工具栏 -->
+      <!-- 操作工具栏：包含文件选择、比例切换、旋转缩放、确认清空等 -->
       <div class="toolbar flex items-center flex-wrap gap-8px">
         <!-- 文件选择（兼容外部上传组件，可隐藏） -->
         <div v-if="showFileInput" class="upload-btn">
@@ -96,16 +102,23 @@ import { VueCropper } from 'vue-cropper'
 
 /**
  * CroppingImage：基于 vue-cropper 的图片裁剪组件
- * - 支持上传、预览、裁剪、旋转、缩放
- * - 支持常用比例设置：1:1、4:3、16:9、自由
- * - 输出 base64 或 Blob，事件透传到父组件
+ * 功能特性：
+ * - 上传/外部传入图片（File/Blob/Base64）
+ * - 交互操作（比例、旋转、缩放、重置）
+ * - 右侧实时预览（尺寸元信息）
+ * - 裁剪输出（Base64 与 Blob）并通过事件回传
+ * - 大图按需压缩（简单 Canvas 压缩），减少体积
  */
 
+// 组件名定义，便于调试与 DevTools 展示
 defineOptions({ name: 'CroppingImage' })
 
+/** 裁剪比例枚举（'free' 表示自由比例） */
 type AspectKey = '1:1' | '4:3' | '16:9' | 'free'
+/** 导出图片格式 */
 type OutputType = 'jpeg' | 'png' | 'webp'
 
+/** 裁剪完成/实时预览的载荷结构 */
 interface EmitDonePayload {
   base64?: string
   blob?: Blob
@@ -114,6 +127,7 @@ interface EmitDonePayload {
   height?: number
 }
 
+/** 组件入参（props） */
 interface Props {
   /** 兼容 v-model:show 控制显示 */
   show?: boolean
@@ -178,9 +192,13 @@ interface CropperApi {
   cropW?: number
   cropH?: number
 }
+// 裁剪器实例引用（调用旋转/缩放/裁剪等 API）
 const cropperRef = ref<CropperApi | null>(null)
+// 文件选择 input 引用（用于触发系统文件选择器）
 const fileInputRef = ref<HTMLInputElement | null>(null)
+// 当前裁剪比例（受控于下拉选择）
 const aspect = ref<AspectKey>(props.defaultAspect)
+// 比例选项（下拉）
 const aspectOptions = [
   { label: '1:1', value: '1:1' },
   { label: '4:3', value: '4:3' },
@@ -188,46 +206,55 @@ const aspectOptions = [
   { label: '自由', value: 'free' },
 ]
 
-/** vue-cropper 配置对象 */
+/**
+ * vue-cropper 配置对象
+ * 说明：多数配置与官方组件一致，此处维持默认交互体验
+ */
 const option = reactive({
-  img: '',
-  outputSize: props.outputQuality,
-  outputType: props.outputType,
-  info: true,
-  canScale: true,
-  autoCrop: true,
-  autoCropWidth: undefined as number | undefined,
-  autoCropHeight: undefined as number | undefined,
-  fixed: true,
-  fixedNumber: [1, 1] as [number, number],
-  full: false,
-  fixedBox: false,
-  canMove: true,
-  canMoveBox: true,
-  original: false,
-  centerBox: true,
-  high: true,
-  infoTrue: false,
-  maxImgSize: 2000,
+  img: '', // 当前裁剪图片（对象 URL）
+  outputSize: props.outputQuality, // 导出质量（0.1-1）
+  outputType: props.outputType, // 导出格式（jpeg/png/webp）
+  info: true, // 显示裁剪框信息（默认）
+  canScale: true, // 是否允许缩放
+  autoCrop: true, // 是否默认生成裁剪框
+  autoCropWidth: undefined as number | undefined, // 默认裁剪框宽度（可按比例生成）
+  autoCropHeight: undefined as number | undefined, // 默认裁剪框高度
+  fixed: true, // 是否固定裁剪比例
+  fixedNumber: [1, 1] as [number, number], // 固定比例（w:h）
+  full: false, // 是否输出原图比例（false 为裁剪结果）
+  fixedBox: false, // 是否固定裁剪框大小
+  canMove: true, // 是否允许移动图片
+  canMoveBox: true, // 是否允许移动裁剪框
+  original: false, // 是否按原始比例渲染
+  centerBox: true, // 裁剪框是否限制在图片区域中
+  high: true, // 是否开启高清（2x）渲染
+  infoTrue: false, // 显示真实输出像素信息
+  maxImgSize: 2000, // 图片最大边长（像素），超出可能影响性能
 })
 
+// 是否已有图片（用于控制按钮可用态）
 const hasImage = computed(() => Boolean(option.img))
 
+// 本地组件状态：预览和对象 URL 管理
 const state = reactive({
-  previewUrl: '',
-  previewMeta: { width: 0, height: 0 },
-  objectUrl: '' as string | null,
+  previewUrl: '', // 右侧预览用的对象 URL
+  previewMeta: { width: 0, height: 0 }, // 当前裁剪区域尺寸
+  objectUrl: '' as string | null, // 当前图片的对象 URL（便于释放）
 })
 
+// 预览地址与尺寸文本（例如：512 × 512）
 const previewUrl = computed(() => state.previewUrl)
 const previewMetaText = computed(() => {
   const { width, height } = state.previewMeta
   return width && height ? `${width.toFixed(0)} × ${height.toFixed(0)}` : '—'
 })
+// 弹窗显示状态（支持 v-model:show 双向绑定）
 const modalShow = ref<boolean>(false)
+// 双向同步：内部状态 -> 外部 v-model:show
 watch(modalShow, (v) => {
   emit('update:show', v)
 })
+// 双向同步：外部 props.show -> 内部状态，首次立即应用
 watch(
   () => props.show,
   (v) => {
@@ -236,7 +263,7 @@ watch(
   { immediate: true },
 )
 
-/** 将比例字符串转换为固定比例 */
+/** 将比例字符串转换为固定比例（'free' 为非固定） */
 function setFixedNumberByAspect(key: AspectKey) {
   if (key === 'free') {
     option.fixed = false
@@ -248,12 +275,16 @@ function setFixedNumberByAspect(key: AspectKey) {
   }
 }
 
-/** 猜测文件名（用于回传） */
+/** 猜测文件名（用于事件回传，不保证真实扩展名） */
 function guessFileName() {
   return typeof props.modelValue === 'object' && props.modelValue ? (props.modelValue as File).name : 'image'
 }
 
-/** 防抖：更新右侧预览 */
+/**
+ * 防抖：更新右侧预览
+ * 说明：调用裁剪器的 getCropBlob 获取当前裁剪结果并生成预览 URL
+ * 注意：每次更新需释放旧的对象 URL，避免内存泄漏
+ */
 const updatePreviewDebounced = useDebounceFn(() => {
   if (!cropperRef.value) return
   cropperRef.value.getCropBlob((blob: Blob) => {
@@ -267,7 +298,11 @@ const updatePreviewDebounced = useDebounceFn(() => {
   })
 }, 200)
 
-/** 按需压缩大图片（canvas 压缩） */
+/**
+ * 按需压缩大图片（简易 Canvas 压缩）
+ * - 超过 maxMB 时按比例缩放到约 90% 目标大小
+ * - 维持导出类型与质量设置
+ */
 async function ensureCompressed(file: File, maxMB: number, quality: number, type: OutputType): Promise<File> {
   const bytesLimit = maxMB * 1024 * 1024
   if (file.size <= bytesLimit) return file
@@ -285,7 +320,7 @@ async function ensureCompressed(file: File, maxMB: number, quality: number, type
   return compressed.size < file.size ? compressed : file
 }
 
-/** Base64 DataURL 转 Blob */
+/** Base64 DataURL 转 Blob（用于外部传入的 base64 初始值） */
 function dataUrlToBlob(dataUrl: string): Blob {
   const arr = dataUrl.split(',')
   const mime = arr[0].match(/:(.*?);/)![1]
@@ -298,6 +333,7 @@ function dataUrlToBlob(dataUrl: string): Blob {
 
 setFixedNumberByAspect(aspect.value)
 
+/** 比例切换：更新固定比例并重新自动生成裁剪框 */
 function onAspectChange(v: AspectKey) {
   setFixedNumberByAspect(v)
   nextTick(() => {
@@ -305,7 +341,10 @@ function onAspectChange(v: AspectKey) {
   })
 }
 
-/** 选择文件 */
+/**
+ * 选择文件：处理类型校验、按需压缩、对象 URL 管理与预览
+ * - 触发时来自原生 input[type=file]
+ */
 async function onFileChange(e: Event) {
   const input = e.target as HTMLInputElement
   const file = input.files?.[0]
@@ -331,7 +370,10 @@ async function onFileChange(e: Event) {
   nextTick(updatePreviewDebounced)
 }
 
-/** 外部驱动：监听 v-model 初始图片 */
+/**
+ * 外部驱动：监听 v-model 初始图片
+ * 支持：File/Blob/Base64 三种形式的初始值
+ */
 watch(
   () => props.modelValue,
   async (val) => {
@@ -348,17 +390,17 @@ watch(
   { immediate: true },
 )
 
-/** 图片加载回调 */
+/** 图片加载回调：失败时向外抛出错误信息 */
 function onImgLoad(status: 'success' | 'error') {
   if (status !== 'success') emit('error', '图片加载失败')
 }
 
-/** 实时回调：进行防抖预览更新 */
+/** 实时回调：进行防抖预览更新（随裁剪器交互触发） */
 function onRealTime() {
   updatePreviewDebounced()
 }
 
-/** 旋转与缩放 */
+/** 旋转与缩放：每次操作后触发预览更新（防抖） */
 function rotateLeft() {
   cropperRef.value?.rotateLeft()
   updatePreviewDebounced()
@@ -381,18 +423,24 @@ function resetCropper() {
   updatePreviewDebounced()
 }
 
+/** 触发原生文件选择器 */
 function triggerFileInput() {
   fileInputRef.value?.click()
 }
 
+/** 打开裁剪弹窗（对外暴露） */
 function openCropper() {
   modalShow.value = true
 }
+/** 关闭裁剪弹窗（对外暴露） */
 function closeCropper() {
   modalShow.value = false
 }
 
-/** 确认裁剪：输出 base64 与 blob */
+/**
+ * 确认裁剪：同时输出 Base64 与 Blob，并透传宽高等信息
+ * 关闭弹窗以完成一次流程
+ */
 function confirmCrop() {
   if (!cropperRef.value) return
   cropperRef.value.getCropData((base64: string) => {
@@ -410,7 +458,7 @@ function confirmCrop() {
   })
 }
 
-/** 清空当前图片 */
+/** 清空当前图片：释放对象 URL、重置预览与 v-model */
 function clearImage() {
   option.img = ''
   if (state.objectUrl) URL.revokeObjectURL(state.objectUrl)
@@ -421,19 +469,28 @@ function clearImage() {
   emit('update:modelValue', null)
 }
 
-/** 对外暴露方法，兼容外部上传组件主动调用 */
+/** 对外暴露方法：兼容外部上传组件主动传入 File */
 function setImage(file: File) {
   const evt = { target: { files: [file] } } as unknown as Event
   onFileChange(evt)
 }
 
+// 暴露外部可调用的 API（打开/关闭、设置图片、确认/清空）
 defineExpose({ confirmCrop, clearImage, setImage, openCropper, closeCropper })
 
+// 显示控制（受 props 驱动）
 const showFileInput = computed(() => props.showFileInput)
 const showPreview = computed(() => props.showPreview)
 </script>
 
 <style lang="scss" scoped>
+/*
+  组件样式：结构化布局与交互优化
+  - cutter：弹窗主体容器
+  - workbench：裁剪工作台（裁剪器 + 预览）
+  - toolbar：操作工具栏（上传/比例/旋转缩放/确认）
+  兼顾浅色/深色模式的视觉一致性
+*/
 .cutter {
   display: flex;
   flex-direction: column;

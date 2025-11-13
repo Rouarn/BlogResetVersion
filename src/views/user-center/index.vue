@@ -173,7 +173,6 @@ async function handlePasswordChange() {
 
 // 头像上传
 const cutterRef = ref<InstanceType<typeof CroppingImage> | null>(null)
-const tempAvatarUrl = ref<string | null>(null)
 function onAvatarFileChange({ fileList }: { fileList: Array<UploadFileInfo> }) {
   const f = fileList?.[0]?.file
   if (!f) return
@@ -186,17 +185,11 @@ async function onCropDone(payload: { blob?: Blob; fileName?: string }) {
   const name = payload.fileName || `avatar.${type.split('/')[1] || 'jpeg'}`
   const file = new File([payload.blob], name, { type })
   const localUrl = URL.createObjectURL(payload.blob)
-  if (tempAvatarUrl.value) URL.revokeObjectURL(tempAvatarUrl.value)
-  tempAvatarUrl.value = localUrl
   userForm.avatar = localUrl
   try {
     const res = await uploadAvatar(file)
     if (res.data && res.data.downloadUrl) {
       userForm.avatar = res.data.downloadUrl
-      if (tempAvatarUrl.value) {
-        URL.revokeObjectURL(tempAvatarUrl.value)
-        tempAvatarUrl.value = null
-      }
       authStore.setUserInfo({
         ...authStore.userInfo,
         avatar: res.data.downloadUrl,
