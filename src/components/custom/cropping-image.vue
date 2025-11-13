@@ -659,7 +659,7 @@ const showPreview = computed(() => props.showPreview)
 }
 
 /* 深色模式优化 */
-@media (prefers-color-scheme: dark) {
+html.dark {
   .cutter {
     background: #1e1e1e;
     border-color: #333;
@@ -671,28 +671,28 @@ const showPreview = computed(() => props.showPreview)
     .cropper-wrap,
     .preview-card,
     .toolbar {
-      background: #262626;
-      border-color: #3a3a3a;
+      background: #262626 !important;
+      border-color: #3a3a3a !important;
     }
 
     .preview-header,
     .preview-footer {
-      background: #2d2d2d;
-      border-color: #3a3a3a;
-      color: #ccc;
+      background: #2d2d2d !important;
+      border-color: #3a3a3a !important;
+      color: #ccc !important;
     }
 
     .preview-body {
-      background: #1f1f1f;
+      background: #1f1f1f !important;
     }
 
     .preview-empty,
     .placeholder {
-      color: #777;
+      color: #777 !important;
     }
 
     .n-button {
-      color: #ddd;
+      color: #ddd !important;
     }
   }
 }
