@@ -24,7 +24,6 @@ function handleLoginSuccess() {
 
 // 注册成功处理
 function handleRegisterSuccess() {
-  window.$message?.success('注册成功！请登录')
   switchMode('pwd')
 }
 

@@ -19,6 +19,7 @@ export default defineConfigWithVueTs(
     'src/router/_generated/**',
     'src/typings/elegant-router.d.ts',
     'src/typings/typed-router.d.ts',
+    'src/typings/components.d.ts',
   ]),
 
   pluginVue.configs['flat/essential'],

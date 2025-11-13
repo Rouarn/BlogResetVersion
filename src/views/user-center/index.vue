@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, nextTick, reactive, ref } from 'vue'
+import CroppingImage from '@/components/custom/cropping-image.vue'
 import { changePassword, updateUserInfo, uploadAvatar } from '@/service/api'
 import { useAuthStore } from '@/stores/modules/auth'
 import type { FormInst, FormRules, UploadFileInfo } from 'naive-ui'
@@ -171,42 +172,45 @@ async function handlePasswordChange() {
 }
 
 // 头像上传
-function handleAvatarUpload(options: { file: UploadFileInfo }) {
-  const file = options.file.file || options.file
-  if (!file) {
-    return Promise.reject(new Error('文件不存在'))
-  }
-
-  // 验证文件类型
-  if (!file.type?.startsWith('image/')) {
-    window.$message?.error('请选择图片文件')
-    return Promise.reject(new Error('文件类型错误'))
-  }
-
-  // 验证文件大小 (10MB)
-  const maxSize = 10 * 1024 * 1024
-  if ((file as File).size > maxSize) {
-    window.$message?.error('图片大小不能超过 10MB')
-    return Promise.reject(new Error('文件大小超限'))
-  }
-
-  // 上传到服务器
-  return uploadAvatar(file as File)
-    .then((res) => {
-      if (res.data && res.data.downloadUrl) {
-        // 使用服务器返回的URL
-        userForm.avatar = res.data.downloadUrl
-        authStore.setUserInfo({
-          ...authStore.userInfo,
-          avatar: res.data.downloadUrl,
-        })
-        window.$message?.success('头像上传成功')
+const cutterRef = ref<InstanceType<typeof CroppingImage> | null>(null)
+const tempAvatarUrl = ref<string | null>(null)
+function onAvatarFileChange({ fileList }: { fileList: Array<UploadFileInfo> }) {
+  const f = fileList?.[0]?.file
+  if (!f) return
+  cutterRef.value?.openCropper()
+  nextTick(() => cutterRef.value?.setImage(f))
+}
+async function onCropDone(payload: { blob?: Blob; fileName?: string }) {
+  if (!payload.blob) return
+  const type = payload.blob.type || 'image/jpeg'
+  const name = payload.fileName || `avatar.${type.split('/')[1] || 'jpeg'}`
+  const file = new File([payload.blob], name, { type })
+  const localUrl = URL.createObjectURL(payload.blob)
+  if (tempAvatarUrl.value) URL.revokeObjectURL(tempAvatarUrl.value)
+  tempAvatarUrl.value = localUrl
+  userForm.avatar = localUrl
+  try {
+    const res = await uploadAvatar(file)
+    if (res.data && res.data.downloadUrl) {
+      userForm.avatar = res.data.downloadUrl
+      if (tempAvatarUrl.value) {
+        URL.revokeObjectURL(tempAvatarUrl.value)
+        tempAvatarUrl.value = null
       }
-    })
-    .catch((_) => {
-      window.$message?.error('头像上传失败，请重试')
-      throw _
-    })
+      authStore.setUserInfo({
+        ...authStore.userInfo,
+        avatar: res.data.downloadUrl,
+      })
+      window.$message?.success('头像上传成功')
+      cutterRef.value?.closeCropper()
+      cutterRef.value?.clearImage()
+    }
+  } catch (_) {
+    window.$message?.error('头像上传失败，请重试')
+  }
+}
+function onCropError(msg: string) {
+  window.$message?.error(msg)
 }
 
 // 格式化日期
@@ -230,7 +234,14 @@ function formatDate(dateStr?: string) {
         <NCard class="text-center">
           <div class="flex flex-col items-center space-y-4">
             <!-- 头像 -->
-            <div class="relative">
+            <NUpload
+              :default-upload="false"
+              @change="onAvatarFileChange"
+              :show-file-list="false"
+              accept="image/*"
+              :disabled="!isEditing"
+              :class="{ 'cursor-pointer hover-avatar': isEditing }"
+            >
               <!-- 有头像时显示头像 -->
               <NAvatar v-if="userForm.avatar" :size="100" :src="userForm.avatar" round class="border-4 border-white shadow-lg" />
               <!-- 无头像时显示默认头像 -->
@@ -238,13 +249,7 @@ function formatDate(dateStr?: string) {
                 <SvgIcon icon="ph:user-circle" class="text-4xl text-gray-400" />
                 <span class="text-xs text-gray-500 mt-1">未设置</span>
               </div>
-
-              <NUpload v-if="isEditing" :custom-request="handleAvatarUpload" :show-file-list="false" accept="image/*">
-                <NButton circle size="small" class="absolute -bottom-1 -right-1 bg-primary text-white shadow-lg">
-                  <SvgIcon icon="ph:camera" />
-                </NButton>
-              </NUpload>
-            </div>
+            </NUpload>
 
             <!-- 基本信息 -->
             <div class="space-y-2">
@@ -255,7 +260,6 @@ function formatDate(dateStr?: string) {
               </NTag>
               <!-- 头像提示 -->
               <p v-if="!userForm.avatar && !isEditing" class="text-xs text-gray-400 mt-2">点击编辑按钮可上传头像</p>
-              <p v-if="!userForm.avatar && isEditing" class="text-xs text-primary mt-2">点击相机图标上传头像</p>
             </div>
 
             <!-- 角色信息 -->
@@ -398,6 +402,14 @@ function formatDate(dateStr?: string) {
         </NCard>
       </div>
     </div>
+    <CroppingImage
+      ref="cutterRef"
+      :show-file-input="true"
+      cropper-title="裁剪头像"
+      :mask-closable="false"
+      @done="onCropDone"
+      @error="onCropError"
+    />
   </div>
 </template>
 
@@ -471,5 +483,38 @@ function formatDate(dateStr?: string) {
   :deep(.n-form-item) {
     margin-bottom: 16px;
   }
+}
+
+.hover-avatar {
+  position: relative;
+  display: inline-block;
+
+  &:hover::after {
+    content: '点击上传';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.4);
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.2) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 1px, transparent 1px);
+    background-size: 12px 12px;
+    color: white;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 12px;
+    pointer-events: none;
+  }
+}
+
+:deep(.n-upload-trigger) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
