@@ -9,37 +9,6 @@ import type { AutoRouterRoute } from '@elegant-router/types';
 
 export const routes: AutoRouterRoute[] = [
   {
-    name: 'Root',
-    path: '/',
-    redirect: '/home',
-    meta: {
-      title: "Root",
-      i18nKey: "route.root",
-      icon: "",
-      order: 2,
-      hideInMenu: false,
-      isKeepAlive: true,
-      isAuth: false,
-      menuType: 2
-    },
-  },
-  {
-    name: 'NotFound',
-    path: '/:pathMatch(.*)*',
-    layout: 'blank',
-    component: '404',
-    meta: {
-      title: "Not Found",
-      i18nKey: "route.notFound",
-      icon: "",
-      order: 2,
-      hideInMenu: false,
-      isKeepAlive: true,
-      isAuth: false,
-      menuType: 2
-    },
-  },
-  {
     name: '403',
     path: '/403',
     layout: 'blank',
