@@ -275,9 +275,25 @@ function setFixedNumberByAspect(key: AspectKey) {
   }
 }
 
-/** 猜测文件名（用于事件回传，不保证真实扩展名） */
+/** 猜文件名：基于当前模型值（File/Blob/Base64）生成默认文件名 */
 function guessFileName() {
-  return typeof props.modelValue === 'object' && props.modelValue ? (props.modelValue as File).name : 'image.' + props.outputType
+  const outExt = props.outputType
+  const mv = props.modelValue
+  const date = Date.now()
+  if (mv instanceof File) {
+    const base = mv.name.replace(/\.[^/.]+$/, '')
+    return `${base}-${date}.${outExt}`
+  }
+  if (typeof mv === 'string') {
+    const m = mv.match(/^data:image\/(\w+);base64,/)
+    const ext = m?.[1] || outExt
+    return `image-${date}.${ext}`
+  }
+  if (mv instanceof Blob && mv.type) {
+    const ext = mv.type.split('/')[1] || outExt
+    return `image-${date}.${ext}`
+  }
+  return `image-${date}.${outExt}`
 }
 
 /**

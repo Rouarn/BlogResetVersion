@@ -72,6 +72,10 @@ function handleDropdown(key: DropdownKey) {
     routerPushByKey(key)
   }
 }
+
+function handleError() {
+  authStore.userInfo.avatar = ''
+}
 </script>
 
 <template>
@@ -81,7 +85,15 @@ function handleDropdown(key: DropdownKey) {
   <NDropdown v-else placement="bottom" trigger="click" :options="options" @select="handleDropdown">
     <div>
       <ButtonIcon>
-        <SvgIcon icon="ph:user-circle" class="text-lg" />
+        <SvgIcon icon="ph:user-circle" class="text-lg" v-if="!authStore.userInfo.avatar" />
+        <NImage
+          :src="authStore.userInfo.avatar"
+          class="w-20px h-20px rounded-full"
+          fit="cover"
+          v-else
+          @error="handleError"
+          preview-disabled
+        />
         <span class="text-16px font-medium">{{ authStore.userInfo.nickname }}</span>
       </ButtonIcon>
     </div>

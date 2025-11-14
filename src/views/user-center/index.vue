@@ -131,7 +131,8 @@ async function handleSave() {
     }
 
     // 调用更新用户信息的 API
-    await updateUserInfo(authStore.userInfo.userId, saveData)
+    const { error } = await updateUserInfo(authStore.userInfo.userId, saveData)
+    if (error) return
 
     // 更新本地状态
     authStore.setUserInfo({
@@ -229,11 +230,11 @@ function formatDate(dateStr?: string) {
             <!-- 头像 -->
             <NUpload
               :default-upload="false"
-              @change="onAvatarFileChange"
               :show-file-list="false"
               accept="image/*"
               :disabled="!isEditing"
               :class="{ 'cursor-pointer hover-avatar': isEditing }"
+              @change="onAvatarFileChange"
             >
               <!-- 有头像时显示头像 -->
               <NAvatar v-if="userForm.avatar" :size="100" :src="userForm.avatar" round class="border-4 border-white shadow-lg" />
@@ -509,5 +510,9 @@ function formatDate(dateStr?: string) {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+:deep(.n-upload-trigger.n-upload-trigger--disabled) {
+  opacity: 1;
 }
 </style>

@@ -9,7 +9,7 @@ import axios from 'axios'
 /* ---------------- 类型定义 ---------------- */
 export type ErrorType = 'overdue' | 'business' | 'network' | 'timeout' | 'cancel' | 'server'
 
-export type OptimizedResponse<T> = { error: { message: string }; data: null } | { error: false | null; data: T }
+export type OptimizedResponse<T> = { error: true; message: string; data: null } | { error: false; data: T | null }
 
 interface ExtendedAxiosResponse<T = unknown> extends AxiosResponse<App.Service.Response<T>> {
   __isError?: boolean
@@ -237,14 +237,14 @@ class RequestHttp {
       // 优先使用后端返回的message，如果没有则使用axios错误信息
       const backendMessage = response.response?.data?.message
       const fallbackMessage = response.message || '网络错误'
-      return { data: null, error: { message: backendMessage || fallbackMessage } }
+      return { data: null, error: true, message: backendMessage || fallbackMessage }
     }
 
     if (response.__isError) {
       // 业务错误（比如后端返回 code != 200）
       // 优先使用后端返回的message
       const backendMessage = response.data?.message
-      return { data: null, error: { message: backendMessage || '请求失败' } }
+      return { data: null, error: true, message: backendMessage || '请求失败' }
     }
 
     if ((response.config as CustomAxiosRequestConfig)?.isDownload) {
@@ -252,20 +252,9 @@ class RequestHttp {
       return { data: response as unknown as T, error: false }
     }
 
-    const responseData = response.data?.data
+    const responseData = (response.data?.data ?? null) as T | null
 
-    if (responseData === undefined || responseData === null) {
-      // data 缺失，算业务错误
-      // 如果后端有返回message，优先使用后端的message
-      const backendMessage = response.data?.message
-      return { data: null, error: { message: backendMessage || '数据缺失' } }
-    }
-
-    // 此时 data 一定是 T
-    return {
-      data: responseData,
-      error: false,
-    }
+    return { data: responseData, error: false }
   }
 
   private shouldRetry(error: AxiosError): boolean {
