@@ -1,5 +1,6 @@
 /**
  * 定义统一 API 前缀
+ * - 仅维护资源根路径，不含具体接口
  */
 const servicePort = {
   user: '/api/v1/users',

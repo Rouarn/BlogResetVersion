@@ -7,8 +7,16 @@ import type { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, Inte
 import axios from 'axios'
 
 /* ---------------- 类型定义 ---------------- */
+/**
+ * 错误类型标识
+ */
 export type ErrorType = 'overdue' | 'business' | 'network' | 'timeout' | 'cancel' | 'server'
 
+/**
+ * 统一返回结构：
+ * - 成功：error=false，data 可为 null（如更新类接口）
+ * - 失败：error=true，附带 message，data=null
+ */
 export type OptimizedResponse<T> = { error: true; message: string; data: null } | { error: false; data: T | null }
 
 interface ExtendedAxiosResponse<T = unknown> extends AxiosResponse<App.Service.Response<T>> {
@@ -68,6 +76,22 @@ const axiosCanceler = new AxiosCanceler()
 
 /* ---------------- 工具函数 ---------------- */
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms))
+
+/**
+ * 提取 AxiosError 的后端 message，若无则使用 fallback
+ */
+function getBackendMessageFromAxiosError(error: AxiosError<App.Service.Response>, fallback: string): string {
+  const backendMessage = error.response?.data?.message
+  return backendMessage || fallback
+}
+
+/**
+ * 提取业务响应的后端 message，若无则使用 fallback
+ */
+function getBackendMessageFromResponse<T>(response: ExtendedAxiosResponse<T>, fallback: string): string {
+  const backendMessage = response.data?.message
+  return backendMessage || fallback
+}
 
 /* ---------------- 请求类 ---------------- */
 class RequestHttp {
@@ -235,16 +259,16 @@ class RequestHttp {
     if ('isAxiosError' in response) {
       // axios 层错误（超时、断网等）
       // 优先使用后端返回的message，如果没有则使用axios错误信息
-      const backendMessage = response.response?.data?.message
       const fallbackMessage = response.message || '网络错误'
-      return { data: null, error: true, message: backendMessage || fallbackMessage }
+      const message = getBackendMessageFromAxiosError(response, fallbackMessage)
+      return { data: null, error: true, message }
     }
 
     if (response.__isError) {
       // 业务错误（比如后端返回 code != 200）
       // 优先使用后端返回的message
-      const backendMessage = response.data?.message
-      return { data: null, error: true, message: backendMessage || '请求失败' }
+      const message = getBackendMessageFromResponse(response, '请求失败')
+      return { data: null, error: true, message }
     }
 
     if ((response.config as CustomAxiosRequestConfig)?.isDownload) {

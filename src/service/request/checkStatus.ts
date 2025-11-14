@@ -1,5 +1,6 @@
 /**
  * 检查 HTTP 状态码并提示
+ * - 当无后端 message 且存在状态码时使用内置文案
  */
 export function checkStatus(status: number, customMessage?: string): void {
   let message = ''
@@ -42,7 +43,7 @@ export function checkStatus(status: number, customMessage?: string): void {
 }
 
 /**
- * 是否为服务端错误
+ * 是否为服务端错误（5xx）
  */
 export function isServerError(status: number): boolean {
   return status >= 500 && status < 600
