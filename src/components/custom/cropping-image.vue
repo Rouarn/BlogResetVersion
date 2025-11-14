@@ -46,8 +46,8 @@
             @real-time="onRealTime"
           />
 
-          <div v-else class="placeholder flex-center h-260px bg-[var(--bg-soft)]">
-            <div class="text-12px text-[var(--text-color-3)]">请选择图片进行裁剪</div>
+          <div v-else class="placeholder flex-center h-260px bg-[rgb(var(--layout-bg-color))]">
+            <div class="text-12px text-[rgb(var(--base-text-color)/0.6)]">请选择图片进行裁剪</div>
           </div>
         </div>
 
@@ -59,7 +59,7 @@
               <img v-if="previewUrl" :src="previewUrl" alt="preview" class="preview-img" />
               <div v-else class="preview-empty">暂无预览</div>
             </div>
-            <div class="preview-footer text-12px text-[var(--text-color-3)]">
+            <div class="preview-footer text-12px text-[rgb(var(--base-text-color)/0.6)]">
               {{ previewMetaText }}
             </div>
           </div>
@@ -277,7 +277,7 @@ function setFixedNumberByAspect(key: AspectKey) {
 
 /** 猜测文件名（用于事件回传，不保证真实扩展名） */
 function guessFileName() {
-  return typeof props.modelValue === 'object' && props.modelValue ? (props.modelValue as File).name : 'image'
+  return typeof props.modelValue === 'object' && props.modelValue ? (props.modelValue as File).name : 'image.' + props.outputType
 }
 
 /**
@@ -497,8 +497,8 @@ const showPreview = computed(() => props.showPreview)
   gap: 14px;
   width: 70%;
   max-width: 900px;
-  background: var(--bg-card, #fff);
-  border: 1px solid var(--border-color, #e5e7eb);
+  background: rgb(var(--container-bg-color));
+  border: 1px solid rgb(var(--base-text-color) / 0.14);
   border-radius: 12px;
   padding: 16px 18px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -509,7 +509,7 @@ const showPreview = computed(() => props.showPreview)
   .croppertitle {
     font-size: 15px;
     font-weight: 600;
-    color: var(--text-color, #222);
+    color: rgb(var(--base-text-color));
     letter-spacing: 0.2px;
   }
 
@@ -524,8 +524,8 @@ const showPreview = computed(() => props.showPreview)
     .cropper-wrap {
       position: relative;
       width: 100%;
-      background: var(--bg-soft, #fafafa);
-      border: 1px solid var(--border-color, #e5e7eb);
+      background: rgb(var(--layout-bg-color));
+      border: 1px solid rgb(var(--base-text-color) / 0.14);
       border-radius: 10px;
       overflow: hidden;
       display: flex;
@@ -536,7 +536,7 @@ const showPreview = computed(() => props.showPreview)
         background 0.2s;
 
       &:hover {
-        border-color: var(--border-color-hover, #cbd5e1);
+        border-color: rgb(var(--base-text-color) / 0.24);
       }
 
       .placeholder {
@@ -545,7 +545,7 @@ const showPreview = computed(() => props.showPreview)
         justify-content: center;
         height: 280px;
         font-size: 13px;
-        color: var(--text-color-3, #999);
+        color: rgb(var(--base-text-color) / 0.6);
         user-select: none;
       }
     }
@@ -556,8 +556,8 @@ const showPreview = computed(() => props.showPreview)
       gap: 12px;
 
       .preview-card {
-        background: var(--bg-card, #fff);
-        border: 1px solid var(--border-color, #e5e7eb);
+        background: rgb(var(--container-bg-color));
+        border: 1px solid rgb(var(--base-text-color) / 0.14);
         border-radius: 10px;
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
         overflow: hidden;
@@ -568,10 +568,10 @@ const showPreview = computed(() => props.showPreview)
         .preview-header {
           font-size: 13px;
           font-weight: 500;
-          color: var(--text-color, #333);
-          background: var(--bg-soft, #f8f8f8);
+          color: rgb(var(--base-text-color));
+          background: rgb(var(--layout-bg-color));
           padding: 8px 12px;
-          border-bottom: 1px solid var(--border-color, #e5e7eb);
+          border-bottom: 1px solid rgb(var(--base-text-color) / 0.14);
         }
 
         .preview-body {
@@ -579,7 +579,7 @@ const showPreview = computed(() => props.showPreview)
           align-items: center;
           justify-content: center;
           height: 200px;
-          background: var(--bg-soft, #fafafa);
+          background: rgb(var(--layout-bg-color));
           padding: 8px;
 
           .preview-img {
@@ -599,17 +599,17 @@ const showPreview = computed(() => props.showPreview)
 
           .preview-empty {
             font-size: 12px;
-            color: var(--text-color-3, #aaa);
+            color: rgb(var(--base-text-color) / 0.6);
           }
         }
 
         .preview-footer {
           padding: 6px 12px;
-          background: var(--bg-soft, #f9f9f9);
-          border-top: 1px solid var(--border-color, #e5e7eb);
+          background: rgb(var(--layout-bg-color));
+          border-top: 1px solid rgb(var(--base-text-color) / 0.14);
           text-align: right;
           font-size: 12px;
-          color: var(--text-color-3, #999);
+          color: rgb(var(--base-text-color) / 0.6);
         }
       }
     }
@@ -621,8 +621,8 @@ const showPreview = computed(() => props.showPreview)
     align-items: center;
     gap: 10px;
     padding: 10px 12px;
-    background: var(--bg-soft, #f9f9f9);
-    border: 1px solid var(--border-color, #e5e7eb);
+    background: rgb(var(--layout-bg-color));
+    border: 1px solid rgb(var(--base-text-color) / 0.14);
     border-radius: 10px;
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.02);
     transition:
@@ -654,45 +654,6 @@ const showPreview = computed(() => props.showPreview)
 
     .ml-auto {
       margin-left: auto;
-    }
-  }
-}
-
-/* 深色模式优化 */
-html.dark {
-  .cutter {
-    background: #1e1e1e;
-    border-color: #333;
-
-    .croppertitle {
-      color: #e5e5e5;
-    }
-
-    .cropper-wrap,
-    .preview-card,
-    .toolbar {
-      background: #262626 !important;
-      border-color: #3a3a3a !important;
-    }
-
-    .preview-header,
-    .preview-footer {
-      background: #2d2d2d !important;
-      border-color: #3a3a3a !important;
-      color: #ccc !important;
-    }
-
-    .preview-body {
-      background: #1f1f1f !important;
-    }
-
-    .preview-empty,
-    .placeholder {
-      color: #777 !important;
-    }
-
-    .n-button {
-      color: #ddd !important;
     }
   }
 }

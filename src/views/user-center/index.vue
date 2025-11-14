@@ -182,7 +182,7 @@ function onAvatarFileChange({ fileList }: { fileList: Array<UploadFileInfo> }) {
 async function onCropDone(payload: { blob?: Blob; fileName?: string }) {
   if (!payload.blob) return
   const type = payload.blob.type || 'image/jpeg'
-  const name = payload.fileName || `avatar.${type.split('/')[1] || 'jpeg'}`
+  const name = `avatar_${authStore.userInfo.userId}_${userForm.nickname || 'user'}_${Date.now()}.${type.split('/')[1] || 'jpeg'}`
   const file = new File([payload.blob], name, { type })
   const localUrl = URL.createObjectURL(payload.blob)
   userForm.avatar = localUrl
