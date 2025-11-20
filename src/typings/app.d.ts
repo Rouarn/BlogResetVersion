@@ -144,28 +144,32 @@ declare namespace App {
         iframe: string
         login: string
         about: string
-        demosLoadingDemo: string
-        demosSocketDemo: string
-        directivesAnimateDirect: string
-        directivesClickoutsideDirect: string
-        directivesCopyDirect: string
-        directivesDebounceDirect: string
-        directivesDragDirect: string
-        directivesFocusDirect: string
-        directivesHighlightDirect: string
-        directivesLazyDirect: string
-        directivesLoadingDirect: string
-        directivesLongpressDirect: string
-        directivesMaskDirect: string
-        directivesPermissionDirect: string
-        directivesScrollDirect: string
-        directivesThrottleDirect: string
-        directivesTooltipDirect: string
-        directivesWatermarkDirect: string
-        directivesRippleDirect: string
-        demos: string
-        directives: string
-        userCenter: string
+        demos: {
+          title: string
+          'loading-demo': string
+          'socket-demo': string
+        }
+        directives: {
+          title: string
+          'animate-direct': string
+          'clickoutside-direct': string
+          'copy-direct': string
+          'debounce-direct': string
+          'drag-direct': string
+          'focus-direct': string
+          'highlight-direct': string
+          'lazy-direct': string
+          'loading-direct': string
+          'longpress-direct': string
+          'mask-direct': string
+          'permission-direct': string
+          'scroll-direct': string
+          'throttle-direct': string
+          'tooltip-direct': string
+          'watermark-direct': string
+          'ripple-direct': string
+        }
+        'user-center': string
       }
       page: {
         about: {
@@ -227,9 +231,9 @@ declare namespace App {
   /** 全局命名空间 */
   namespace Global {
     /** 路由键 */
-    type RouteKey = import('@elegant-router/types').RouteKey
+    type RouteKey = string
     /** 路由路径 */
-    type RoutePath = import('@elegant-router/types').RoutePath
+    type RoutePath = string
 
     /** 路由跳转参数 */
     type RouterPushOptions = {
@@ -255,7 +259,7 @@ declare namespace App {
        *
        * 等同于路由键
        */
-      key: string
+      key: RouteKey
       /** 菜单标签 */
       label: string
       /** 菜单的 i18n 键 */

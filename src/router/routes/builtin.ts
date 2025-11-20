@@ -1,22 +1,16 @@
-import { layouts, views } from '@/router/_generated/imports'
-import { transformToVueRoutes } from '@/router/_generated/transformer'
-import { getRoutePath } from '../_generated/shared'
-import type { AutoRouterRoute } from '@elegant-router/types'
+import type { RouteMeta, RouteRecordRaw } from 'vue-router'
 
 /** 静态路由 */
-export const ROOT_ROUTE: AutoRouterRoute = {
+export const ROOT_ROUTE: RouteRecordRaw = {
   name: 'Root',
   path: '/',
-  redirect: getRoutePath('Home'),
+  redirect: '/home',
+  component: () => import('@/layouts/base-layout/index.vue'),
   meta: {
     title: 'root',
-  },
+  } satisfies RouteMeta,
+  children: [],
 }
 
 /** builtin routes, it must be constant and setup in vue-router */
-const builtinRoutes: AutoRouterRoute[] = [ROOT_ROUTE]
-
-/** create builtin vue routes */
-export function createBuiltinVueRoutes() {
-  return transformToVueRoutes(builtinRoutes, layouts, views)
-}
+export const builtinRoutes: RouteRecordRaw[] = [ROOT_ROUTE]

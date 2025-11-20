@@ -61,6 +61,7 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
     })
 
     setReloadFlag(true)
+    routeStore.resetRouteCache()
   }
 
   function init() {

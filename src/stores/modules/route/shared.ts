@@ -1,224 +1,238 @@
 import { useSvgIcon } from '@/hooks/common/icon'
-import { $t } from '@/locales'
-import type { AutoRouterRoute } from '@elegant-router/types'
-import { PARENT_MENU_META_MAP } from '~/er.menu.config'
-import type { _RouteRecordBase } from 'vue-router'
+import { $t, $te } from '@/locales'
+import type { _RouteRecordBase, RouteRecordRaw } from 'vue-router'
 
 /**
- * 工具函数：kebab-case 转 PascalCase
+ * @description 使用递归扁平化菜单，方便添加动态路由
+ * @param {Array} menuList 菜单列表
+ * @returns {Array}
  */
-function toPascalCase(str: string): string {
-  return str
-    .split('-')
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join('')
+export function getFlatMenuList(menuList: RouteRecordRaw[]): RouteRecordRaw[] {
+  const newMenuList: RouteRecordRaw[] = JSON.parse(JSON.stringify(menuList))
+  return newMenuList.flatMap((item) => [item, ...(item.children ? getFlatMenuList(item.children) : [])])
 }
 
 /**
- * 工具函数：格式化菜单 label
- */
-function toMenuLabel(str: string): string {
-  return str
-    .split('-')
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(' ')
-}
-
-/**
- * 创建菜单图标
- */
-function createMenuIcon(iconName?: string, fontSize = 16, localIcon?: string) {
-  if (!iconName) return undefined
-  const { SvgIconVNode } = useSvgIcon()
-  return SvgIconVNode({
-    icon: iconName,
-    localIcon,
-    fontSize: fontSize ?? 20,
-  })
-}
-
-/**
- * 创建实际路由菜单项
- */
-function createRouteMenu(route: AutoRouterRoute, pathSegments: string[], level: number): App.Global.Menu {
-  const { title, i18nKey, icon = import.meta.env.VITE_MENU_ICON, localIcon, iconFontSize, order, menuType } = route.meta ?? {}
-  const { name, path } = route
-
-  const label = i18nKey ? $t(i18nKey) : title!
-
-  const isLeaf = level === pathSegments.length - 1
-
-  return {
-    key: name as App.Global.RouteKey,
-    label,
-    i18nKey: i18nKey as App.I18n.I18nKey,
-    routeKey: name as App.Global.RouteKey,
-    routePath: path as App.Global.RoutePath,
-    icon: createMenuIcon(icon, iconFontSize, localIcon),
-    order: order ?? 1,
-    children: isLeaf ? undefined : [], // 非叶子节点要初始化 children
-    menuType: menuType ?? 2,
-  }
-}
-
-/**
- * 创建父级菜单
- */
-function createParentMenu(segment: string, fullPath: string): App.Global.Menu {
-  const key = toPascalCase(segment) as App.Global.RouteKey
-  const segmentKey = segment as keyof App.I18n.Schema['route']
-  const i18nKey = `route.${segment}` as App.I18n.I18nKey
-
-  // 使用国际化键获取标签，如果没有对应的翻译则使用格式化的segment作为fallback
-  const label = $t(i18nKey) || toMenuLabel(segment)
-
-  return {
-    key,
-    label,
-    i18nKey,
-    routeKey: key,
-    routePath: fullPath as App.Global.RoutePath,
-    icon: createMenuIcon(PARENT_MENU_META_MAP[segmentKey]?.icon || '', PARENT_MENU_META_MAP[segmentKey]?.iconFontSize),
-    order: PARENT_MENU_META_MAP[segmentKey]?.order ?? 1,
-    children: [],
-    menuType: 1,
-  }
-}
-
-/**
- * 递归排序菜单
- */
-function sortMenus(menus: App.Global.Menu[]): App.Global.Menu[] {
-  return menus
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-    .map((menu) => ({
-      ...menu,
-      children: menu.children ? sortMenus(menu.children) : undefined,
-    }))
-}
-
-/**
- * 查找或创建父级菜单
- */
-function findOrCreateParent(
-  menus: App.Global.Menu[],
-  menuMap: Map<string, App.Global.Menu>,
-  pathSegments: string[],
-  level: number,
-): App.Global.Menu {
-  const segment = pathSegments[level]
-  const key = pathSegments.slice(0, level + 1).join('/')
-  let parent = menuMap.get(key)
-
-  if (!parent) {
-    const fullPath = `/${key}`
-    parent = createParentMenu(segment || '', fullPath)
-    menuMap.set(key, parent)
-
-    if (level === 0) {
-      menus.push(parent)
-    } else {
-      const grandKey = pathSegments.slice(0, level).join('/')
-      const grandParent = menuMap.get(grandKey)
-      grandParent?.children?.push(parent)
-    }
-  }
-  return parent
-}
-
-/**
- * 获取菜单
- */
-export function getAuthElegantRoutes(routes: AutoRouterRoute[]): App.Global.Menu[] {
-  const menus: App.Global.Menu[] = []
-  const menuMap = new Map<string, App.Global.Menu>()
-
-  const validRoutes = routes.filter((route) => {
-    const meta = route.meta
-    if (!route.name || route.name.startsWith('_')) return false
-    if (['NotFound', 'Root'].includes(route.name as string)) return false
-    if (meta?.hideInMenu) return false
-    return true
-  })
-
-  validRoutes.forEach((route) => {
-    const pathSegments = route.path.split('/').filter(Boolean)
-    if (pathSegments.length === 0) return
-
-    // 过滤掉路由参数（以:开头的段），只保留实际的路径段
-    const realPathSegments = pathSegments.filter((segment) => !segment.startsWith(':'))
-
-    if (realPathSegments.length === 0) return
-    if (realPathSegments.length === 1) {
-      // 一级菜单
-      const menu = createRouteMenu(route, realPathSegments, 0)
-      menuMap.set(route.name as string, menu)
-      menus.push(menu)
-    } else {
-      // 多级菜单
-      let parent: App.Global.Menu | null = null
-      for (let i = 0; i < realPathSegments.length - 1; i++) {
-        parent = findOrCreateParent(menus, menuMap, realPathSegments, i)
-      }
-
-      const finalMenu = createRouteMenu(route, realPathSegments, realPathSegments.length - 1)
-      parent?.children?.push(finalMenu)
-      menuMap.set(route.name as string, finalMenu)
-    }
-  })
-
-  return sortMenus(menus)
-}
-
-/**
- * 更新菜单的国际化标签
- */
-export function updateMenuLocale(menus: App.Global.Menu[]): App.Global.Menu[] {
-  return menus.map((menu) => ({
-    ...menu,
-    label: menu.i18nKey ? $t(menu.i18nKey) : menu.label,
-    children: menu.children ? updateMenuLocale(menu.children) : undefined,
-  }))
-}
-
-/**
- * Transform menu to searchMenus
- * 递归扁平化菜单结构，提取所有叶子节点用于搜索
+ * sort route by order
  *
- * @param menus - menus
- * @param treeMap
+ * @param route route
  */
-export function transformMenuToSearchMenus(menus: App.Global.Menu[], treeMap: App.Global.Menu[] = []): App.Global.Menu[] {
-  if (!menus?.length) return []
+function sortRouteByOrder(route: RouteRecordRaw) {
+  if (route.children?.length) {
+    route.children.sort((next, prev) => (Number(next.meta?.order) || 0) - (Number(prev.meta?.order) || 0))
+    route.children.forEach(sortRouteByOrder)
+  }
 
-  return menus.reduce((acc, cur) => {
-    if (!cur.children || cur.children.length === 0) {
-      // 叶子节点，添加到搜索菜单
-      acc.push(cur)
-    } else {
-      // 有子菜单，递归处理子菜单
-      transformMenuToSearchMenus(cur.children, acc)
-    }
-    return acc
-  }, treeMap)
+  return route
 }
 
 /**
- * Type-safe check for keep-alive routes
+ * sort routes by order
+ *
+ * @param routes routes
  */
-function isKeepAliveRoute(route: AutoRouterRoute): route is AutoRouterRoute & { name: App.Global.RouteKey } {
-  return !!route.component && !!route.meta?.isKeepAlive && !!route.name
+export function sortRoutesByOrder(routes: RouteRecordRaw[]) {
+  routes.sort((next, prev) => (Number(next.meta?.order) || 0) - (Number(prev.meta?.order) || 0))
+  routes.forEach(sortRouteByOrder)
+
+  return routes
+}
+
+/**
+ * Update locale of global menus
+ *
+ * @param menus
+ */
+export function updateLocaleOfGlobalMenus(menus: App.Global.Menu[]) {
+  const result: App.Global.Menu[] = []
+
+  menus.forEach((menu) => {
+    const { i18nKey, label, children } = menu
+
+    const newLabel = i18nKey && $te(i18nKey) ? $t(i18nKey) : label
+
+    const newMenu: App.Global.Menu = {
+      ...menu,
+      label: newLabel,
+    }
+
+    if (children?.length) {
+      newMenu.children = updateLocaleOfGlobalMenus(children)
+    }
+
+    result.push(newMenu)
+  })
+
+  return result
+}
+
+/**
+ * Get global menu by route
+ *
+ * @param route
+ */
+export function getGlobalMenuByBaseRoute(routes: RouteRecordRaw[]) {
+  const { SvgIconVNode } = useSvgIcon()
+
+  function mapRouteToMenu(route: RouteRecordRaw): App.Global.Menu {
+    const { name, path, children } = route
+    const { title, i18nKey, icon = import.meta.env.VITE_MENU_ICON, localIcon, iconFontSize } = route.meta ?? {}
+
+    const label = i18nKey && $te(i18nKey) ? $t(i18nKey) : title!
+
+    const menu: App.Global.Menu = {
+      key: name as App.Global.RouteKey,
+      label,
+      routeKey: name as App.Global.RouteKey,
+      routePath: path as App.Global.RoutePath,
+      icon: SvgIconVNode({ icon, localIcon, fontSize: iconFontSize || 20 }),
+    }
+
+    if (children?.length) {
+      menu.children = children.map(mapRouteToMenu)
+    }
+
+    return menu
+  }
+
+  return sortRoutesByOrder(routes).map(mapRouteToMenu)
+}
+
+/**
+ * Sort menus by order
+ *
+ * @param menus menus
+ */
+export function sortMenusByOrder(menus: App.Global.Menu[]) {
+  menus.sort((next, prev) => (Number(next.order) || 0) - (Number(prev.order) || 0))
+  menus.forEach((menu) => {
+    if (menu.children?.length) {
+      sortMenusByOrder(menu.children)
+    }
+  })
+
+  return menus
 }
 
 /**
  * Get cache route names
+ *
+ * @param routes Vue routes (two levels)
  */
-export function getCacheRouteNames(routes: AutoRouterRoute[]): App.Global.RouteKey[] {
-  return routes.flatMap((route) => {
-    const current = isKeepAliveRoute(route) ? [route.name] : []
-    const children = (route as _RouteRecordBase).children
-      ? getCacheRouteNames((route as _RouteRecordBase).children as AutoRouterRoute[])
-      : []
-    return [...current, ...children]
+export function getCacheRouteNames(routes: RouteRecordRaw[]) {
+  const cacheNames: App.Global.RouteKey[] = []
+
+  routes.forEach((route) => {
+    // only get last two level route, which has component
+    route.children?.forEach((child) => {
+      if (child.component && child.meta?.keepAlive) {
+        cacheNames.push(child.name as App.Global.RouteKey)
+      }
+    })
   })
+
+  return cacheNames
+}
+
+/**
+ * Is route exist by route name
+ *
+ * @param routeName
+ * @param routes
+ */
+function recursiveGetIsRouteExistByRouteName(route: RouteRecordRaw, routeName: App.Global.RouteKey) {
+  let isExist = route.name === routeName
+
+  if (isExist) {
+    return true
+  }
+
+  if (route.children && route.children.length) {
+    isExist = route.children.some((item) => recursiveGetIsRouteExistByRouteName(item, routeName))
+  }
+
+  return isExist
+}
+
+export function isRouteExistByRouteName(routeName: App.Global.RouteKey, routes: RouteRecordRaw[]) {
+  return routes.some((route) => recursiveGetIsRouteExistByRouteName(route, routeName))
+}
+
+/**
+ * Get selected menu key path
+ *
+ * @param selectedKey
+ * @param menus
+ */
+function findMenuPath(targetKey: string, menu: App.Global.Menu): string[] | null {
+  const path: string[] = []
+
+  function dfs(item: App.Global.Menu): boolean {
+    path.push(item.key)
+
+    if (item.key === targetKey) {
+      return true
+    }
+
+    if (item.children) {
+      for (const child of item.children) {
+        if (dfs(child)) {
+          return true
+        }
+      }
+    }
+
+    path.pop()
+
+    return false
+  }
+
+  if (dfs(menu)) {
+    return path
+  }
+
+  return null
+}
+
+/**
+ * Find menu path
+ *
+ * @param targetKey Target menu key
+ * @param menu Menu
+ */
+export function getSelectedMenuKeyPathByKey(selectedKey: string, menus: App.Global.Menu[]) {
+  const keyPath: string[] = []
+
+  menus.some((menu) => {
+    const path = findMenuPath(selectedKey, menu)
+
+    const find = Boolean(path?.length)
+
+    if (find) {
+      keyPath.push(...path!)
+    }
+
+    return find
+  })
+
+  return keyPath
+}
+
+/**
+ * Transform menu to searchMenus
+ *
+ * @param menus - menus
+ * @param treeMap
+ */
+export function transformMenuToSearchMenus(menus: App.Global.Menu[], treeMap: App.Global.Menu[] = []) {
+  if (menus && menus.length === 0) return []
+  return menus.reduce((acc, cur) => {
+    if (!cur.children) {
+      acc.push(cur)
+    }
+    if (cur.children && cur.children.length > 0) {
+      transformMenuToSearchMenus(cur.children, treeMap)
+    }
+    return acc
+  }, treeMap)
 }

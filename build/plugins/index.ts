@@ -1,6 +1,5 @@
 import { setupAutoImportPlugin } from './autoImport'
 import { setupComponentsPlugin } from './components'
-import { setupElegantRouterPlugin } from './elegantRouter'
 import { setupHtmlPlugin } from './htmlPlugin'
 import { setupIconsPlugin } from './icons'
 import { setupProgressPlugin } from './progress'
@@ -26,7 +25,6 @@ export function setupVitePlugins(viteEnv: Env.ImportMeta, buildTime: string): Pl
     setupVuePlugin(),
     setupVueJsxPlugin(),
     setupVueDevToolsPlugin(String(VITE_DEVTOOLS_LAUNCH_EDITOR)),
-    setupElegantRouterPlugin(),
     setupUnocssPlugin(VITE_ICON_PREFIX, localIconPath, collectionName),
     setupProgressPlugin(),
     setupAutoImportPlugin(),

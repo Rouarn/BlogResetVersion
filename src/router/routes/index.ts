@@ -1,8 +1,3 @@
-import { layouts, views } from '@/router/_generated/imports'
-import { routes as elegantRoutes } from '@/router/_generated/routes'
-import { transformToVueRoutes } from '@/router/_generated/transformer'
-import type { AutoRouterRoute } from '@elegant-router/types'
-
 /**
  * @description 📚 路由参数配置简介
  * @param path ==> 路由菜单访问路径
@@ -23,17 +18,3 @@ import type { AutoRouterRoute } from '@elegant-router/types'
  * @param meta.query ==> 路由的查询参数
  * @param meta.menuType ==> 菜单类型 (1: 目录; 2: 菜单)
  * */
-
-/** create routes when the auth route mode is static */
-export function createStaticRoutes() {
-  return { routes: [...elegantRoutes] }
-}
-
-/**
- * Get auth vue routes
- *
- * @param routes Elegant routes
- */
-export function getAuthVueRoutes(routes: AutoRouterRoute[]) {
-  return transformToVueRoutes(routes, layouts, views)
-}

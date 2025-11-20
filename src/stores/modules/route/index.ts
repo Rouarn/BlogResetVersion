@@ -1,49 +1,75 @@
-import { createStaticRoutes, getAuthVueRoutes } from '@/router/routes'
 import router from '@/router'
 import { fetchGetUserRoutes } from '@/service/api'
-import { useAuthStore } from '@/stores/modules/auth'
-import { getAuthElegantRoutes, getCacheRouteNames, transformMenuToSearchMenus, updateMenuLocale } from './shared'
+import {
+  getCacheRouteNames,
+  getFlatMenuList,
+  getGlobalMenuByBaseRoute,
+  transformMenuToSearchMenus,
+  updateLocaleOfGlobalMenus,
+} from './shared'
 import { SetupStoreId } from '@/enum'
 import useBoolean from '@/hooks/common/use-boolean'
-import type { AutoRouterRoute } from '@elegant-router/types'
 import { defineStore } from 'pinia'
-import type { RouteRecordRaw } from 'vue-router'
+import type { RouteComponent, RouteRecordRaw } from 'vue-router'
 
 export const useRouteStore = defineStore(SetupStoreId.Route, () => {
-  const authStore = useAuthStore()
   const { bool: isInitAuthRoute, setBool: setIsInitAuthRoute } = useBoolean()
 
-  /** 路由模式 */
-  const authRouteMode = ref(import.meta.env.VITE_AUTH_ROUTE_MODE)
+  // 引入 views 文件夹下所有 vue 文件
+  const modules = import.meta.glob('@/views/**/*.vue') as Record<string, () => Promise<RouteComponent>>
 
   /** 全局菜单 */
   const menus = ref<App.Global.Menu[]>([])
   const searchMenus = computed(() => transformMenuToSearchMenus(menus.value))
 
   /**
+   * Exclude cache routes
+   *
+   * for reset route cache
+   */
+  const excludeCacheRoutes = ref<App.Global.RouteKey[]>([])
+
+  /** Cache routes */
+  const cacheRoutes = ref<App.Global.RouteKey[]>([])
+
+  /**
+   * Get cache routes
+   *
+   * @param routes Vue routes
+   */
+  function getCacheRoutes(routes: RouteRecordRaw[]) {
+    cacheRoutes.value = getCacheRouteNames(routes)
+  }
+
+  /**
+   * Reset route cache
+   *
+   * @default router.currentRoute.value.name current route name
+   * @param routeKey
+   */
+  async function resetRouteCache(routeKey?: App.Global.RouteKey) {
+    const routeName = routeKey || (router.currentRoute.value.name as App.Global.RouteKey)
+
+    excludeCacheRoutes.value.push(routeName)
+
+    await nextTick()
+
+    excludeCacheRoutes.value = []
+  }
+
+  /**
    * 获取全局菜单
    *
    * @param routes Vue 路由
    */
-  function getGlobalMenus(routes: AutoRouterRoute[]) {
-    menus.value = getAuthElegantRoutes(routes)
+  function getGlobalMenus(routes: RouteRecordRaw[]) {
+    menus.value = getGlobalMenuByBaseRoute(routes)
+    console.log('menus.value: ', menus.value)
   }
 
   /** 根据语言更新全局菜单 */
   function updateGlobalMenusByLocale() {
-    menus.value = updateMenuLocale(menus.value)
-  }
-
-  /** 缓存路由 */
-  const cacheRoutes = ref<App.Global.RouteKey[]>([])
-
-  /**
-   * 获取缓存路由
-   *
-   * @param routes Vue 路由
-   */
-  function getCacheRoutes(routes: AutoRouterRoute[]) {
-    cacheRoutes.value = getCacheRouteNames(routes)
+    menus.value = updateLocaleOfGlobalMenus(menus.value)
   }
 
   const removeRouteFns: (() => void)[] = []
@@ -63,73 +89,43 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     removeRouteFns.push(fn)
   }
 
+  /** Reset store */
+  async function resetStore() {
+    const routeStore = useRouteStore()
+
+    routeStore.$reset()
+
+    resetVueRoutes()
+  }
+
   /**
    * 将路由添加到 Vue Router
    *
    * @param routes Vue 路由
    */
   function addRoutesToVueRouter(routes: RouteRecordRaw[]) {
-    routes.forEach((route) => {
-      const removeFn = router.addRoute(route)
+    routes.forEach((route: RouteRecordRaw) => {
+      let removeFn: () => void
+      const comp = (route as RouteRecordRaw).component
+      if (typeof comp === 'string') {
+        const key = `/src/views${comp}.vue`
+        const loader = modules[key]
+        if (loader) (route as RouteRecordRaw).component = loader
+      }
+      if (route.meta?.isFull) {
+        removeFn = router.addRoute(route as unknown as RouteRecordRaw)
+      } else {
+        removeFn = router.addRoute('Root', route as unknown as RouteRecordRaw)
+      }
       addRemoveRouteFn(removeFn)
     })
   }
 
-  /** 鉴权路由 */
-  const authRoutes = shallowRef<AutoRouterRoute[]>([])
-
-  function addAuthRoutes(routes: AutoRouterRoute[]) {
-    const authRoutesMap = new Map<string, AutoRouterRoute>([])
-
-    routes.forEach((route) => {
-      authRoutesMap.set(route.name, route)
-    })
-
-    authRoutes.value = Array.from(authRoutesMap.values())
-  }
-
-  /** 处理常量路由与鉴权路由 */
-  function handleConstantAndAuthRoutes() {
-    const allRoutes = [...authRoutes.value]
-
-    const vueRoutes = getAuthVueRoutes(allRoutes)
-
-    resetVueRoutes()
-
-    addRoutesToVueRouter(vueRoutes)
-
-    getGlobalMenus(allRoutes)
-
-    getCacheRoutes(allRoutes)
-  }
-
-  /** 初始化动态鉴权路由 */
-  async function initDynamicAuthRoute() {
-    const { data, error } = await fetchGetUserRoutes()
-
-    if (!error) {
-      const { routes } = data
-
-      addAuthRoutes(routes)
-
-      handleConstantAndAuthRoutes()
-
-      setIsInitAuthRoute(true)
-    } else {
-      // 如果获取用户路由失败，重置存储
-      authStore.resetStore()
-    }
-  }
-
-  /** 初始化静态鉴权路由 */
-  function initStaticAuthRoute() {
-    const { routes: staticAuthRoutes } = createStaticRoutes()
-
-    addAuthRoutes(staticAuthRoutes)
-
-    handleConstantAndAuthRoutes()
-
-    setIsInitAuthRoute(true)
+  /** create builtin vue routes */
+  async function createBuiltinVueRoutes(): Promise<RouteRecordRaw[]> {
+    const { data } = await fetchGetUserRoutes()
+    const routes = [...data] as unknown as RouteRecordRaw[]
+    return routes
   }
 
   /** 初始化应用路由 */
@@ -137,29 +133,30 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     // 如果已经初始化则直接返回
     if (isInitAuthRoute.value) return
 
-    try {
-      // 如果是动态模式则获取动态路由
-      if (authRouteMode.value === 'static') {
-        initStaticAuthRoute()
-      } else {
-        await initDynamicAuthRoute()
-      }
-    } catch (error) {
-      // 处理初始化过程中的意外错误
-      if (error instanceof Error) {
-        throw new Error(`路由初始化失败: ${error.message}`)
-      } else {
-        throw new Error('路由初始化因未知错误而失败')
-      }
-    }
+    const routes = await createBuiltinVueRoutes()
+
+    // 转换为单层
+    const flatRoutes = getFlatMenuList(routes)
+
+    // 添加路由到 Vue Router
+    addRoutesToVueRouter(flatRoutes)
+
+    // 获取全局菜单（保留分组层级）
+    getGlobalMenus(routes)
+
+    setIsInitAuthRoute(true)
   }
 
   return {
+    resetStore,
     menus,
     searchMenus,
-    cacheRoutes,
     isInitAuthRoute,
+    excludeCacheRoutes,
+    cacheRoutes,
     initAuthRoute,
+    getCacheRoutes,
+    resetRouteCache,
     updateGlobalMenusByLocale,
   }
 })
