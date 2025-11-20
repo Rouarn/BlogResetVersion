@@ -1,15 +1,14 @@
 # 🚀 Frontend Template
 
-基于 **Vue 3 + Vite + TypeScript** 构建的现代化前端开发模板，集成 **Elegant Router** 文件系统路由和丰富的开箱即用功能，助力快速启动项目开发。
+基于 **Vue 3 + Vite + TypeScript** 构建的现代化前端开发模板，内置路由分组与国际化约定、后端路由数据驱动与视图组件自动解析，并配套丰富的开箱即用功能，助力快速启动项目开发。
 
 ## ✨ 核心亮点
 
-### 🎯 文件系统路由
+### 🎯 路由与菜单
 
-- **Elegant Router** 驱动，基于文件结构自动生成路由
-- **零配置使用**，创建文件即可生成对应路由和菜单
-- **类型安全导航**，完整的 TypeScript 类型推断
-- **智能菜单生成**，自动分组和排序，支持多层级嵌套
+- **后端路由数据驱动**，基于 `src/assets/json/authMenuList.json`
+- **组件自动解析**，字符串组件路径自动映射到 `src/views` 真实组件
+- **智能菜单生成**，自动分组与排序，支持任意层级嵌套
 
 ### 🏗️ 现代化技术栈
 
@@ -110,209 +109,107 @@ src/
 ├── 📁 layouts/        # 🏗️ 布局组件
 ├── 📁 locales/        # 🌍 国际化配置
 ├── 📁 plugins/        # 🔌 插件配置
-├── 📁 router/         # 🛣️ 路由配置 (Elegant Router)
+├── 📁 router/         # 🛣️ 路由与守卫
 ├── 📁 service/        # 📡 API 服务 (HTTP + Socket.IO)
 ├── 📁 stores/         # 🗃️ 状态管理 (Pinia)
 ├── 📁 styles/         # 🎨 样式文件
 ├── 📁 theme/          # 🌈 主题配置
 ├── 📁 typings/        # 📝 类型定义
 ├── 📁 utils/          # 🛠️ 工具函数
-└── 📁 views/          # 📄 页面组件 (文件系统路由核心)
-    ├── _builtin/      # 🔒 内置页面 (登录、404等)
+└── 📁 views/          # 📄 页面组件
+    ├── (builtin)/     # 🔒 内置页面 (登录、404、403、500、iframe等)
     ├── home/          # 🏠 首页
     ├── about/         # ℹ️ 关于页面
-    ├── demos/         # 🎪 功能演示
-    ├── directives/    # 🎯 指令演示
+    ├── demos/         # 🎪 功能演示（分组）
+    ├── directives/    # 🎯 指令演示（分组）
     └── user-center/   # 👤 用户中心
 ```
 
-## 🎯 基于 Elegant Router 的文件系统路由
+## 🎯 路由来源与解析
 
-### 🚀 Elegant Router 简介
+### 📦 路由数据
 
-Elegant Router 是一款为 Vue.js 应用设计的创新路由管理工具，基于文件系统结构自动生成路由，消除了手动配置路由的繁琐过程。<mcreference link="https://github.com/soybeanjs/elegant-router" index="3"></mcreference>
-
-### ✨ 核心特性
-
-- **🗂️ 文件系统驱动** - 无需手动配置，路由结构直接从文件系统派生
-- **🔍 透明数据结构** - 路由数据完全透明，便于调试和自定义扩展
-- **🛡️ 类型安全导航** - 自动生成类型定义文件，提供完整的类型推断和智能提示
-- **⚙️ 灵活配置能力** - 提供丰富的配置选项，满足各种复杂场景需求
-- **🎨 智能布局管理** - 自动处理布局与页面组件的关系，简化嵌套路由的创建
-- **⚡ 性能优化设计** - 内置代码分割和懒加载支持，优化应用性能
-
-### 🛠️ 工作原理
-
-Elegant Router 通过扫描 `src/views` 目录，根据文件路径自动生成路由配置：
-
-```typescript
-// er.config.ts 配置文件
-export default defineConfig({
-  pageDir: 'src/views', // 页面目录
-  pageInclude: ['**/*.vue'], // 页面文件匹配模式
-  pageExclude: ['**/components/**'], // 排除的页面文件
-  routerGeneratedDir: 'src/router/_generated', // 路由生成目录
-  layouts: {
-    base: 'src/layouts/components/base-layout.vue',
-    blank: 'src/layouts/components/blank-layout.vue',
-  },
-  getRouteMeta: (node) => ({
-    title: node.name.replace(/([A-Z])/g, ' $1').trim(),
-    i18nKey: `route.${node.name.toLowerCase()}`,
-    icon: '',
-    order: 2,
-    hideInMenu: false,
-    isKeepAlive: true,
-    isAuth: false,
-  }),
-})
-```
-
-### 📁 自动路由生成规则
-
-基于文件路径自动生成对应的路由：
+- 路由由后端（此处为本地 JSON 模拟）提供：`src/assets/json/authMenuList.json`
+- 支持分组目录：`demos` 与 `directives`，其余为单层路由
+- 国际化键采用层级+连字符格式：
 
 ```
-src/views/
-├── home/index.vue           → /home (路由名: Home)
-├── about/index.vue          → /about (路由名: About)
-├── demos/
-│   ├── loading-demo/index.vue → /demos/loading-demo (路由名: DemosLoadingDemo)
-│   └── socket-demo/index.vue  → /demos/socket-demo (路由名: DemosSocketDemo)
-├── directives/
-│   ├── copy-direct/index.vue  → /directives/copy-direct (路由名: DirectivesCopyDirect)
-│   └── drag-direct/index.vue  → /directives/drag-direct (路由名: DirectivesDragDirect)
-└── _builtin/                # 以 _ 开头的文件夹会被自动排除
-    ├── 403/index.vue
-    └── 404/index.vue
+route.home
+route.demos.loading-demo
+route.demos.socket-demo
+route.directives.copy-direct
+route.directives.drag-direct
+...
+route.user-center
 ```
 
-### 🎯 智能菜单生成
+### 🔌 组件自动解析
 
-基于生成的路由自动创建菜单结构，支持：
+- 对于 JSON 中的字符串组件路径（如 `"/home/index"`），运行时自动解析到真实组件：
 
-- **自动分组**: 多个页面自动创建分组菜单
-- **智能排除**: `_` 开头文件夹和 `hideInMenu: true` 路由自动排除
-- **类型安全**: 完整的 TypeScript 类型支持
-
-### 🔧 自动生成的文件
-
-Elegant Router 会在 `src/router/_generated` 目录下自动生成以下文件：
-
-```
-src/router/_generated/
-├── imports.ts      # 组件导入文件
-├── routes.ts       # 路由配置文件
-├── shared.ts       # 共享工具函数
-└── transformer.ts  # 路由转换器
+```ts
+// src/stores/modules/route/shared.ts
+export function resolveRouteComponent(route, modules) {
+  const comp = route.component as unknown as string | RouteComponent | undefined
+  if (typeof comp === 'string') {
+    const key = `/src/views${comp}.vue`
+    const loader = modules[key]
+    if (loader) route.component = loader
+  }
+  return route
+}
 ```
 
-#### 生成的路由配置示例
+### 🧭 菜单生成与排序
 
-```typescript
-// src/router/_generated/routes.ts (自动生成)
-export const routes: AutoRouterRoute[] = [
-  {
-    name: 'Home',
-    path: '/home',
-    layout: 'base',
-    component: 'Home',
-    meta: {
-      title: 'Home',
-      i18nKey: 'route.home',
-      icon: '',
-      hideInMenu: false,
-      isKeepAlive: true,
-      isAuth: false,
-      order: 2,
-    },
-  },
-  {
-    name: 'DemosLoadingDemo',
-    path: '/demos/loading-demo',
-    layout: 'base',
-    component: 'DemosLoadingDemo',
-    meta: {
-      title: 'Demos Loading Demo',
-      i18nKey: 'route.demosloadingdemo',
-      // ... 其他元信息
-    },
-  },
-  // ... 更多路由
-]
-```
+- 递归生成：`getGlobalMenuByBaseRoute(routes)` 将路由转为菜单，并递归处理 `children`
+- 排序规则：`order` 字段对所有层级进行排序
+- 文案规则：优先使用 `i18nKey`（若翻译存在），否则回退到 `title`
+
+### 🛡️ 路由守卫与初始化
+
+- 首次进入应用，若已登录但尚未初始化，执行路由初始化并重定向到原目标路径
+- 无论分支如何，守卫均调用 `next()` 保证导航有效，避免 “The next callback was never called” 报错
 
 ### 🎯 多层级菜单支持
 
-**🚀 增强特性**：支持任意层级的菜单嵌套，完美处理复杂的菜单结构。
+- 支持任意层级的菜单嵌套与排序
+- 支持分组目录（`demos`、`directives`）及其子项的统一管理
+- 搜索项为叶子菜单，使用 `transformMenuToSearchMenus()` 提取
 
-#### 核心能力
-
-- **递归处理**：支持任意深度的菜单嵌套
-- **动态创建**：自动创建中间层级的父菜单
-- **智能排序**：递归排序所有层级的菜单项
-- **完整搜索**：正确提取所有可搜索的叶子节点
-- **类型安全**：完整的 TypeScript 类型支持
-
-#### 支持的菜单结构
-
-```
-首页 (/home)
-功能演示
-├── Loading 演示 (/demos/loading-demo)
-└── Socket 演示 (/demos/socket-demo)
-自定义指令
-├── 复制指令 (/directives/copy-direct)
-├── 拖拽指令 (/directives/drag-direct)
-└── 更多指令...
-```
-
-#### 技术实现
-
-**核心函数**：
-
-- `getAuthElegantRoutes()` - 基于 Elegant Router 生成的路由创建菜单
-- `sortMenus()` - 递归排序所有层级的菜单
-- `transformMenuToSearchMenus()` - 递归提取叶子节点用于搜索
-
-### 📂 项目文件结构示例
+### 📂 视图目录示例
 
 ```
 src/views/
-├── home/                    # 首页 → /home
+├── home/                    # → /home
 │   └── index.vue
-├── about/                   # 关于页面 → /about
+├── about/                   # → /about
 │   └── index.vue
-├── demos/                   # 功能演示分组
-│   ├── loading-demo/        # → /demos/loading-demo
-│   │   └── index.vue
-│   └── socket-demo/         # → /demos/socket-demo
-│       └── index.vue
-├── directives/              # 自定义指令分组
-│   ├── copy-direct/         # → /directives/copy-direct
-│   │   └── index.vue
-│   ├── drag-direct/         # → /directives/drag-direct
-│   │   └── index.vue
-│   ├── animate-direct/      # → /directives/animate-direct
-│   │   └── index.vue
-│   └── demos/               # 嵌套演示页面
-│       ├── loading-demo/    # → /directives/demos/loading-demo
-│       │   └── index.vue
-│       └── socket-demo/     # → /directives/demos/socket-demo
-│           └── index.vue
-├── user-center/             # 用户中心 → /user-center
+├── demos/                   # → /demos/*
+│   ├── loading-demo/
+│   │   └── index.vue        # → /demos/loading-demo
+│   └── socket-demo/
+│       └── index.vue        # → /demos/socket-demo
+├── directives/              # → /directives/*
+│   ├── copy-direct/
+│   │   └── index.vue        # → /directives/copy-direct
+│   ├── drag-direct/
+│   │   └── index.vue        # → /directives/drag-direct
+│   └── animate-direct/
+│       └── index.vue        # → /directives/animate-direct
+├── user-center/             # → /user-center
 │   └── index.vue
-└── _builtin/                # 内置页面（自动排除）
+└── (builtin)/               # 内置页面
     ├── 403/
-    │   └── index.vue
+    │   └── index.vue        # → /403
     ├── 404/
-    │   └── index.vue
+    │   └── index.vue        # → /404
     ├── 500/
-    │   └── index.vue
+    │   └── index.vue        # → /500
     ├── login/
-    │   └── index.vue
-    └── iframe-page/
-        └── [url].vue        # 动态路由参数
+    │   └── index.vue        # → /login
+    └── iframe/
+        └── [url].vue        # → /iframe/:url
 ```
 
 ### 🔄 开发工作流

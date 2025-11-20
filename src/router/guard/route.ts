@@ -1,8 +1,5 @@
-import { nextTick } from 'vue'
-import { useAppStore } from '@/stores/modules/app'
 import { useAuthStore } from '@/stores/modules/auth'
 import { useRouteStore } from '@/stores/modules/route'
-import { useFullscreen } from '@vueuse/core'
 import type { RouteLocationRaw, Router } from 'vue-router'
 
 /**
@@ -52,22 +49,7 @@ export function createRouteGuard(router: Router) {
   })
 
   router.afterEach((to) => {
-    // 检查是否需要全屏
-    const { isFullscreen, enter, exit } = useFullscreen()
-
-    nextTick(() => {
-      const appStore = useAppStore()
-
-      if (to.meta.isFull) {
-        enter()
-        appStore.setHideHeader(true)
-      } else if (isFullscreen.value) {
-        exit()
-        appStore.setHideHeader(false)
-      } else {
-        appStore.setHideHeader(false)
-      }
-    })
+    console.log('afterEach: ', to.fullPath)
   })
 
   router.onError((error) => {

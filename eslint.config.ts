@@ -16,9 +16,6 @@ export default defineConfigWithVueTs(
     '**/coverage/**',
     // 从 .prettierignore 同步的忽略规则
     'src/typings/auto-imports.d.ts',
-    'src/router/_generated/**',
-    'src/typings/elegant-router.d.ts',
-    'src/typings/typed-router.d.ts',
     'src/typings/components.d.ts',
   ]),
 
