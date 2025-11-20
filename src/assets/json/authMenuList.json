@@ -2,51 +2,6 @@
   "code": 200,
   "data": [
     {
-      "name": "builtin-403",
-      "path": "/403",
-      "component": "/(builtin)/403/index",
-      "meta": {
-        "title": "403",
-        "i18nKey": "route.403",
-        "icon": "",
-        "order": 2,
-        "hideInMenu": true,
-        "isKeepAlive": true,
-        "isAuth": false,
-        "menuType": 2
-      }
-    },
-    {
-      "name": "builtin-404",
-      "path": "/404",
-      "component": "/(builtin)/404/index",
-      "meta": {
-        "title": "404",
-        "i18nKey": "route.404",
-        "icon": "",
-        "order": 2,
-        "hideInMenu": true,
-        "isKeepAlive": true,
-        "isAuth": false,
-        "menuType": 2
-      }
-    },
-    {
-      "name": "builtin-500",
-      "path": "/500",
-      "component": "/(builtin)/500/index",
-      "meta": {
-        "title": "500",
-        "i18nKey": "route.500",
-        "icon": "",
-        "order": 2,
-        "hideInMenu": true,
-        "isKeepAlive": true,
-        "isAuth": false,
-        "menuType": 2
-      }
-    },
-    {
       "name": "about",
       "path": "/about",
       "component": "/about/index",
@@ -116,7 +71,7 @@
         "title": "Directives",
         "i18nKey": "route.directives.title",
         "icon": "",
-        "order": 2,
+        "order": 1,
         "hideInMenu": false,
         "isKeepAlive": false,
         "isAuth": false,
@@ -379,66 +334,6 @@
           }
         }
       ]
-    },
-    {
-      "name": "home",
-      "path": "/home",
-      "component": "/home/index",
-      "meta": {
-        "title": "Home",
-        "i18nKey": "route.home",
-        "icon": "",
-        "order": 1,
-        "hideInMenu": false,
-        "isKeepAlive": true,
-        "isAuth": false,
-        "menuType": 2
-      }
-    },
-    {
-      "name": "builtin-iframe-url",
-      "path": "/iframe/:url",
-      "component": "/(builtin)/iframe/[url]",
-      "meta": {
-        "title": "Iframe Url",
-        "i18nKey": "route.iframe",
-        "icon": "",
-        "order": 2,
-        "hideInMenu": true,
-        "isKeepAlive": true,
-        "isAuth": false,
-        "menuType": 2
-      }
-    },
-    {
-      "name": "builtin-login",
-      "path": "/login",
-      "component": "/(builtin)/login/index",
-      "meta": {
-        "title": "Login",
-        "i18nKey": "route.login",
-        "icon": "",
-        "order": 2,
-        "hideInMenu": true,
-        "isKeepAlive": true,
-        "isAuth": false,
-        "menuType": 2
-      }
-    },
-    {
-      "name": "user-center",
-      "path": "/user-center",
-      "component": "/user-center/index",
-      "meta": {
-        "title": "User Center",
-        "i18nKey": "route.user-center",
-        "icon": "",
-        "order": 2,
-        "hideInMenu": true,
-        "isKeepAlive": true,
-        "isAuth": true,
-        "menuType": 2
-      }
     }
   ],
   "message": "success"

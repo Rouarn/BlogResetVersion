@@ -18,7 +18,7 @@ function loginOrRegister() {
   toLogin()
 }
 
-type DropdownKey = 'UserCenter' | 'logout'
+type DropdownKey = 'user-center' | 'logout'
 
 type DropdownOption =
   | {
@@ -35,7 +35,7 @@ const options = computed(() => {
   const opts: DropdownOption[] = [
     {
       label: $t('common.userCenter'),
-      key: 'UserCenter',
+      key: 'user-center',
       icon: SvgIconVNode({ icon: 'ph:user-circle', fontSize: 18 }),
     },
     {

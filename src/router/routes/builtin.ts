@@ -1,4 +1,4 @@
-import type { RouteMeta, RouteRecordRaw } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
 
 /** 静态路由 */
 export const ROOT_ROUTE: RouteRecordRaw = {
@@ -8,9 +8,108 @@ export const ROOT_ROUTE: RouteRecordRaw = {
   component: () => import('@/layouts/base-layout/index.vue'),
   meta: {
     title: 'root',
-  } satisfies RouteMeta,
-  children: [],
+  },
+  children: [
+    {
+      name: 'home',
+      path: '/home',
+      component: () => import('@/views/home/index.vue'),
+      meta: {
+        title: 'Home',
+        i18nKey: 'route.home',
+        icon: '',
+        order: 1,
+        hideInMenu: false,
+        isKeepAlive: true,
+        isAuth: false,
+      },
+    },
+    {
+      name: 'user-center',
+      path: '/user-center',
+      component: () => import('@/views/user-center/index.vue'),
+      meta: {
+        title: 'User Center',
+        i18nKey: 'route.user-center',
+        icon: '',
+        order: 2,
+        hideInMenu: true,
+        isKeepAlive: true,
+        isAuth: true,
+      },
+    },
+  ],
 }
 
-/** builtin routes, it must be constant and setup in vue-router */
-export const builtinRoutes: RouteRecordRaw[] = [ROOT_ROUTE]
+/** 静态路由 */
+export const STATIC_ROUTER: RouteRecordRaw[] = [
+  {
+    name: 'iframe-url',
+    path: '/iframe/:url',
+    component: () => import('@/views/(builtin)/iframe/[url].vue'),
+    meta: {
+      title: 'Iframe Url',
+      i18nKey: 'route.iframe',
+      icon: '',
+      order: 2,
+      hideInMenu: true,
+      isKeepAlive: true,
+      isAuth: false,
+    },
+  },
+  {
+    name: 'login',
+    path: '/login',
+    component: () => import('@/views/(builtin)/login/index.vue'),
+    meta: {
+      title: 'Login',
+      i18nKey: 'route.login',
+      icon: '',
+      order: 2,
+      hideInMenu: true,
+      isKeepAlive: true,
+      isAuth: false,
+    },
+  },
+]
+
+/** 错误路由 */
+export const ERROR_ROUTER: RouteRecordRaw[] = [
+  {
+    name: '403',
+    path: '/403',
+    component: () => import('@/views/(builtin)/403/index.vue'),
+    meta: {
+      title: '403',
+      i18nKey: 'route.403',
+    },
+  },
+  {
+    name: '404',
+    path: '/404',
+    component: () => import('@/views/(builtin)/404/index.vue'),
+    meta: {
+      title: '404',
+      i18nKey: 'route.404',
+    },
+  },
+  {
+    name: '500',
+    path: '/500',
+    component: () => import('@/views/(builtin)/500/index.vue'),
+    meta: {
+      title: '500',
+      i18nKey: 'route.500',
+    },
+  },
+  {
+    name: 'error',
+    path: '/:pathMatch(.*)*',
+    redirect: '/404',
+    component: () => import('@/views/(builtin)/404/index.vue'),
+    meta: {
+      title: 'error',
+    },
+    children: [],
+  },
+]

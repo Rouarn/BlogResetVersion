@@ -1,6 +1,6 @@
 import { createMemoryHistory, createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 import { createRouterGuard } from '@/router/guard'
-import { builtinRoutes } from './routes/builtin'
+import { builtinRoutes } from './routes'
 import type { App } from 'vue'
 
 const mode = import.meta.env.VITE_ROUTER_MODE as 'hash' | 'history' | 'memory'

@@ -1,6 +1,6 @@
 import { useSvgIcon } from '@/hooks/common/icon'
 import { $t, $te } from '@/locales'
-import type { _RouteRecordBase, RouteRecordRaw } from 'vue-router'
+import type { _RouteRecordBase, RouteComponent, RouteRecordRaw } from 'vue-router'
 
 /**
  * @description 使用递归扁平化菜单，方便添加动态路由
@@ -94,6 +94,19 @@ export function getGlobalMenuByBaseRoute(routes: RouteRecordRaw[]) {
 
     return menu
   }
+
+  // 添加 home 菜单
+  routes.unshift({
+    name: 'home',
+    path: '/home',
+    component: () => import('@/views/home/index.vue'),
+    meta: {
+      title: 'Home',
+      i18nKey: 'route.home',
+      icon: '',
+      order: 0,
+    },
+  })
 
   return sortRoutesByOrder(routes).map(mapRouteToMenu)
 }
@@ -235,4 +248,14 @@ export function transformMenuToSearchMenus(menus: App.Global.Menu[], treeMap: Ap
     }
     return acc
   }, treeMap)
+}
+
+export function resolveRouteComponent(route: RouteRecordRaw, modules: Record<string, () => Promise<RouteComponent>>): RouteRecordRaw {
+  const comp = route.component as unknown as string | RouteComponent | undefined
+  if (typeof comp === 'string') {
+    const key = `/src/views${comp}.vue`
+    const loader = modules[key]
+    if (loader) route.component = loader
+  }
+  return route
 }

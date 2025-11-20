@@ -4,6 +4,7 @@ import {
   getCacheRouteNames,
   getFlatMenuList,
   getGlobalMenuByBaseRoute,
+  resolveRouteComponent,
   transformMenuToSearchMenus,
   updateLocaleOfGlobalMenus,
 } from './shared'
@@ -64,7 +65,6 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
    */
   function getGlobalMenus(routes: RouteRecordRaw[]) {
     menus.value = getGlobalMenuByBaseRoute(routes)
-    console.log('menus.value: ', menus.value)
   }
 
   /** 根据语言更新全局菜单 */
@@ -106,16 +106,11 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   function addRoutesToVueRouter(routes: RouteRecordRaw[]) {
     routes.forEach((route: RouteRecordRaw) => {
       let removeFn: () => void
-      const comp = (route as RouteRecordRaw).component
-      if (typeof comp === 'string') {
-        const key = `/src/views${comp}.vue`
-        const loader = modules[key]
-        if (loader) (route as RouteRecordRaw).component = loader
-      }
-      if (route.meta?.isFull) {
-        removeFn = router.addRoute(route as unknown as RouteRecordRaw)
+      const resolvedRoute = resolveRouteComponent(route as RouteRecordRaw, modules)
+      if (resolvedRoute.meta?.isFull) {
+        removeFn = router.addRoute(resolvedRoute as unknown as RouteRecordRaw)
       } else {
-        removeFn = router.addRoute('Root', route as unknown as RouteRecordRaw)
+        removeFn = router.addRoute('Root', resolvedRoute as unknown as RouteRecordRaw)
       }
       addRemoveRouteFn(removeFn)
     })

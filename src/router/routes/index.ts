@@ -18,3 +18,9 @@
  * @param meta.query ==> 路由的查询参数
  * @param meta.menuType ==> 菜单类型 (1: 目录; 2: 菜单)
  * */
+
+import { ERROR_ROUTER, ROOT_ROUTE, STATIC_ROUTER } from './builtin'
+import type { RouteRecordRaw } from 'vue-router'
+
+/** builtin routes, it must be constant and setup in vue-router */
+export const builtinRoutes: RouteRecordRaw[] = [ROOT_ROUTE, ...STATIC_ROUTER, ...ERROR_ROUTER]
