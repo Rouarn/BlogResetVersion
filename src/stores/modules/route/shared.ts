@@ -95,19 +95,6 @@ export function getGlobalMenuByBaseRoute(routes: RouteRecordRaw[]) {
     return menu
   }
 
-  // 添加 home 菜单
-  routes.unshift({
-    name: 'home',
-    path: '/home',
-    component: () => import('@/views/home/index.vue'),
-    meta: {
-      title: 'Home',
-      i18nKey: 'route.home',
-      icon: '',
-      order: 0,
-    },
-  })
-
   return sortRoutesByOrder(routes).map(mapRouteToMenu)
 }
 

@@ -16,7 +16,7 @@ export function createRouteGuard(router: Router) {
     const routeStore = useRouteStore()
 
     // 初始化路由菜单 (提供给header菜单使用,路由使用的是基于文件自动生成的)
-    if (!routeStore.isInitAuthRoute) {
+    if (authStore.isLogin && !routeStore.isInitAuthRoute) {
       await routeStore.initAuthRoute()
 
       // the route is captured by the "not-found" route because the constant route is not initialized

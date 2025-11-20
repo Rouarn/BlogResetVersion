@@ -46,7 +46,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
    * Reset route cache
    *
    * @default router.currentRoute.value.name current route name
-   * @param routeKey
+   * @param routeKey 路由名称
    */
   async function resetRouteCache(routeKey?: App.Global.RouteKey) {
     const routeName = routeKey || (router.currentRoute.value.name as App.Global.RouteKey)
