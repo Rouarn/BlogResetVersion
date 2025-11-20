@@ -47,3 +47,8 @@ export function fetchCaptchaCheck({ token, code }: Api.Auth.CaptchaVerify) {
     code,
   })
 }
+
+/** 退出登录 */
+export function fetchLogout() {
+  return request.post(`${servicePort.auth}/logout`)
+}

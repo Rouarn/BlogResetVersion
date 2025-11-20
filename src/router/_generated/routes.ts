@@ -436,7 +436,7 @@ export const routes: AutoRouterRoute[] = [
       order: 2,
       hideInMenu: true,
       isKeepAlive: true,
-      isAuth: false,
+      isAuth: true,
       menuType: 2
     },
   }

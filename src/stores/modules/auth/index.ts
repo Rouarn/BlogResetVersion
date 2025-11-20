@@ -1,6 +1,6 @@
 import { computed, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { fetchLogin, fetchUserInfo } from '@/service/api/login'
+import { fetchLogin, fetchLogout, fetchUserInfo } from '@/service/api/login'
 import { localStg } from '@/utils/storage'
 import { useThemeStore } from '../theme'
 import { clearAuthStorage, getToken } from './shared'
@@ -31,6 +31,7 @@ const initialState = {
 }
 
 export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
+  const authStore = useAuthStore()
   const themeStore = useThemeStore()
 
   const route = useRoute()
@@ -52,7 +53,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
 
   const setUserInfo = (value: Api.Auth.UserInfo) => {
     Object.assign(userInfo, value)
-    localStg.set('userInfo', value)
+    localStg.set('userInfo', userInfo)
   }
 
   /**
@@ -64,33 +65,36 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
    */
   async function login(useruame: string, password: string, redirect = true) {
     const { data, error } = await fetchLogin(useruame.trim(), password.trim())
-    if (!error) {
-      setToken(data.accessToken)
-      const { data: userInfoData } = await fetchUserInfo()
-      setUserInfo(userInfoData ?? initialState.userInfo)
+    if (error) return
+    setToken(data?.accessToken ?? initialState.token)
+    const { data: userInfoData } = await fetchUserInfo()
+    setUserInfo(userInfoData ?? initialState.userInfo)
 
-      await redirectFromLogin(redirect)
+    await redirectFromLogin(redirect)
 
-      window.$notification?.success({
-        title: '登录成功',
-        content: `欢迎回来：${userInfo.nickname}`,
-        duration: 4500,
-      })
-    }
+    window.$notification?.success({
+      title: '登录成功',
+      content: `欢迎回来：${userInfo.nickname || userInfo.username || userInfo.mobile || userInfo.email}`,
+      duration: 4500,
+    })
   }
 
-  function $reset() {
-    setToken(initialState.token)
-    setUserInfo(initialState.userInfo)
+  /** Logout */
+  async function logout() {
+    await fetchLogout()
   }
 
   /** Reset auth store */
   async function resetStore() {
-    $reset()
+    setUserInfo(initialState.userInfo)
 
     themeStore.resetStore()
 
+    await logout()
+
     clearAuthStorage()
+
+    authStore.$reset()
 
     if (route.meta.isAuth) {
       await toLogin()
