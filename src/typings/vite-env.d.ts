@@ -56,13 +56,6 @@ declare namespace Env {
      * @link https://docs.iconify.design/api/providers.html
      */
     readonly VITE_ICONIFY_URL?: string
-    /**
-     * 鉴权路由模式
-     *
-     * - Static：在前端生成鉴权路由
-     * - Dynamic：在后端生成鉴权路由
-     */
-    readonly VITE_AUTH_ROUTE_MODE: 'static' | 'dynamic'
   }
 }
 
