@@ -16,12 +16,24 @@ import type { RouteComponent, RouteRecordRaw } from 'vue-router'
 export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   const { bool: isInitAuthRoute, setBool: setIsInitAuthRoute } = useBoolean()
 
-  // 引入 views 文件夹下所有 vue 文件
-  const modules = import.meta.glob('@/views/**/*.vue') as Record<string, () => Promise<RouteComponent>>
-
   /** 全局菜单 */
   const menus = ref<App.Global.Menu[]>([])
   const searchMenus = computed(() => transformMenuToSearchMenus(menus.value))
+
+  /**
+   * 获取全局菜单
+   *
+   * @param routes Vue 路由
+   */
+  function getGlobalMenus(routes: RouteRecordRaw[]) {
+    menus.value = getGlobalMenuByBaseRoute(routes)
+  }
+
+  /** 根据语言更新全局菜单 */
+  function updateGlobalMenusByLocale() {
+    menus.value = updateLocaleOfGlobalMenus(menus.value)
+    console.log('menus.value: ', menus.value)
+  }
 
   /**
    * Exclude cache routes
@@ -58,20 +70,6 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     excludeCacheRoutes.value = []
   }
 
-  /**
-   * 获取全局菜单
-   *
-   * @param routes Vue 路由
-   */
-  function getGlobalMenus(routes: RouteRecordRaw[]) {
-    menus.value = getGlobalMenuByBaseRoute(routes)
-  }
-
-  /** 根据语言更新全局菜单 */
-  function updateGlobalMenusByLocale() {
-    menus.value = updateLocaleOfGlobalMenus(menus.value)
-  }
-
   const removeRouteFns: (() => void)[] = []
 
   /** 重置 Vue 路由 */
@@ -104,6 +102,9 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
    * @param routes Vue 路由
    */
   function addRoutesToVueRouter(routes: RouteRecordRaw[]) {
+    // 引入 views 文件夹下所有 vue 文件
+    const modules = import.meta.glob('@/views/**/*.vue') as Record<string, () => Promise<RouteComponent>>
+
     routes.forEach((route: RouteRecordRaw) => {
       let removeFn: () => void
       const resolvedRoute = resolveRouteComponent(route as RouteRecordRaw, modules)

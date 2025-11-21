@@ -83,6 +83,7 @@ export function getGlobalMenuByBaseRoute(routes: RouteRecordRaw[]) {
     const menu: App.Global.Menu = {
       key: name as App.Global.RouteKey,
       label,
+      i18nKey,
       routeKey: name as App.Global.RouteKey,
       routePath: path as App.Global.RoutePath,
       icon: SvgIconVNode({ icon, localIcon, fontSize: iconFontSize || 20 }),
