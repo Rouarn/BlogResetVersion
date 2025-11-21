@@ -43,6 +43,14 @@ const local: App.I18n.Schema = {
       followPrimary: 'Follow Primary',
     },
     themeDrawerTitle: 'Theme Configuration',
+    watermark: {
+      title: 'Watermark Settings',
+      visible: 'Show Fullscreen Watermark',
+      text: 'Custom Watermark Text',
+      enableUserName: 'Enable Username Watermark',
+      enableTime: 'Show Current Time',
+      timeFormat: 'Time Format',
+    },
     configOperation: {
       copyConfig: 'Copy Config',
       copySuccessMsg: 'Copy Success, Please replace the variable "themeSettings" in "src/theme/settings.ts"',

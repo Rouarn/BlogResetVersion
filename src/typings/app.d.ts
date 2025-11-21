@@ -28,6 +28,20 @@ declare namespace App {
       /** 是否推荐颜色 */
       recommendColor: boolean
 
+      /** 水印设置 */
+      watermark: {
+        /** 是否显示水印 */
+        visible: boolean
+        /** 水印文本 */
+        text: string
+        /** 是否显示用户名 */
+        enableUserName: boolean
+        /** 是否显示时间 */
+        enableTime: boolean
+        /** 时间格式 */
+        timeFormat: string
+      }
+
       /** 定义部分主题设置的 tokens，将转换为 CSS 变量 */
       tokens: {
         light: ThemeSettingToken
@@ -127,6 +141,15 @@ declare namespace App {
           followPrimary: string
         } & Record<Theme.ThemeColorKey, string>
         themeDrawerTitle: string
+
+        watermark: {
+          title: string
+          visible: string
+          text: string
+          enableUserName: string
+          enableTime: string
+          timeFormat: string
+        }
         configOperation: {
           copyConfig: string
           copySuccessMsg: string

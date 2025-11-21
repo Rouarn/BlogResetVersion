@@ -43,6 +43,14 @@ const local: App.I18n.Schema = {
       followPrimary: '跟随主色',
     },
     themeDrawerTitle: '主题配置',
+    watermark: {
+      title: '水印设置',
+      visible: '显示全屏水印',
+      text: '自定义水印文本',
+      enableUserName: '启用用户名水印',
+      enableTime: '显示当前时间',
+      timeFormat: '时间格式',
+    },
 
     configOperation: {
       copyConfig: '复制配置',

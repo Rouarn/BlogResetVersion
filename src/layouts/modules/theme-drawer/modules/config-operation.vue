@@ -27,7 +27,7 @@ function getClipboardText() {
 
   const json = themeStore.settingsJson
 
-  return json.replace(reg, (match) => match.replace(/"/g, ''))
+  return json.replace(reg, (match: string) => match.replace(/"/g, ''))
 }
 
 function handleReset() {

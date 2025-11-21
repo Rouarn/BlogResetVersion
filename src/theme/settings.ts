@@ -12,6 +12,13 @@ export const themeSettings: App.Theme.ThemeSetting = {
     error: '#f5222d',
   },
   isInfoFollowPrimary: true,
+  watermark: {
+    visible: false,
+    text: 'Frontend Template',
+    enableUserName: false,
+    enableTime: false,
+    timeFormat: 'YYYY-MM-DD HH:mm',
+  },
   tokens: {
     light: {
       colors: {
