@@ -11,21 +11,32 @@ defineOptions({
 
 const authStore = useAuthStore()
 const formRef = ref<FormInst | null>(null)
+const passwordFormRef = ref<FormInst | null>(null)
 const isEditing = ref(false)
 const activeTab = ref('profile')
+const saving = ref(false)
+const changingPassword = ref(false)
 
-// 用户信息表单数据
-const userForm = reactive({
-  nickname: authStore.userInfo.nickname || '用户',
-  avatar: authStore.userInfo.avatar || '',
-  gender: (authStore.userInfo.gender ?? 2) as 0 | 1 | 2,
-  mobile: authStore.userInfo.mobile || '',
-  email: authStore.userInfo.email || '',
-  bio: authStore.userInfo.bio || '',
-  birthday: authStore.userInfo.birthday ? new Date(authStore.userInfo.birthday).getTime() : null,
-  city: authStore.userInfo.city || '',
-  profession: authStore.userInfo.profession || '',
-})
+function normalizeGender(input: unknown): 0 | 1 | 2 {
+  const n = Number(input)
+  return n === 0 || n === 1 || n === 2 ? (n as 0 | 1 | 2) : 2
+}
+
+function getInitialUserForm() {
+  return {
+    nickname: authStore.userInfo.nickname || '用户',
+    avatar: authStore.userInfo.avatar || '',
+    gender: normalizeGender(authStore.userInfo.gender),
+    mobile: authStore.userInfo.mobile || '',
+    email: authStore.userInfo.email || '',
+    bio: authStore.userInfo.bio || '',
+    birthday: authStore.userInfo.birthday ? new Date(authStore.userInfo.birthday).getTime() : null,
+    city: authStore.userInfo.city || '',
+    profession: authStore.userInfo.profession || '',
+  }
+}
+
+const userForm = reactive(getInitialUserForm())
 
 // 密码修改表单
 const passwordForm = reactive({
@@ -39,7 +50,7 @@ const genderOptions = [
   { label: '男性', value: 0 },
   { label: '女性', value: 1 },
   { label: '保密', value: 2 },
-]
+] as const
 
 // 角色映射
 const roleMap = {
@@ -51,7 +62,7 @@ const roleMap = {
   user: '普通用户',
   viewer: '查看者',
   guest: '访客',
-}
+} as const
 
 // 表单验证规则
 const rules: FormRules = {
@@ -104,17 +115,7 @@ function handleEdit() {
 function handleCancel() {
   isEditing.value = false
   // 重置表单数据
-  Object.assign(userForm, {
-    nickname: authStore.userInfo.nickname || '用户',
-    avatar: authStore.userInfo.avatar || '',
-    gender: (authStore.userInfo.gender ?? 2) as 0 | 1 | 2,
-    mobile: authStore.userInfo.mobile || '',
-    email: authStore.userInfo.email || '',
-    bio: authStore.userInfo.bio || '',
-    birthday: authStore.userInfo.birthday ? new Date(authStore.userInfo.birthday).getTime() : null,
-    city: authStore.userInfo.city || '',
-    profession: authStore.userInfo.profession || '',
-  })
+  Object.assign(userForm, getInitialUserForm())
 }
 
 async function handleSave() {
@@ -127,10 +128,11 @@ async function handleSave() {
     const saveData = {
       ...userForm,
       birthday: userForm.birthday ? new Date(userForm.birthday).toISOString().split('T')[0] : '',
-      gender: Number(userForm.gender) as 0 | 1 | 2, // 确保gender为正确的联合类型
+      gender: Number(userForm.gender) as 0 | 1 | 2,
     }
 
     // 调用更新用户信息的 API
+    saving.value = true
     const { error } = await updateUserInfo(authStore.userInfo.userId, saveData)
     if (error) return
 
@@ -144,12 +146,15 @@ async function handleSave() {
     window.$message?.success('保存成功')
   } catch (_) {
     window.$message?.error('保存失败，请重试')
+  } finally {
+    saving.value = false
   }
 }
 
 async function handlePasswordChange() {
   try {
-    // 调用修改密码的 API
+    await passwordFormRef.value?.validate()
+    changingPassword.value = true
     const result = await changePassword({
       oldPassword: passwordForm.oldPassword,
       newPassword: passwordForm.newPassword,
@@ -157,18 +162,18 @@ async function handlePasswordChange() {
     })
 
     if (!result.error) {
-      // 清空表单
       Object.assign(passwordForm, {
         oldPassword: '',
         newPassword: '',
         confirmPassword: '',
       })
       window.$message?.success(result.data?.message || '密码修改成功')
-
       authStore.resetStore()
     }
   } catch (_) {
     window.$message?.error('密码修改失败，请检查当前密码是否正确')
+  } finally {
+    changingPassword.value = false
   }
 }
 
@@ -196,11 +201,12 @@ async function onCropDone(payload: { blob?: Blob; fileName?: string }) {
         avatar: res.data.downloadUrl,
       })
       window.$message?.success('头像上传成功')
-      cutterRef.value?.closeCropper()
-      cutterRef.value?.clearImage()
     }
   } catch (_) {
     window.$message?.error('头像上传失败，请重试')
+  } finally {
+    cutterRef.value?.closeCropper()
+    cutterRef.value?.clearImage()
   }
 }
 function onCropError(msg: string) {
@@ -210,7 +216,9 @@ function onCropError(msg: string) {
 // 格式化日期
 function formatDate(dateStr?: string) {
   if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleString('zh-CN')
+  const d = new Date(dateStr)
+  if (Number.isNaN(d.getTime())) return '-'
+  return d.toLocaleString('zh-CN')
 }
 </script>
 
@@ -264,7 +272,10 @@ function formatDate(dateStr?: string) {
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-gray-600 whitespace-nowrap mr-3">用户ID</span>
-                <span class="text-xs text-gray-500 font-mono ellipsis-text">{{ authStore.userInfo.userId }}</span>
+                <!-- 悬浮提示 -->
+                <span class="text-xs text-gray-500 font-mono ellipsis-text" :title="authStore.userInfo.userId">
+                  {{ authStore.userInfo.userId }}
+                </span>
               </div>
             </div>
           </div>
@@ -303,8 +314,8 @@ function formatDate(dateStr?: string) {
                     编辑
                   </NButton>
                   <template v-else>
-                    <NButton @click="handleCancel">取消</NButton>
-                    <NButton type="primary" @click="handleSave">
+                    <NButton @click="handleCancel" :disabled="saving">取消</NButton>
+                    <NButton type="primary" @click="handleSave" :loading="saving">
                       <SvgIcon icon="ph:check" class="mr-1" />
                       保存
                     </NButton>
@@ -360,7 +371,7 @@ function formatDate(dateStr?: string) {
               <div class="max-w-2xl">
                 <h2 class="text-lg font-semibold text-gray-800 mb-6">修改密码</h2>
 
-                <NForm :model="passwordForm" :rules="passwordRules" label-placement="left" label-width="120">
+                <NForm ref="passwordFormRef" :model="passwordForm" :rules="passwordRules" label-placement="left" label-width="120">
                   <NFormItem label="当前密码" path="oldPassword">
                     <NInput
                       v-model:value="passwordForm.oldPassword"
@@ -384,7 +395,7 @@ function formatDate(dateStr?: string) {
                   </NFormItem>
 
                   <NFormItem>
-                    <NButton type="primary" @click="handlePasswordChange">
+                    <NButton type="primary" @click="handlePasswordChange" :loading="changingPassword">
                       <SvgIcon icon="ph:lock" class="mr-1" />
                       修改密码
                     </NButton>
