@@ -1,6 +1,6 @@
 import type { RouteRecordRaw } from 'vue-router'
 
-/** 静态路由 */
+/** Root路由 */
 export const ROOT_ROUTE: RouteRecordRaw = {
   name: 'Root',
   path: '/',

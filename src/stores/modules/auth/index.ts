@@ -79,26 +79,21 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     })
   }
 
-  /** Logout */
-  async function logout() {
-    await fetchLogout()
-  }
-
   /** Reset auth store */
-  async function resetStore() {
-    setUserInfo(initialState.userInfo)
+  function resetStore() {
+    fetchLogout().then(async () => {
+      setUserInfo(initialState.userInfo)
 
-    themeStore.resetStore()
+      themeStore.resetStore()
 
-    await logout()
+      clearAuthStorage()
 
-    clearAuthStorage()
+      authStore.$reset()
 
-    authStore.$reset()
-
-    if (route.meta.isAuth) {
-      await toLogin()
-    }
+      if (route.meta.isAuth) {
+        await toLogin()
+      }
+    })
   }
   return {
     token,
