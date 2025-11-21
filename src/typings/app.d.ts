@@ -125,7 +125,7 @@ declare namespace App {
         themeColor: {
           title: string
           followPrimary: string
-        } & Theme.ThemeColor
+        } & Record<Theme.ThemeColorKey, string>
         themeDrawerTitle: string
         configOperation: {
           copyConfig: string
