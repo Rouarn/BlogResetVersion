@@ -1,11 +1,11 @@
 import { localStg } from '@/utils/storage'
 
-/** Get token */
+/** 获取令牌 */
 export function getToken() {
   return localStg.get('token') || ''
 }
 
-/** Clear auth storage */
+/** 清除认证存储 */
 export function clearAuthStorage() {
   localStg.remove('token')
 }

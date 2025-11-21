@@ -5,7 +5,7 @@ import { addColorAlpha, getColorPalette, getPaletteColorByNumber, getRgb } from 
 import { defu } from 'defu'
 import type { GlobalThemeOverrides } from 'naive-ui'
 
-/** Init theme settings */
+/** 初始化主题设置 */
 export function initThemeSettings() {
   const isProd = import.meta.env.VITE_USER_NODE_ENV === 'production'
 
@@ -39,10 +39,10 @@ interface NaiveColorAction {
 }
 
 /**
- * Get naive theme colors
+ * 获取 Naive 主题色
  *
- * @param colors Theme colors
- * @param [recommended=false] Use recommended color. Default is `false`
+ * @param colors 主题色集合
+ * @param [recommended=false] 是否使用推荐色，默认 `false`
  */
 function getNaiveThemeColors(colors: App.Theme.ThemeColor, recommended = false) {
   const colorActions: NaiveColorAction[] = [
@@ -69,10 +69,9 @@ function getNaiveThemeColors(colors: App.Theme.ThemeColor, recommended = false) 
 }
 
 /**
- * Get naive theme
+ * 获取 Naive UI 主题配置
  *
- * @param colors Theme colors
- * @param [recommended=false] Use recommended color. Default is `false`
+ * @param colors 主题色集合
  */
 export function getNaiveTheme(colors: App.Theme.ThemeColor) {
   const { primary: colorLoading } = colors
@@ -94,10 +93,10 @@ export function getNaiveTheme(colors: App.Theme.ThemeColor) {
 }
 
 /**
- * Create theme palette colors
+ * 创建主题调色板颜色
  *
- * @param colors Theme colors
- * @param [recommended=false] Use recommended color. Default is `false`
+ * @param colors 主题色集合
+ * @param [recommended=false] 是否使用推荐色，默认 `false`
  */
 function createThemePaletteColors(colors: App.Theme.ThemeColor, recommended = false) {
   const colorKeys = Object.keys(colors) as App.Theme.ThemeColorKey[]
@@ -117,11 +116,11 @@ function createThemePaletteColors(colors: App.Theme.ThemeColor, recommended = fa
 }
 
 /**
- * create theme token css vars value by theme settings
+ * 根据主题设置生成主题 Token 的 CSS 变量
  *
- * @param colors Theme colors
- * @param tokens Theme setting tokens
- * @param [recommended=false] Use recommended color. Default is `false`
+ * @param colors 主题色集合
+ * @param tokens 主题设置的 tokens
+ * @param [recommended=false] 是否使用推荐色，默认 `false`
  */
 export function createThemeToken(colors: App.Theme.ThemeColor, tokens?: App.Theme.ThemeSetting['tokens'], recommended = false) {
   const paletteColors = createThemePaletteColors(colors, recommended)
@@ -157,9 +156,9 @@ export function createThemeToken(colors: App.Theme.ThemeColor, tokens?: App.Them
 }
 
 /**
- * Get css var by tokens
+ * 根据 tokens 生成 CSS 变量字符串
  *
- * @param tokens Theme base tokens
+ * @param tokens 主题基础 tokens
  */
 function getCssVarByTokens(tokens: App.Theme.BaseToken) {
   const styles: string[] = []
@@ -192,9 +191,9 @@ function getCssVarByTokens(tokens: App.Theme.BaseToken) {
   return styleStr
 }
 /**
- * Add theme vars to global
+ * 将主题变量添加到全局
  *
- * @param tokens
+ * @param tokens 亮色主题 tokens
  */
 export function addThemeVarsToGlobal(tokens: App.Theme.BaseToken, darkTokens: App.Theme.BaseToken) {
   const cssVarStr = getCssVarByTokens(tokens)
@@ -224,10 +223,10 @@ export function addThemeVarsToGlobal(tokens: App.Theme.BaseToken, darkTokens: Ap
 }
 
 /**
- * Toggle auxiliary color modes
+ * 切换辅助色彩模式
  *
- * @param grayscaleMode
- * @param colourWeakness
+ * @param grayscaleMode 灰度模式
+ * @param colourWeakness 色弱模式
  */
 export function toggleAuxiliaryColorModes(grayscaleMode = false, colourWeakness = false) {
   const htmlElement = document.documentElement

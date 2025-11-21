@@ -13,9 +13,9 @@ export function getFlatMenuList(menuList: RouteRecordRaw[]): RouteRecordRaw[] {
 }
 
 /**
- * sort route by order
+ * 按顺序字段对路由排序
  *
- * @param route route
+ * @param route 路由
  */
 function sortRouteByOrder(route: RouteRecordRaw) {
   if (route.children?.length) {
@@ -27,9 +27,9 @@ function sortRouteByOrder(route: RouteRecordRaw) {
 }
 
 /**
- * sort routes by order
+ * 按顺序字段对路由列表排序
  *
- * @param routes routes
+ * @param routes 路由列表
  */
 export function sortRoutesByOrder(routes: RouteRecordRaw[]) {
   routes.sort((next, prev) => (Number(next.meta?.order) || 0) - (Number(prev.meta?.order) || 0))
@@ -39,9 +39,9 @@ export function sortRoutesByOrder(routes: RouteRecordRaw[]) {
 }
 
 /**
- * Update locale of global menus
+ * 根据语言更新全局菜单
  *
- * @param menus
+ * @param menus 菜单列表
  */
 export function updateLocaleOfGlobalMenus(menus: App.Global.Menu[]) {
   const result: App.Global.Menu[] = []
@@ -67,9 +67,9 @@ export function updateLocaleOfGlobalMenus(menus: App.Global.Menu[]) {
 }
 
 /**
- * Get global menu by route
+ * 通过基础路由生成全局菜单
  *
- * @param route
+ * @param routes 路由列表
  */
 export function getGlobalMenuByBaseRoute(routes: RouteRecordRaw[]) {
   const { SvgIconVNode } = useSvgIcon()
@@ -100,9 +100,9 @@ export function getGlobalMenuByBaseRoute(routes: RouteRecordRaw[]) {
 }
 
 /**
- * Sort menus by order
+ * 按顺序字段对菜单排序
  *
- * @param menus menus
+ * @param menus 菜单列表
  */
 export function sortMenusByOrder(menus: App.Global.Menu[]) {
   menus.sort((next, prev) => (Number(next.order) || 0) - (Number(prev.order) || 0))
@@ -116,15 +116,15 @@ export function sortMenusByOrder(menus: App.Global.Menu[]) {
 }
 
 /**
- * Get cache route names
+ * 获取需要缓存的路由名称
  *
- * @param routes Vue routes (two levels)
+ * @param routes Vue 路由（两级）
  */
 export function getCacheRouteNames(routes: RouteRecordRaw[]) {
   const cacheNames: App.Global.RouteKey[] = []
 
   routes.forEach((route) => {
-    // only get last two level route, which has component
+    // 仅获取最后两级且带组件的路由
     route.children?.forEach((child) => {
       if (child.component && child.meta?.keepAlive) {
         cacheNames.push(child.name as App.Global.RouteKey)
@@ -136,10 +136,10 @@ export function getCacheRouteNames(routes: RouteRecordRaw[]) {
 }
 
 /**
- * Is route exist by route name
+ * 根据路由名称判断路由是否存在
  *
- * @param routeName
- * @param routes
+ * @param routeName 路由名称
+ * @param routes 路由列表
  */
 function recursiveGetIsRouteExistByRouteName(route: RouteRecordRaw, routeName: App.Global.RouteKey) {
   let isExist = route.name === routeName
@@ -160,10 +160,10 @@ export function isRouteExistByRouteName(routeName: App.Global.RouteKey, routes: 
 }
 
 /**
- * Get selected menu key path
+ * 获取选中菜单的键路径
  *
- * @param selectedKey
- * @param menus
+ * @param selectedKey 选中键
+ * @param menus 菜单列表
  */
 function findMenuPath(targetKey: string, menu: App.Global.Menu): string[] | null {
   const path: string[] = []
@@ -196,10 +196,10 @@ function findMenuPath(targetKey: string, menu: App.Global.Menu): string[] | null
 }
 
 /**
- * Find menu path
+ * 查找菜单路径
  *
- * @param targetKey Target menu key
- * @param menu Menu
+ * @param targetKey 目标菜单键
+ * @param menu 菜单
  */
 export function getSelectedMenuKeyPathByKey(selectedKey: string, menus: App.Global.Menu[]) {
   const keyPath: string[] = []
@@ -220,10 +220,10 @@ export function getSelectedMenuKeyPathByKey(selectedKey: string, menus: App.Glob
 }
 
 /**
- * Transform menu to searchMenus
+ * 将菜单转换为可搜索菜单列表
  *
- * @param menus - menus
- * @param treeMap
+ * @param menus 菜单列表
+ * @param treeMap 聚合列表
  */
 export function transformMenuToSearchMenus(menus: App.Global.Menu[], treeMap: App.Global.Menu[] = []) {
   if (menus && menus.length === 0) return []

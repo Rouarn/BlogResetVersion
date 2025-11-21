@@ -17,7 +17,7 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
   const { bool: contentXScrollable, setBool: setContentXScrollable } = useBoolean()
   const { bool: hideHeader, setBool: setHideHeader } = useBoolean(false)
 
-  /** Is mobile layout */
+  /** 是否为移动端布局 */
   const isMobile = breakpoints.smaller('sm')
 
   const locale = ref<App.I18n.LangType>((localStg.get('lang') || 'zh-CN') as App.I18n.LangType)
@@ -39,7 +39,7 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
     localStg.set('lang', lang)
   }
 
-  /** Update document title by locale */
+  /** 根据语言更新文档标题 */
   function updateDocumentTitleByLocale() {
     const AppTitle = $t('system.title')
     const { title, i18nKey } = router.currentRoute.value.meta
@@ -49,9 +49,9 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
   }
 
   /**
-   * Reload page
+   * 重新加载页面
    *
-   * @param duration Duration time
+   * @param duration 时长
    */
   async function reloadPage(duration = 300) {
     setReloadFlag(false)
@@ -68,27 +68,27 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
     setDayjsLocale(locale.value)
   }
 
-  // watch store
+  // 监听 Store
   scope.run(() => {
-    // watch locale
+    // 监听语言
     watch(locale, () => {
-      // update document title by locale
+      // 根据语言更新文档标题
       updateDocumentTitleByLocale()
 
-      // update global menus by locale
+      // 根据语言更新全局菜单
       routeStore.updateGlobalMenusByLocale()
 
-      // set dayjs locale
+      // 设置 dayjs 语言
       setDayjsLocale(locale.value)
     })
   })
 
-  /** On scope dispose */
+  /** 作用域销毁时 */
   onScopeDispose(() => {
     scope.stop()
   })
 
-  // init
+  // 初始化
   init()
 
   return {

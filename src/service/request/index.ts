@@ -13,11 +13,12 @@ import axios from 'axios'
 export type ErrorType = 'overdue' | 'business' | 'network' | 'timeout' | 'cancel' | 'server'
 
 /**
- * 统一返回结构：
- * - 成功：error=false，data 可为 null（如更新类接口）
- * - 失败：error=true，附带 message，data=null
+ * 统一返回结构（支持顶层解构 data、error、message）：
+ * - 始终包含：error(boolean)、message(string)、data(T)
+ * - 当 error=true 时：message 为错误文案，data 为 null（运行时），类型上仍为 T 以便通过 if(error) 收窄后使用
+ * - 当 error=false 时：message 为空字符串，data 为后端数据（可能为 null，如更新类接口）
  */
-export type OptimizedResponse<T> = { error: true; message: string; data: null } | { error: false; data: T | null }
+export type OptimizedResponse<T> = { error: boolean; message: string; data: T }
 
 interface ExtendedAxiosResponse<T = unknown> extends AxiosResponse<App.Service.Response<T>> {
   __isError?: boolean
@@ -261,24 +262,24 @@ class RequestHttp {
       // 优先使用后端返回的message，如果没有则使用axios错误信息
       const fallbackMessage = response.message || '网络错误'
       const message = getBackendMessageFromAxiosError(response, fallbackMessage)
-      return { data: null, error: true, message }
+      return { data: null as unknown as T, error: true, message }
     }
 
     if (response.__isError) {
       // 业务错误（比如后端返回 code != 200）
       // 优先使用后端返回的message
       const message = getBackendMessageFromResponse(response, '请求失败')
-      return { data: null, error: true, message }
+      return { data: null as unknown as T, error: true, message }
     }
 
     if ((response.config as CustomAxiosRequestConfig)?.isDownload) {
       // 下载类请求，直接返回原始 response
-      return { data: response as unknown as T, error: false }
+      return { data: response as unknown as T, error: false, message: '' }
     }
 
-    const responseData = (response.data?.data ?? null) as T | null
+    const responseData = (response.data?.data ?? null) as unknown as T
 
-    return { data: responseData, error: false }
+    return { data: responseData, error: false, message: '' }
   }
 
   private shouldRetry(error: AxiosError): boolean {

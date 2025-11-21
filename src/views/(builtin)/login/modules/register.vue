@@ -33,9 +33,9 @@ const loading = ref(false)
 
 // 生成验证码
 async function generateCaptcha() {
-  const { data, error } = await fetchCaptcha()
+  const { data, error, message } = await fetchCaptcha()
   if (error) {
-    window.$message?.error(error.message)
+    window.$message?.error(message)
     return
   }
   captchaCode.value = data.image
@@ -116,13 +116,13 @@ async function handleRegister() {
 
   try {
     // 先验证验证码
-    const { error } = await fetchCaptchaCheck({
+    const { error, message } = await fetchCaptchaCheck({
       token: captchaToken.value,
       code: captcha.value,
     })
 
     if (error) {
-      window.$message?.error(error.message)
+      window.$message?.error(message)
       await resetCaptcha()
       return
     }

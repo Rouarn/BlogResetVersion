@@ -57,14 +57,13 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   }
 
   /**
-   * Login
-   *
-   * @param useruame User name
-   * @param password Password
-   * @param [redirect=true]登录后是否重定向。默认为“true”
+   * 登录
+   * @param username 用户名
+   * @param password 密码
+   * @param [redirect=true] 登录后是否重定向，默认 true
    */
-  async function login(useruame: string, password: string, redirect = true) {
-    const { data, error } = await fetchLogin(useruame.trim(), password.trim())
+  async function login(username: string, password: string, redirect = true) {
+    const { data, error } = await fetchLogin(username.trim(), password.trim())
     if (error) return
     setToken(data?.accessToken ?? initialState.token)
     const { data: userInfoData } = await fetchUserInfo()
@@ -79,7 +78,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     })
   }
 
-  /** Reset auth store */
+  /** 重置认证 Store */
   function resetStore() {
     fetchLogout().then(async () => {
       setUserInfo(initialState.userInfo)

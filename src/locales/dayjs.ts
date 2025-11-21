@@ -4,7 +4,7 @@ import 'dayjs/locale/zh-cn'
 import { locale } from 'dayjs'
 
 /**
- * Set dayjs locale
+ * 设置 dayjs 语言环境
  *
  * @param lang
  */

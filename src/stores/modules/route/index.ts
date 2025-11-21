@@ -36,28 +36,28 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   }
 
   /**
-   * Exclude cache routes
+   * 排除需要缓存的路由
    *
-   * for reset route cache
+   * 用于重置路由缓存
    */
   const excludeCacheRoutes = ref<App.Global.RouteKey[]>([])
 
-  /** Cache routes */
+  /** 缓存的路由 */
   const cacheRoutes = ref<App.Global.RouteKey[]>([])
 
   /**
-   * Get cache routes
+   * 获取缓存路由
    *
-   * @param routes Vue routes
+   * @param routes Vue 路由
    */
   function getCacheRoutes(routes: RouteRecordRaw[]) {
     cacheRoutes.value = getCacheRouteNames(routes)
   }
 
   /**
-   * Reset route cache
+   * 重置路由缓存
    *
-   * @default router.currentRoute.value.name current route name
+   * @default router.currentRoute.value.name 当前路由名称
    * @param routeKey 路由名称
    */
   async function resetRouteCache(routeKey?: App.Global.RouteKey) {
@@ -87,7 +87,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     removeRouteFns.push(fn)
   }
 
-  /** Reset store */
+  /** 重置 Store */
   async function resetStore() {
     const routeStore = useRouteStore()
 
@@ -117,7 +117,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     })
   }
 
-  /** create builtin vue routes */
+  /** 创建内置 Vue 路由 */
   async function createBuiltinVueRoutes(): Promise<RouteRecordRaw[]> {
     const { data } = await fetchGetUserRoutes()
     const routes = [...data] as unknown as RouteRecordRaw[]

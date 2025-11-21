@@ -1349,7 +1349,7 @@ const resetScroll = () => {
   }
 }
 
-// Debug info panel styles
+// 调试信息面板样式
 .debug-info-panel {
   margin-top: 16px;
   background: #f8f9fa;

@@ -68,7 +68,7 @@ function handleDropdown(key: DropdownKey) {
   if (key === 'logout') {
     logout()
   } else {
-    // If your other options are jumps from other routes, they will be directly supported here
+    // 如果你的其他选项是跳转到路由，这里会直接支持
     routerPushByKey(key)
   }
 }

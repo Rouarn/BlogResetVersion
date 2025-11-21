@@ -40,14 +40,14 @@ declare module 'vue-router' {
     localIcon?: string
     /** 图标大小，宽度和高度相同 */
     iconFontSize?: number
-    /** Router order */
+    /** 路由排序权重 */
     order?: number | null
     /** 是否在菜单中隐藏该路由 */
     hideInMenu?: boolean | null
     /**
-     * The menu key will be activated when entering the route
+     * 进入该路由时将激活指定的菜单键
      *
-     * The route is not in the menu
+     * 当路由不在菜单中时可用
      *
      * @example
      * 路由为 "user_detail"，如果设置为 "user_list"，菜单 "user_list" 将被激活
