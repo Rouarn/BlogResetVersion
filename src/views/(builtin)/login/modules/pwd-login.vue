@@ -56,7 +56,7 @@ async function handleLogin() {
     return
   }
 
-  if (!captcha.value) {
+  if ((!captcha.value && captcha.value.length < 1) || captcha.value.length < 4) {
     window.$message?.error('请输入验证码')
     return
   }
@@ -68,9 +68,8 @@ async function handleLogin() {
       token: captchaToken.value,
       code: captcha.value,
     })
-
+    console.log(error, message)
     if (error) {
-      window.$message?.error(message)
       await resetCaptcha()
       return
     }
