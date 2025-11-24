@@ -126,7 +126,7 @@ export function getCacheRouteNames(routes: RouteRecordRaw[]) {
   routes.forEach((route) => {
     // 仅获取最后两级且带组件的路由
     route.children?.forEach((child) => {
-      if (child.component && child.meta?.keepAlive) {
+      if (child.component && child.meta?.isKeepAlive) {
         cacheNames.push(child.name as App.Global.RouteKey)
       }
     })

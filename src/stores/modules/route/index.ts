@@ -139,6 +139,9 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     // 获取全局菜单（保留分组层级）
     getGlobalMenus(routes)
 
+    // 获取需要缓存的路由名称
+    getCacheRoutes(routes)
+
     setIsInitAuthRoute(true)
   }
 
@@ -150,7 +153,6 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     excludeCacheRoutes,
     cacheRoutes,
     initAuthRoute,
-    getCacheRoutes,
     resetRouteCache,
     updateGlobalMenusByLocale,
   }
