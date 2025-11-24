@@ -85,15 +85,6 @@ export const ERROR_ROUTER: RouteRecordRaw[] = [
     },
   },
   {
-    name: '404',
-    path: '/404',
-    component: () => import('@/views/(builtin)/404/index.vue'),
-    meta: {
-      title: '404',
-      i18nKey: 'route.404',
-    },
-  },
-  {
     name: '500',
     path: '/500',
     component: () => import('@/views/(builtin)/500/index.vue'),
@@ -103,12 +94,12 @@ export const ERROR_ROUTER: RouteRecordRaw[] = [
     },
   },
   {
-    name: 'error',
+    name: 'not-found',
     path: '/:pathMatch(.*)*',
-    redirect: '/404',
     component: () => import('@/views/(builtin)/404/index.vue'),
     meta: {
-      title: 'error',
+      title: 'not-found',
+      i18nKey: 'route.404',
     },
     children: [],
   },

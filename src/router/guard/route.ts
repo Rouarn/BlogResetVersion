@@ -12,16 +12,24 @@ export function createRouteGuard(router: Router) {
     if (authStore.isLogin && !routeStore.isInitAuthRoute) {
       await routeStore.initAuthRoute()
 
-      // 若因未初始化被 not-found 捕获，初始化后重定向至原目标
-      const path = to.fullPath
-      const location: RouteLocationRaw = {
-        path,
-        replace: true,
-        query: to.query,
-        hash: to.hash,
-      }
+      const notFoundRoute: App.Global.RouteKey[] = ['not-found', '404']
+      const isNotFoundRoute = notFoundRoute.includes(to.name as App.Global.RouteKey)
 
-      return next(location)
+      // 由于鉴权路由尚未初始化，该路由被“not-found”捕获
+      // 鉴权路由初始化后，重定向回原目标路由
+      if (isNotFoundRoute) {
+        const rootRoute: App.Global.RouteKey = 'root'
+        const path = to.redirectedFrom?.name === rootRoute ? '/' : to.fullPath
+
+        const location: RouteLocationRaw = {
+          path,
+          replace: true,
+          query: to.query,
+          hash: to.hash,
+        }
+
+        return next(location)
+      }
     }
 
     // 需要授权的页面
@@ -44,11 +52,11 @@ export function createRouteGuard(router: Router) {
 
   router.afterEach((to) => {
     // 可在此添加埋点或统计
-    console.log('[router after each]:', to)
+    console.log('[router.afterEach]: ', to)
   })
 
   router.onError((error) => {
     // 统一路由错误处理入口（可结合上报系统）
-    console.error('[router error]:', error?.message || error)
+    console.log('[router.onError]: ', error)
   })
 }
