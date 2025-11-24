@@ -16,7 +16,7 @@ import type { RouteComponent, RouteRecordRaw } from 'vue-router'
 export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   const { bool: isInitAuthRoute, setBool: setIsInitAuthRoute } = useBoolean()
 
-  /** 全局菜单 */
+  /** 全局菜单（保留分组层级用于侧边/头部） */
   const menus = ref<App.Global.Menu[]>([])
   const searchMenus = computed(() => transformMenuToSearchMenus(menus.value))
 
@@ -32,7 +32,6 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   /** 根据语言更新全局菜单 */
   function updateGlobalMenusByLocale() {
     menus.value = updateLocaleOfGlobalMenus(menus.value)
-    console.log('menus.value: ', menus.value)
   }
 
   /**
@@ -72,7 +71,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
 
   const removeRouteFns: (() => void)[] = []
 
-  /** 重置 Vue 路由 */
+  /** 重置 Vue 路由（移除动态添加的路由） */
   function resetVueRoutes() {
     removeRouteFns.forEach((fn) => fn())
     removeRouteFns.length = 0
@@ -87,7 +86,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     removeRouteFns.push(fn)
   }
 
-  /** 重置 Store */
+  /** 重置 Store（清空路由相关状态） */
   async function resetStore() {
     const routeStore = useRouteStore()
 
@@ -117,14 +116,14 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     })
   }
 
-  /** 创建内置 Vue 路由 */
+  /** 创建内置 Vue 路由（从后端拉取权限路由） */
   async function createBuiltinVueRoutes(): Promise<RouteRecordRaw[]> {
     const { data } = await fetchGetUserRoutes()
     const routes = [...data] as unknown as RouteRecordRaw[]
     return routes
   }
 
-  /** 初始化应用路由 */
+  /** 初始化应用路由（仅在登录后首次执行） */
   async function initAuthRoute() {
     // 如果已经初始化则直接返回
     if (isInitAuthRoute.value) return

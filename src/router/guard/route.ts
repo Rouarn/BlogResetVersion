@@ -2,22 +2,17 @@ import { useAuthStore } from '@/stores/modules/auth'
 import { useRouteStore } from '@/stores/modules/route'
 import type { RouteLocationRaw, Router } from 'vue-router'
 
-/**
- * 创建路由守卫
- *
- * @param router - 路由实例
- */
+/** 创建路由守卫（鉴权、菜单初始化、登录页拦截） */
 export function createRouteGuard(router: Router) {
   router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore()
     const routeStore = useRouteStore()
 
-    // 初始化路由菜单 (提供给header菜单使用,路由使用的是基于文件自动生成的)
+    // 初始化路由菜单（用于 Header 菜单展示，实际路由基于文件自动生成）
     if (authStore.isLogin && !routeStore.isInitAuthRoute) {
       await routeStore.initAuthRoute()
 
-      // the route is captured by the "not-found" route because the constant route is not initialized
-      // after the constant route is initialized, redirect to the original route
+      // 若因未初始化被 not-found 捕获，初始化后重定向至原目标
       const path = to.fullPath
       const location: RouteLocationRaw = {
         path,
@@ -29,16 +24,15 @@ export function createRouteGuard(router: Router) {
       return next(location)
     }
 
-    // 检查是否需要授权
+    // 需要授权的页面
     if (to.meta.isAuth) {
-      // 检查是否登录
+      // 未登录则跳转登录
       if (!authStore.isLogin) {
-        // 跳转到登陆页
         return next({ path: '/login', replace: false, query: { redirect: to.fullPath } })
       }
     }
 
-    // 判断是否访问登陆页，有 Token 就在当前页面，没有 Token 重置路由到登陆页
+    // 访问登录页：已登录则留在原页，未登录允许访问
     if (to.path.toLocaleLowerCase() === '/login') {
       if (authStore.isLogin) return next(from.fullPath)
       return next()
@@ -49,10 +43,12 @@ export function createRouteGuard(router: Router) {
   })
 
   router.afterEach((to) => {
-    console.log('afterEach: ', to.fullPath)
+    // 可在此添加埋点或统计
+    console.log('[router after each]:', to)
   })
 
   router.onError((error) => {
-    console.log('error: ', error.message)
+    // 统一路由错误处理入口（可结合上报系统）
+    console.error('[router error]:', error?.message || error)
   })
 }

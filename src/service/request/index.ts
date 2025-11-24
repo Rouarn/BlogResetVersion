@@ -6,7 +6,7 @@ import { ResultEnum } from '@/enum'
 import type { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import axios from 'axios'
 
-/* ---------------- 类型定义 ---------------- */
+/* ---------------- 类型与结构 ---------------- */
 /**
  * 错误类型标识
  */
@@ -40,7 +40,7 @@ export interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   __retryCount?: number
 }
 
-/* ---------------- Loading 管理 ---------------- */
+/* ---------------- Loading 管理（全局请求动效） ---------------- */
 let loadingCount = 0
 
 function openLoading() {
@@ -53,7 +53,7 @@ function closeLoading() {
   if (loadingCount === 0) window.$loading?.close()
 }
 
-/* ---------------- 默认配置 ---------------- */
+/* ---------------- 默认配置与重试策略 ---------------- */
 const DEFAULT_RETRY_CONFIG = {
   count: 2,
   delay: 1000,
@@ -78,23 +78,19 @@ const axiosCanceler = new AxiosCanceler()
 /* ---------------- 工具函数 ---------------- */
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms))
 
-/**
- * 提取 AxiosError 的后端 message，若无则使用 fallback
- */
+/** 提取 AxiosError 的后端 message，若无则使用 fallback */
 function getBackendMessageFromAxiosError(error: AxiosError<App.Service.Response>, fallback: string): string {
   const backendMessage = error.response?.data?.message
   return backendMessage || fallback
 }
 
-/**
- * 提取业务响应的后端 message，若无则使用 fallback
- */
+/** 提取业务响应的后端 message，若无则使用 fallback */
 function getBackendMessageFromResponse<T>(response: ExtendedAxiosResponse<T>, fallback: string): string {
   const backendMessage = response.data?.message
   return backendMessage || fallback
 }
 
-/* ---------------- 请求类 ---------------- */
+/* ---------------- 请求类（统一封装发送、重试、错误提示） ---------------- */
 class RequestHttp {
   private service: AxiosInstance
 
@@ -134,7 +130,7 @@ class RequestHttp {
       (error) => Promise.reject(error),
     )
 
-    // 响应拦截器（注意：onRejected 的类型是 unknown，这里我们用类型守卫）
+    // 响应拦截器（错误分支使用类型守卫）
     this.service.interceptors.response.use(
       (response: ExtendedAxiosResponse & { config: CustomAxiosRequestConfig }) => {
         const { config, data } = response
@@ -258,16 +254,14 @@ class RequestHttp {
 
   private transformResponse<T>(response: ExtendedAxiosResponse<T> | AxiosError<App.Service.Response>): OptimizedResponse<T> {
     if ('isAxiosError' in response) {
-      // axios 层错误（超时、断网等）
-      // 优先使用后端返回的message，如果没有则使用axios错误信息
+      // axios 层错误（超时、断网等），优先使用后端返回message
       const fallbackMessage = response.message || '网络错误'
       const message = getBackendMessageFromAxiosError(response, fallbackMessage)
       return { data: null as unknown as T, error: true, message }
     }
 
     if (response.__isError) {
-      // 业务错误（比如后端返回 code != 200）
-      // 优先使用后端返回的message
+      // 业务错误（比如后端返回 code != 200），优先使用后端返回message
       const message = getBackendMessageFromResponse(response, '请求失败')
       return { data: null as unknown as T, error: true, message }
     }
@@ -307,7 +301,7 @@ class RequestHttp {
     }
   }
 
-  /** 通用发送方法 */
+  /** 通用发送方法（统一 GET/POST/PUT/PATCH/DELETE） */
   private async send<T>(
     method: CustomAxiosRequestConfig['method'],
     url: string,

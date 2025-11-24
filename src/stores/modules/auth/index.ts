@@ -31,7 +31,6 @@ const initialState = {
 }
 
 export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
-  const authStore = useAuthStore()
   const themeStore = useThemeStore()
 
   const route = useRoute()
@@ -78,17 +77,13 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     })
   }
 
-  /** 重置认证 Store */
+  /** 重置认证状态（退出登录并清理本地数据） */
   function resetStore() {
     fetchLogout().then(async () => {
       setUserInfo(initialState.userInfo)
-
+      setToken(initialState.token)
       themeStore.resetStore()
-
       clearAuthStorage()
-
-      authStore.$reset()
-
       if (route.meta.isAuth) {
         await toLogin()
       }
