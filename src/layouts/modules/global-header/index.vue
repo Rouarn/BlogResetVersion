@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import ChatSystem from '../chat-system/index.vue'
 import GlobalLogo from '../global-logo/index.vue'
 import GlobalMenu from '../global-menu/index.vue'
 import GlobalSearch from '../global-search/index.vue'
+import NotificationCenter from '../notification-center/index.vue'
 import ThemeButton from './components/theme-button.vue'
 import UserAvatar from './components/user-avatar.vue'
 import ThemeSchemaSwitch from '@/components/common/theme-schema-switch.vue'
@@ -35,8 +37,13 @@ const { isFullscreen, toggle } = useFullscreen()
         <FullScreen v-if="!appStore.isMobile" :full="isFullscreen" @click="toggle" />
         <!-- 语言切换 -->
         <LangSwitch :lang="appStore.locale" :lang-options="appStore.localeOptions" @change-lang="appStore.changeLocale" />
+        <!-- 通知中心 -->
+        <NotificationCenter />
+        <!-- 聊天系统 -->
+        <ChatSystem />
         <!-- 主题切换 -->
         <ThemeSchemaSwitch :theme-schema="themeStore.themeScheme" :is-dark="themeStore.darkMode" @switch="themeStore.toggleThemeScheme" />
+        <!-- 主题配置按钮 -->
         <ThemeButton />
         <!-- 用户头像 -->
         <UserAvatar />
