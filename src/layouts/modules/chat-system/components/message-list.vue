@@ -37,44 +37,29 @@ onMounted(() => {
 
 <template>
   <NScrollbar class="h-full">
-    <div ref="listRef" class="px-3 py-3 space-y-3">
+    <div ref="listRef" class="px-3 py-3 space-y-6">
       <template v-for="item in props.grouped" :key="item.t === 'date' ? 'd-' + (item as any).label : 'm-' + (item as any).m.id">
-        <div v-if="item.t === 'date'" class="flex items-center justify-center">
-          <NTag type="default" size="small">{{ (item as any).label }}</NTag>
+        <div v-if="item.t === 'date'" class="text-center">
+          <span class="date-chip">{{ (item as any).label }}</span>
         </div>
-        <div v-else class="flex items-end gap-2" :class="(item as any).m.self ? 'justify-end' : 'justify-start'">
-          <div v-if="!(item as any).m.self" class="w-8 h-8 rounded-full bg-gray-300 text-12px flex items-center justify-center">
-            {{ ((item as any).m.sender || $t('chat.other')).slice(0, 1) }}
-          </div>
-          <div
-            class="max-w-80 px-3 py-2 rounded-2xl shadow-sm"
-            :class="(item as any).m.self ? 'bg-[var(--primary-color)]/18' : 'bg-gray-100/60'"
-          >
-            <div class="flex items-center justify-between gap-3 mb-1">
-              <div class="text-12px opacity-70">
-                {{ (item as any).m.sender || ((item as any).m.self ? $t('chat.me') : $t('chat.other')) }}
-              </div>
-              <div class="text-12px opacity-60">{{ props.formatTime((item as any).m.ts) }}</div>
+        <div v-else class="flex" :class="(item as any).m.self ? 'justify-end' : 'justify-start'">
+          <div class="bubble" :class="(item as any).m.self ? 'bubble-self' : 'bubble-other'">
+            <div class="bubble-content">{{ (item as any).m.content }}</div>
+            <div class="bubble-footer" :class="(item as any).m.self ? 'bubble-footer-self' : 'bubble-footer-other'">
+              <span class="name">{{ (item as any).m.sender || ((item as any).m.self ? $t('chat.me') : $t('chat.other')) }}</span>
+              <span class="dot">·</span>
+              <span class="time">{{ props.formatTime((item as any).m.ts) }}</span>
+              <span class="status" v-if="(item as any).m.status === 'sending'">
+                <SvgIcon icon="ph:clock" /> {{ $t('chat.statusSending') }}
+              </span>
+              <span class="status" v-else-if="(item as any).m.status === 'sent'">
+                <SvgIcon icon="ph:check" /> {{ $t('chat.statusSent') }}
+              </span>
+              <span class="status error" v-else-if="(item as any).m.status === 'failed'">
+                <SvgIcon icon="ph:warning" /> {{ $t('chat.statusFailed') }}
+                <NButton tertiary size="tiny" class="ml-2" @click="emits('retry', (item as any).m.id)">{{ $t('chat.retry') }}</NButton>
+              </span>
             </div>
-            <div class="text-14px leading-6 whitespace-pre-wrap break-words">{{ (item as any).m.content }}</div>
-            <div class="mt-1 flex items-center gap-2 justify-end text-12px">
-              <template v-if="(item as any).m.status === 'sending'">
-                <SvgIcon icon="ph:clock" />
-                {{ $t('chat.statusSending') }}
-              </template>
-              <template v-else-if="(item as any).m.status === 'sent'">
-                <SvgIcon icon="ph:check" />
-                {{ $t('chat.statusSent') }}
-              </template>
-              <template v-else-if="(item as any).m.status === 'failed'">
-                <SvgIcon icon="ph:warning" class="text-red-500" />
-                {{ $t('chat.statusFailed') }}
-                <NButton tertiary size="tiny" @click="emits('retry', (item as any).m.id)">{{ $t('chat.retry') }}</NButton>
-              </template>
-            </div>
-          </div>
-          <div v-if="(item as any).m.self" class="w-8 h-8 rounded-full bg-primary/30 text-12px flex items-center justify-center">
-            {{ $t('chat.me') }}
           </div>
         </div>
       </template>
@@ -82,8 +67,52 @@ onMounted(() => {
   </NScrollbar>
 </template>
 
-<style scoped>
-.max-w-80 {
-  max-width: 80%;
+<style lang="scss" scoped>
+.bubble {
+  max-width: 70%;
+  padding: 10px 12px;
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.bubble-self {
+  background: rgba(0, 150, 136, 0.14);
+}
+.bubble-other {
+  background: rgba(250, 250, 250, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+.bubble-content {
+  font-size: 14px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.bubble-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+.bubble-footer-self {
+  justify-content: flex-end;
+}
+.bubble-footer-other {
+  justify-content: flex-start;
+}
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.status.error {
+  color: #e5484d;
+}
+.date-chip {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
 }
 </style>

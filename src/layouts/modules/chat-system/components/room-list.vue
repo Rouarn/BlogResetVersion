@@ -36,23 +36,25 @@ function createOrJoin() {
     <div class="p-2">
       <NInput v-model:value="search" :placeholder="$t('chat.filterRooms')" size="small" />
     </div>
-    <NScrollbar class="flex-1 min-h-0">
-      <div class="py-1">
-        <div
-          v-for="r in rooms"
-          :key="r.id"
-          class="px-3 py-2 cursor-pointer flex items-center justify-between hover:bg-gray-100/40"
-          :class="r.id === currentRoomId ? 'bg-gray-100/30' : ''"
-          @click="emits('select', r.id)"
-        >
-          <div class="text-14px truncate max-w-32">{{ r.name || r.id }}</div>
-          <div class="flex items-center gap-2">
-            <NBadge :value="r.unreadCount" :max="99" v-if="r.unreadCount > 0" />
-            <NTag size="small" type="info">{{ r.userCount }}</NTag>
+    <div class="h-[calc(100vh-120px)]">
+      <NScrollbar class="flex-1 min-h-0">
+        <div class="py-1">
+          <div
+            v-for="r in rooms"
+            :key="r.id"
+            class="px-3 py-2 cursor-pointer flex items-center justify-between hover:bg-gray-100/40"
+            :class="r.id === currentRoomId ? 'bg-gray-100/30' : ''"
+            @click="emits('select', r.id)"
+          >
+            <div class="text-14px truncate max-w-32">{{ r.name || r.id }}</div>
+            <div class="flex items-center gap-2">
+              <NBadge :value="r.unreadCount" :max="99" v-if="r.unreadCount > 0" />
+              <NTag size="small" type="info">{{ r.userCount }}</NTag>
+            </div>
           </div>
         </div>
-      </div>
-    </NScrollbar>
+      </NScrollbar>
+    </div>
     <div class="p-2 border-t border-gray-200/40 flex items-center gap-2">
       <NInput v-model:value="newRoom" size="small" :placeholder="$t('chat.joinOrCreate')" @keyup.enter="createOrJoin" />
       <NButton size="small" type="primary" @click="createOrJoin">{{ $t('chat.join') }}</NButton>

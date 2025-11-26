@@ -9,6 +9,7 @@ const props = defineProps<{
   currentRoomDisplay: string
   msgSearch: string
   typingUsersText: string
+  statusText: string
 }>()
 
 const emits = defineEmits<{
@@ -26,6 +27,7 @@ const emits = defineEmits<{
         :class="props.connected ? 'bg-green-500' : props.connecting ? 'bg-yellow-500' : 'bg-red-500'"
       />
       <NTag size="small" type="info">{{ props.currentRoomDisplay }}</NTag>
+      <NTag size="small" type="info">{{ props.statusText }}</NTag>
     </div>
     <div class="flex items-center gap-2">
       <NInput

@@ -48,6 +48,10 @@ const typingUsersText = computed<string>(() => {
   return `${arr.slice(0, 2).join('、')}${arr.length > 2 ? ' ' + $t('chat.typingMany') : ''}`
 })
 
+const statusText = computed<string>(() =>
+  connected.value ? $t('chat.statusConnected') : connecting.value ? $t('chat.statusConnecting') : $t('chat.statusDisconnected'),
+)
+
 const msgListRef = ref<{ scrollToBottom: () => void } | null>(null)
 
 let typingTimer: number | null = null
@@ -203,6 +207,7 @@ async function createOrJoinRoom() {
             :current-room-display="currentRoomDisplay"
             :msg-search="msgSearch"
             :typing-users-text="typingUsersText"
+            :status-text="statusText"
             @update:msg-search="(v) => (msgSearch = v)"
             @scroll-to-bottom="scrollToBottom"
             @clear-room="clearRoom"
@@ -218,13 +223,6 @@ async function createOrJoinRoom() {
             @typing-start="startTyping"
             @typing-stop="stopTyping"
           />
-          <div class="px-3 py-1 text-12px opacity-70">
-            <span>
-              {{ $t('chat.currentStatus') }}：{{
-                connected ? $t('chat.statusConnected') : connecting ? $t('chat.statusConnecting') : $t('chat.statusDisconnected')
-              }}
-            </span>
-          </div>
         </div>
       </div>
     </NDrawerContent>
