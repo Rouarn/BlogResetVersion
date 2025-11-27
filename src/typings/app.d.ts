@@ -170,7 +170,6 @@ declare namespace App {
         demos: {
           title: string
           'loading-demo': string
-          'socket-demo': string
         }
         directives: {
           title: string
@@ -214,44 +213,7 @@ declare namespace App {
           }
         }
       }
-      chat: {
-        title: string
-        room: string
-        filterRooms: string
-        joinOrCreate: string
-        join: string
-        searchMessages: string
-        emoji: string
-        attachment: string
-        typing: string
-        typingMany: string
-        today: string
-        yesterday: string
-        scrollToBottom: string
-        clearRoom: string
-        inputHint: string
-        send: string
-        me: string
-        other: string
-        retry: string
-        statusSending: string
-        statusSent: string
-        statusFailed: string
-        currentStatus: string
-        statusConnected: string
-        statusConnecting: string
-        statusDisconnected: string
-      }
-      notification: {
-        title: string
-        latest: string
-        none: string
-        system: string
-        room: string
-        typeJoin: string
-        typeLeave: string
-        typeUserCount: string
-      }
+
       icon: {
         themeConfig: string
         themeSchema: string

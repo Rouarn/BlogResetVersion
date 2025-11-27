@@ -22,7 +22,7 @@
 
 - **🎨 主题系统** - 亮色/暗色/跟随系统，动态主题色切换
 - **⚡ 智能加载** - HTTP 请求 Loading + 应用启动动画，用户体验极佳
-- **🔌 实时通信** - Socket.IO 集成，自动连接管理和断线重连
+
 - **🌍 国际化支持** - Vue I18n 多语言，动态语言切换
 - **🎯 自定义指令** - 复制、拖拽、水印、防抖等 15+ 实用指令
 - **📡 HTTP 封装** - 智能重试、请求取消、完整类型安全
@@ -50,7 +50,6 @@
 |              | Pinia          | 3+   | 官方推荐状态管理               |
 | **工具库**   | VueUse         | -    | Composition API 工具集         |
 |              | Axios          | -    | HTTP 客户端库                  |
-|              | Socket.IO      | -    | 实时通信客户端                 |
 |              | Day.js         | -    | 轻量级日期处理                 |
 |              | Vue I18n       | 11+  | 国际化解决方案                 |
 | **开发工具** | ESLint         | 9+   | 代码质量检查                   |
@@ -110,7 +109,7 @@ src/
 ├── 📁 locales/        # 🌍 国际化配置
 ├── 📁 plugins/        # 🔌 插件配置
 ├── 📁 router/         # 🛣️ 路由与守卫
-├── 📁 service/        # 📡 API 服务 (HTTP + Socket.IO)
+├── 📁 service/        # 📡 API 服务 (HTTP)
 ├── 📁 stores/         # 🗃️ 状态管理 (Pinia)
 ├── 📁 styles/         # 🎨 样式文件
 ├── 📁 theme/          # 🌈 主题配置
@@ -134,9 +133,8 @@ src/
 - 国际化键采用层级+连字符格式：
 
 ```
-route.home
-route.demos.loading-demo
-route.demos.socket-demo
+    route.home
+    route.demos.loading-demo
 route.directives.copy-direct
 route.directives.drag-direct
 ...
@@ -188,8 +186,7 @@ src/views/
 ├── demos/                   # → /demos/*
 │   ├── loading-demo/
 │   │   └── index.vue        # → /demos/loading-demo
-│   └── socket-demo/
-│       └── index.vue        # → /demos/socket-demo
+
 ├── directives/              # → /directives/*
 │   ├── copy-direct/
 │   │   └── index.vue        # → /directives/copy-direct
@@ -430,332 +427,6 @@ if (shouldShowLoading) {
 - **事件驱动** - 基于 DOM 事件的状态管理
 - **内存安全** - 自动清理和垃圾回收
 
-## 🔌 Socket.IO 实时通信系统
-
-本模板集成了完整的 Socket.IO 客户端服务，提供开箱即用的实时通信解决方案。
-
-### ✨ 核心特性
-
-- 🔄 **智能连接管理** - 自动处理连接生命周期，支持连接状态监控
-- 🔁 **断线重连机制** - 网络异常时自动重连，可配置重连次数和延迟
-- 🏠 **房间管理系统** - 支持加入/离开房间，自动重连时恢复房间状态
-- 💬 **聊天功能支持** - 专门的聊天 Hook，支持消息持久化和去重
-- 🔧 **完整类型支持** - 全面的 TypeScript 类型定义
-- 🎯 **Vue 3 集成** - 专为 Composition API 设计的响应式 Hook
-- ⚡ **错误处理机制** - 完善的错误分类和处理策略
-
-### 📁 文件结构
-
-```
-src/service/socket/
-├── index.ts           # 导出入口文件
-├── socketManager.ts   # Socket 连接管理器
-├── useSocket.ts       # 基础 Socket Hook
-└── useChatSocket.ts   # 聊天功能 Hook
-```
-
-### 🚀 快速开始
-
-#### 环境配置
-
-在环境变量文件中配置 Socket 服务器地址：
-
-```bash
-# .env.development
-VITE_SOCKET_URL=ws://localhost:3001
-VITE_SOCKET_NAMESPACE=/chat
-
-# .env.production
-VITE_SOCKET_URL=wss://your.socket.com
-VITE_SOCKET_NAMESPACE=/chat
-```
-
-#### 基础使用
-
-```typescript
-import { socketManager } from '@/service/socket'
-
-// 连接到服务器
-await socketManager.connect()
-
-// 加入房间
-await socketManager.joinRoom('room-001')
-
-// 发送消息
-await socketManager.sendMessage('room-001', 'Hello World!')
-
-// 监听事件
-socketManager.on('message', (data) => {
-  console.log('收到消息:', data)
-})
-
-// 断开连接
-socketManager.disconnect()
-```
-
-#### 在 Vue 组件中使用
-
-```vue
-<template>
-  <div>
-    <div>连接状态: {{ state.isConnected ? '已连接' : '未连接' }}</div>
-    <div>已加入房间: {{ joinedRooms.join(', ') }}</div>
-    <button @click="handleConnect" :disabled="state.isConnecting">
-      {{ state.isConnected ? '断开连接' : '连接' }}
-    </button>
-  </div>
-</template>
-
-<script setup>
-import { useSocket } from '@/service/socket'
-
-// 使用基础 Socket Hook
-const { state, joinedRooms, connect, disconnect } = useSocket({
-  autoConnect: true,
-  syncState: true,
-})
-
-const handleConnect = () => {
-  if (state.value.isConnected) {
-    disconnect()
-  } else {
-    connect()
-  }
-}
-</script>
-```
-
-### 🔧 主要 API
-
-#### SocketManager 类
-
-**连接管理**
-
-- `connect(): Promise<void>` - 连接到 Socket 服务器
-- `disconnect(): void` - 断开连接
-- `getConnectionInfo(): ConnectionInfo` - 获取连接信息
-- `isConnected(): boolean` - 检查是否已连接
-
-**房间管理**
-
-- `joinRoom(roomId: string, userId?: string): Promise<void>` - 加入房间
-- `leaveRoom(roomId: string): Promise<void>` - 离开房间
-- `getJoinedRooms(): string[]` - 获取已加入的房间列表
-
-**消息通信**
-
-- `sendMessage(roomId: string, content: string): Promise<void>` - 发送消息
-- `emit(event: string, data?: unknown): void` - 发送自定义事件
-- `on(event: string, callback: EventCallback): void` - 监听事件
-- `off(event: string, callback?: EventCallback): void` - 取消监听
-
-#### useSocket Hook
-
-基础 Socket 功能 Hook，提供连接管理和状态监控：
-
-```typescript
-const {
-  // 状态信息
-  info, // 连接详细信息
-  state, // 连接状态（isConnected, isConnecting 等）
-  joinedRooms, // 已加入的房间
-  isLoading, // 操作加载状态
-  lastError, // 最后的错误信息
-
-  // 连接方法
-  connect, // 连接服务器
-  disconnect, // 断开连接
-  reconnect, // 手动重连
-
-  // 房间方法
-  joinRoom, // 加入房间
-  leaveRoom, // 离开房间
-
-  // 通信方法
-  sendMessage, // 发送消息
-  emit, // 发送事件
-  on, // 监听事件
-  off, // 取消监听
-} = useSocket(options)
-```
-
-#### useChatSocket Hook
-
-专门用于聊天功能的高级 Hook：
-
-```typescript
-const {
-  // 聊天数据
-  messages, // 消息列表
-  notifications, // 通知列表
-  rooms, // 房间信息
-  currentRoom, // 当前房间
-
-  // 计算属性
-  currentRoomMessages, // 当前房间消息
-  unreadMessagesCount, // 未读消息数
-
-  // 聊天方法
-  sendChatMessage, // 发送聊天消息
-  joinChatRoom, // 加入聊天房间
-  leaveChatRoom, // 离开聊天房间
-  markAsRead, // 标记已读
-  clearMessages, // 清空消息
-} = useChatSocket(options)
-```
-
-### 🎯 事件类型
-
-#### 系统事件
-
-- `connect` - 连接成功
-- `disconnect` - 连接断开
-- `connect_error` - 连接错误
-- `reconnect` - 重连成功
-- `reconnect_error` - 重连错误
-- `reconnect_failed` - 重连失败
-
-#### 房间事件
-
-- `room:joined` - 成功加入房间
-- `room:left` - 成功离开房间
-- `room:error` - 房间操作错误
-- `room:user_joined` - 有用户加入房间
-- `room:user_left` - 有用户离开房间
-
-#### 消息事件
-
-- `message` - 接收到消息
-- `message:sent` - 消息发送成功
-- `message:error` - 消息发送失败
-- `notification` - 接收到通知
-
-### ⚙️ 配置选项
-
-#### SocketConfig 配置
-
-```typescript
-interface SocketConfig {
-  url: string // Socket 服务器 URL
-  namespace?: string // 命名空间
-  autoConnect?: boolean // 是否自动连接（默认 true）
-  reconnection?: boolean // 是否启用重连（默认 true）
-  reconnectionAttempts?: number // 最大重连次数（默认 5）
-  reconnectionDelay?: number // 重连延迟时间（默认 1000ms）
-  timeout?: number // 连接超时时间（默认 20000ms）
-  transports?: string[] // 传输方式（默认 ['websocket']）
-  auth?: { token?: string } // 认证信息
-}
-```
-
-#### UseSocket 选项
-
-```typescript
-interface UseSocketOptions {
-  autoConnect?: boolean // 是否自动连接（默认 false）
-  autoReconnect?: boolean // 是否自动重连（默认 true）
-  syncState?: boolean // 是否同步状态（默认 true）
-}
-```
-
-#### UseChatSocket 选项
-
-```typescript
-interface UseChatSocketOptions extends UseSocketOptions {
-  maxMessages?: number // 最大消息数（默认 1000）
-  maxNotifications?: number // 最大通知数（默认 100）
-  enableMessagePersistence?: boolean // 是否启用消息持久化（默认 false）
-  messageRetryAttempts?: number // 消息重试次数（默认 3）
-}
-```
-
-### 🎯 最佳实践
-
-#### 应用启动时初始化
-
-```typescript
-// main.ts 或 App.vue
-import { socketManager } from '@/service/socket'
-import { useAuthStore } from '@/stores/modules/auth'
-
-const initApp = async () => {
-  const authStore = useAuthStore()
-  if (authStore.isLoggedIn) {
-    try {
-      await socketManager.connect()
-    } catch (error) {
-      console.error('Socket 连接失败:', error)
-    }
-  }
-}
-```
-
-#### 错误处理
-
-```typescript
-import { SocketError, SocketErrorType } from '@/service/socket'
-
-try {
-  await socketManager.connect()
-} catch (error) {
-  if (error instanceof SocketError) {
-    switch (error.type) {
-      case SocketErrorType.CONNECTION_FAILED:
-        console.error('连接失败:', error.message)
-        break
-      case SocketErrorType.TIMEOUT:
-        console.error('连接超时:', error.message)
-        break
-      default:
-        console.error('Socket 错误:', error.message)
-    }
-  }
-}
-```
-
-#### 组件中的正确使用
-
-```typescript
-// 推荐：使用 Hook 方式
-const { state, connect, disconnect, on, off } = useSocket({
-  autoConnect: true,
-  syncState: true,
-})
-
-// 监听消息
-const handleMessage = (data: MessageData) => {
-  console.log('收到消息:', data)
-}
-
-onMounted(() => {
-  on('message', handleMessage)
-})
-
-// 组件卸载时自动清理
-onUnmounted(() => {
-  off('message', handleMessage)
-})
-```
-
-### 🔍 示例演示
-
-访问 `/demos/socket-demo` 查看完整的 Socket.IO 使用示例，包括：
-
-- 连接状态实时显示
-- 房间加入和离开
-- 消息发送和接收
-- 错误处理和重连机制
-- 聊天功能演示
-
-### 💡 技术实现
-
-- **连接管理器** - 单例模式的 SocketManager 类，统一管理连接状态
-- **响应式 Hook** - 基于 Vue 3 Composition API 的响应式状态管理
-- **错误分类** - 完善的错误类型定义和处理机制
-- **房间恢复** - 断线重连时自动恢复已加入的房间
-- **消息去重** - 防止重复消息和通知的智能去重机制
-- **类型安全** - 完整的 TypeScript 类型定义，开发体验更佳
-
 ## 📚 学习资源
 
 ### 官方文档
@@ -765,7 +436,6 @@ onUnmounted(() => {
 - [Naive UI 组件库](https://www.naiveui.com/)
 - [UnoCSS 文档](https://unocss.dev/)
 - [Pinia 状态管理](https://pinia.vuejs.org/)
-- [Socket.IO 官方文档](https://socket.io/docs/v4/)
 
 ## 🤝 参与贡献
 

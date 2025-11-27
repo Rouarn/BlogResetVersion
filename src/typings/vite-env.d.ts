@@ -30,10 +30,6 @@ declare namespace Env {
     readonly VITE_ROUTER_MODE: RouterHistoryMode
     /** 存储键前缀 */
     readonly VITE_STORAGE_PREFIX: string
-    /** Socket 地址 */
-    readonly VITE_SOCKET_URL: string
-    /** Socket 命名空间 */
-    readonly VITE_SOCKET_NAMESPACE: string
     /** Node 运行环境 */
     readonly VITE_USER_NODE_ENV: 'development' | 'production'
     /** 是否启用 Vue DevTools */

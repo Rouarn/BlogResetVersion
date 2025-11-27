@@ -45,21 +45,6 @@
             "isAuth": false,
             "menuType": 2
           }
-        },
-        {
-          "name": "demos-socket-demo",
-          "path": "/demos/socket-demo",
-          "component": "/demos/socket-demo/index",
-          "meta": {
-            "title": "Demos Socket Demo",
-            "i18nKey": "route.demos.socket-demo",
-            "icon": "",
-            "order": 2,
-            "hideInMenu": false,
-            "isKeepAlive": true,
-            "isAuth": false,
-            "menuType": 2
-          }
         }
       ]
     },

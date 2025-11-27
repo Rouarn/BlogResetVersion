@@ -30,7 +30,6 @@ declare module 'vue-router/auto-routes' {
     '500': RouteRecordInfo<'500', '/500', Record<never, never>, Record<never, never>>
     About: RouteRecordInfo<'About', '/about', Record<never, never>, Record<never, never>>
     DemosLoadingDemo: RouteRecordInfo<'DemosLoadingDemo', '/demos/loading-demo', Record<never, never>, Record<never, never>>
-    DemosSocketDemo: RouteRecordInfo<'DemosSocketDemo', '/demos/socket-demo', Record<never, never>, Record<never, never>>
     DirectivesAnimateDirect: RouteRecordInfo<
       'DirectivesAnimateDirect',
       '/directives/animate-direct',
