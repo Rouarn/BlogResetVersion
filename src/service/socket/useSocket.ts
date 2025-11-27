@@ -1,4 +1,4 @@
-import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onUnmounted, readonly, ref, watch } from 'vue'
 import { type ConnectionInfo, SocketError, SocketErrorType, socketManager } from '@/service/socket/socketManager'
 
 export interface UseSocketOptions {

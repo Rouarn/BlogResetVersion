@@ -39,7 +39,7 @@ export default defineConfigWithVueTs(
       'vue/multi-word-component-names': [
         'warn',
         {
-          ignores: ['index', 'App', 'Register', '[id]', '[url]'],
+          ignores: ['index', 'App', 'Register', '[id]', '[url]', 'composer'],
         },
       ],
       // 强制模板中的组件名使用 PascalCase（大驼峰）命名，除了以 icon- 开头的

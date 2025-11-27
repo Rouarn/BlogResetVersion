@@ -105,12 +105,18 @@ class SocketManager {
         // 获取当前用户token
         const authStore = useAuthStore()
         const token = authStore.token
-        console.log('token: ', token)
 
         // 检查用户是否已登录
         if (!token) {
           this.connectionPromise = null
           reject(new SocketError(SocketErrorType.CONNECTION_FAILED, '用户未登录，无法建立WebSocket连接'))
+          return
+        }
+
+        if (this.isTokenExpired(token)) {
+          this.connectionPromise = null
+          authStore.resetStore()
+          reject(new SocketError(SocketErrorType.CONNECTION_FAILED, '登录已过期，请重新登录'))
           return
         }
 
@@ -154,6 +160,15 @@ class SocketManager {
           clearTimeout(timeoutId)
           this.info = { ...this.info, status: 'error', lastError: err.message }
           this.connectionPromise = null
+          const msg = String(err?.message || '')
+          if (msg.includes('jwt expired') || msg.includes('认证令牌无效')) {
+            try {
+              this.socket?.disconnect()
+            } catch {}
+            try {
+              authStore.resetStore()
+            } catch {}
+          }
           reject(new SocketError(SocketErrorType.CONNECTION_FAILED, err.message, err))
         })
       } catch (error) {
@@ -176,11 +191,6 @@ class SocketManager {
         lastError: reason,
       }
       this.joinedRooms.clear()
-
-      // 如果是意外断开且允许重连，则尝试重连
-      if (this.config.reconnection && reason !== 'io client disconnect') {
-        this.scheduleReconnect()
-      }
     })
 
     this.socket.on('reconnect_attempt', (attemptNumber) => {
@@ -208,18 +218,6 @@ class SocketManager {
     })
   }
 
-  private scheduleReconnect(): void {
-    this.clearReconnectTimer()
-    this.reconnectTimer = setTimeout(() => {
-      if (this.info.status === 'disconnected') {
-        this.connect().catch(() => {
-          // 重连失败，继续尝试
-          this.scheduleReconnect()
-        })
-      }
-    }, this.config.reconnectionDelay)
-  }
-
   private clearReconnectTimer(): void {
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer)
@@ -241,7 +239,6 @@ class SocketManager {
   }
 
   disconnect(): void {
-    this.clearReconnectTimer()
     this.connectionPromise = null
 
     if (this.socket) {
@@ -439,6 +436,24 @@ class SocketManager {
         this.socket!.on(event, cb)
       })
     })
+  }
+
+  private isTokenExpired(token?: string): boolean {
+    if (!token) return true
+    const parts = token.split('.')
+    if (parts.length !== 3) return true
+    try {
+      const payloadBase64 = parts[1]
+      if (!payloadBase64) return true
+      const base64 = payloadBase64.replace(/-/g, '+').replace(/_/g, '/')
+      const json = atob(base64)
+      const payload = JSON.parse(json) as { exp?: number }
+      const exp = Number(payload.exp || 0)
+      if (!exp) return false
+      return exp * 1000 <= Date.now()
+    } catch {
+      return true
+    }
   }
 }
 
