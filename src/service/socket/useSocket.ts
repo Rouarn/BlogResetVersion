@@ -1,5 +1,5 @@
 import { computed, nextTick, onUnmounted, readonly, ref, watch } from 'vue'
-import { type ConnectionInfo, SocketError, SocketErrorType, socketManager } from '@/service/socket/socketManager'
+import { type ConnectionInfo, type ServerRoomItem, SocketError, SocketErrorType, socketManager } from '@/service/socket/socketManager'
 
 export interface UseSocketOptions {
   autoConnect?: boolean
@@ -116,6 +116,10 @@ export function useSocket(options: UseSocketOptions = {}) {
     await socketManager.sendMessage(roomId, JSON.stringify(content))
   })
 
+  const getRooms = withErrorHandling(async (): Promise<ServerRoomItem[]> => {
+    return await socketManager.getRooms()
+  })
+
   // 发送自定义事件
   const emit = (event: string, data?: unknown) => {
     socketManager.emit(event, data)
@@ -228,6 +232,7 @@ export function useSocket(options: UseSocketOptions = {}) {
     joinRoom,
     leaveRoom,
     sendMessage,
+    getRooms,
     emit,
     on,
     off,

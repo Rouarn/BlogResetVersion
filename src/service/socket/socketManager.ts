@@ -38,6 +38,13 @@ interface MessageData {
   sender?: string
 }
 
+interface ServerRoomItem {
+  id: string
+  name: string
+  type: string
+  members: number
+}
+
 type EventCallback = (...args: unknown[]) => void
 
 // 错误类型枚举
@@ -373,6 +380,28 @@ class SocketManager {
     })
   }
 
+  async getRooms(): Promise<ServerRoomItem[]> {
+    if (!this.isConnected()) {
+      throw new SocketError(SocketErrorType.NOT_CONNECTED, '未连接到服务器')
+    }
+
+    return new Promise((resolve, reject) => {
+      const timeoutId = setTimeout(() => {
+        reject(new SocketError(SocketErrorType.TIMEOUT, '获取房间列表超时'))
+      }, this.config.timeout)
+
+      this.socket!.emit('get-rooms', undefined, (res: RoomResponse) => {
+        clearTimeout(timeoutId)
+        if (res?.success && res.data && (res.data as Record<string, unknown>).rooms) {
+          const rooms = (res.data as { rooms: ServerRoomItem[] }).rooms
+          resolve(rooms)
+        } else {
+          reject(new SocketError(SocketErrorType.CONNECTION_FAILED, res?.error || '获取房间列表失败'))
+        }
+      })
+    })
+  }
+
   emit(event: string, data?: unknown): void {
     if (!event) return
 
@@ -461,4 +490,4 @@ export const socketManager = new SocketManager()
 
 // 导出类型和错误类以便外部使用
 export { SocketError, SocketErrorType, SocketManager }
-export type { ConnectionInfo, EventCallback, MessageData, RoomResponse, SocketConfig }
+export type { ConnectionInfo, EventCallback, MessageData, RoomResponse, ServerRoomItem, SocketConfig }

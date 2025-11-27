@@ -308,6 +308,29 @@ export function useChatSocket(options: UseChatSocketOptions = {}) {
     return Array.from(rooms.value.values())
   }
 
+  async function fetchRoomList(): Promise<ChatRoom[]> {
+    const serverRooms = await socket.getRooms()
+    const result: ChatRoom[] = serverRooms.map((r) => {
+      const existing = rooms.value.get(r.id)
+      return {
+        id: r.id,
+        name: r.name,
+        userCount: r.members,
+        lastMessage: existing?.lastMessage,
+        unreadCount: existing?.unreadCount ?? 0,
+      }
+    })
+
+    const serverIds = new Set(serverRooms.map((r) => r.id))
+    Array.from(rooms.value.keys()).forEach((id) => {
+      if (!serverIds.has(id)) {
+        rooms.value.delete(id)
+      }
+    })
+    result.forEach((room) => rooms.value.set(room.id, room))
+    return Array.from(rooms.value.values())
+  }
+
   // 清理指定房间的消息
   function clearRoomMessages(roomId: string) {
     updateMessage({ type: 'clear', roomId })
@@ -341,30 +364,13 @@ export function useChatSocket(options: UseChatSocketOptions = {}) {
     }),
   )
 
-  // 监听房间通知
   cleanupFunctions.push(
-    socket.on('room_notification', (...args: unknown[]) => {
-      const data = args[0] as Record<string, unknown>
-      if (!data?.room || !data?.type) return
-
-      const notification: RoomNotification = {
-        id: (data.id as string) || crypto.randomUUID(),
-        room: data.room as string,
-        type: data.type as RoomNotificationType,
-        user: data.user as string,
-        userCount: data.userCount as number,
-        ts: (data.ts as number) || Date.now(),
-      }
-
-      addNotification(notification)
-
-      // 更新房间用户数
-      if (data.userCount !== undefined) {
-        const room = rooms.value.get(data.room as string)
-        if (room) {
-          room.userCount = data.userCount as number
-        }
-      }
+    socket.on('notification', (...args: unknown[]) => {
+      const msg = args[0] as Record<string, unknown>
+      const payload = (msg?.data ?? {}) as Record<string, unknown>
+      const roomId = (payload.room as string) || (msg?.roomId as string)
+      if (!roomId) return
+      fetchRoomList()
     }),
   )
 
@@ -425,10 +431,9 @@ export function useChatSocket(options: UseChatSocketOptions = {}) {
     () => socket.state.value.isConnected,
     (isConnected) => {
       if (isConnected) {
-        // 重连后重新加入房间
         console.log('Socket重连成功，准备重新加入房间')
+        fetchRoomList()
       } else {
-        // 断开连接时清理打字状态
         typingUsers.value.clear()
       }
     },
@@ -462,8 +467,10 @@ export function useChatSocket(options: UseChatSocketOptions = {}) {
     setCurrentRoom,
     markRoomAsRead,
     getRoomList,
+    fetchRoomList,
     clearRoomMessages,
     clearAllMessages,
+    addNotification,
 
     // 工具方法
     saveMessages,

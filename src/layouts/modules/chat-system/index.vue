@@ -33,7 +33,12 @@ const currentRoomDisplay = computed<string>(() => {
   if (id === defaultRoomId) return defaultRoomLabel.value
   return id
 })
-const rooms = computed(() => chat.getRoomList().filter((r) => r.id.toLowerCase().includes(roomSearch.value.toLowerCase())))
+const rooms = computed(() =>
+  chat
+    .getRoomList()
+    .filter((r) => chat.joinedRooms.value.includes(r.id))
+    .filter((r) => r.id.toLowerCase().includes(roomSearch.value.toLowerCase())),
+)
 const msgsRaw = chat.currentRoomMessages
 const filteredMsgs = computed(() => {
   const q = msgSearch.value.trim().toLowerCase()
@@ -63,7 +68,10 @@ function scrollToBottom() {
 
 async function ensureJoined(room: string) {
   try {
-    if (!chat.joinedRooms.value.includes(room)) await chat.joinRoom(room)
+    if (!chat.joinedRooms.value.includes(room)) {
+      await chat.joinRoom(room)
+      await chat.fetchRoomList()
+    }
   } catch (err) {
     console.warn('join room failed', err)
   }

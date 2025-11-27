@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useChatSocket } from '@/service/socket'
-import { useAppStore } from '@/stores/modules/app'
 import { $t } from '@/locales'
-import { setDayjsLocale } from '@/locales/dayjs'
 import dayjs from 'dayjs'
 
 defineOptions({ name: 'NotificationCenter' })
 
-const appStore = useAppStore()
 const show = ref<boolean>(false)
 const chat = useChatSocket({ autoConnect: true })
 
@@ -21,18 +18,12 @@ const latestNotifications = computed(() => {
 
 onMounted(async () => {
   try {
-    setDayjsLocale(appStore.locale)
     await chat.connect()
     await chat.joinRoom('notifications')
   } catch (err) {
     console.warn('notification init failed', err)
   }
 })
-
-watch(
-  () => appStore.locale,
-  (lang) => setDayjsLocale(lang),
-)
 
 function formatType(t: string) {
   if (t === 'join') return $t('notification.typeJoin')

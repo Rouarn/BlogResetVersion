@@ -48,7 +48,7 @@ function createOrJoin() {
           >
             <div class="text-14px truncate max-w-32">{{ r.name || r.id }}</div>
             <div class="flex items-center gap-2">
-              <NBadge :value="r.unreadCount" :max="99" v-if="r.unreadCount > 0" />
+              <NBadge :value="r.unreadCount" :max="99" v-if="r.unreadCount > -1" />
               <NTag size="small" type="info">{{ r.userCount }}</NTag>
             </div>
           </div>

@@ -8,6 +8,7 @@ import ThemeButton from './components/theme-button.vue'
 import UserAvatar from './components/user-avatar.vue'
 import ThemeSchemaSwitch from '@/components/common/theme-schema-switch.vue'
 import { useAppStore } from '@/stores/modules/app'
+import { useAuthStore } from '@/stores/modules/auth'
 import { useThemeStore } from '@/stores/modules/theme'
 import { useFullscreen } from '@vueuse/core'
 
@@ -17,6 +18,7 @@ defineOptions({
 
 const appStore = useAppStore()
 const themeStore = useThemeStore()
+const authStore = useAuthStore()
 const { isFullscreen, toggle } = useFullscreen()
 </script>
 
@@ -38,9 +40,9 @@ const { isFullscreen, toggle } = useFullscreen()
         <!-- 语言切换 -->
         <LangSwitch :lang="appStore.locale" :lang-options="appStore.localeOptions" @change-lang="appStore.changeLocale" />
         <!-- 通知中心 -->
-        <NotificationCenter />
+        <NotificationCenter v-if="authStore.isLogin" />
         <!-- 聊天系统 -->
-        <ChatSystem />
+        <ChatSystem v-if="authStore.isLogin" />
         <!-- 主题切换 -->
         <ThemeSchemaSwitch :theme-schema="themeStore.themeScheme" :is-dark="themeStore.darkMode" @switch="themeStore.toggleThemeScheme" />
         <!-- 主题配置按钮 -->
