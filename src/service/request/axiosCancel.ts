@@ -1,4 +1,5 @@
 import type { CustomAxiosRequestConfig } from './index'
+import { stableStringify } from './utils'
 import type { Canceler } from 'axios'
 import axios from 'axios'
 
@@ -16,7 +17,7 @@ export class AxiosCanceler {
   /** 生成唯一 key */
   private getKey(config: CustomAxiosRequestConfig): string {
     const { url, method, params, data } = config
-    return [method, url, JSON.stringify(params ?? {}), JSON.stringify(data ?? {})].join('&')
+    return [String(method || '').toUpperCase(), String(url || ''), stableStringify(params ?? {}), stableStringify(data ?? {})].join('&')
   }
 
   /** 添加请求 */

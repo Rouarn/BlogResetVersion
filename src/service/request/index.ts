@@ -2,6 +2,7 @@ import router from '@/router'
 import { useAuthStore } from '@/stores/modules/auth'
 import { AxiosCanceler, REQUEST_CANCEL_ERROR } from './axiosCancel'
 import { checkStatus, isServerError } from './checkStatus'
+import { computeRetryDelay } from './utils'
 import { ResultEnum } from '@/enum'
 import type { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import axios from 'axios'
@@ -18,7 +19,7 @@ export type ErrorType = 'overdue' | 'business' | 'network' | 'timeout' | 'cancel
  * - 当 error=true 时：message 为错误文案，data 为 null（运行时），类型上仍为 T 以便通过 if(error) 收窄后使用
  * - 当 error=false 时：message 为空字符串，data 为后端数据（可能为 null，如更新类接口）
  */
-export type OptimizedResponse<T> = { error: boolean; message: string; data: T }
+export type OptimizedResponse<T> = { error: boolean; message: string; data: T; errorType?: ErrorType }
 
 interface ExtendedAxiosResponse<T = unknown> extends AxiosResponse<App.Service.Response<T>> {
   __isError?: boolean
@@ -31,6 +32,9 @@ export interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   retry?: {
     count: number
     delay: number
+    maxDelay?: number
+    backoff?: 'linear' | 'exponential'
+    jitter?: boolean
     retryCondition?: (error: AxiosError) => boolean
   }
   isUpload?: boolean
@@ -59,9 +63,12 @@ function closeLoading() {
 const DEFAULT_RETRY_CONFIG = {
   count: 2,
   delay: 1000,
+  maxDelay: 8000,
+  backoff: 'exponential' as const,
+  jitter: true,
   retryCondition: (error: AxiosError) => {
-    if (!error.response) return true // 网络错误重试
-    return isServerError(error.response.status) // 5xx 重试
+    if (!error.response) return true
+    return isServerError(error.response.status)
   },
 }
 
@@ -332,13 +339,18 @@ class RequestHttp {
       // axios 层错误（超时、断网等），优先使用后端返回message
       const fallbackMessage = response.message || '网络错误'
       const message = getBackendMessageFromAxiosError(response, fallbackMessage)
-      return { data: null as unknown as T, error: true, message }
+      let type: ErrorType = 'network'
+      const rawMsg = typeof response.message === 'string' ? response.message : String(response.message ?? '')
+      if (rawMsg.includes('timeout')) type = 'timeout'
+      else if (response.response?.status === 401) type = 'overdue'
+      else if (typeof response.response?.status === 'number' && isServerError(response.response.status)) type = 'server'
+      return { data: null as unknown as T, error: true, message, errorType: type }
     }
 
     if (response.__isError) {
       // 业务错误（比如后端返回 code != 200），优先使用后端返回message
       const message = getBackendMessageFromResponse(response, '请求失败')
-      return { data: null as unknown as T, error: true, message }
+      return { data: null as unknown as T, error: true, message, errorType: response.__errorType }
     }
 
     if ((response.config as CustomAxiosRequestConfig)?.isDownload) {
@@ -363,10 +375,17 @@ class RequestHttp {
   }
 
   private async retryRequest(config: CustomAxiosRequestConfig, _error: AxiosError): Promise<OptimizedResponse<unknown>> {
-    const retryConfig = { ...DEFAULT_RETRY_CONFIG, ...config.retry }
-    config.__retryCount = (config.__retryCount || 0) + 1
+    const retryCfg = { ...DEFAULT_RETRY_CONFIG, ...config.retry }
+    const attempt = (config.__retryCount || 0) + 1
+    config.__retryCount = attempt
 
-    await sleep(retryConfig.delay)
+    const delay = computeRetryDelay(attempt, retryCfg.delay, {
+      backoff: retryCfg.backoff,
+      jitter: retryCfg.jitter,
+      maxDelay: retryCfg.maxDelay,
+    })
+
+    await sleep(delay)
 
     try {
       const response = await this.service.request(config)

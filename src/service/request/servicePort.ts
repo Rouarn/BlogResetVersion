@@ -8,6 +8,7 @@ const servicePort = {
   route: '/api/v1/route',
   files: '/api/v1/files',
   product: '/api/v1/product',
-}
+} as const
 
+export type ServicePortKey = keyof typeof servicePort
 export default servicePort
