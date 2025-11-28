@@ -3,13 +3,17 @@ import { useRoute } from 'vue-router'
 import { fetchLogin, fetchLogout, fetchUserInfo } from '@/service/api/login'
 import { localStg } from '@/utils/storage'
 import { useThemeStore } from '../theme'
-import { clearAuthStorage, getToken } from './shared'
+import { clearAuthStorage, getRefreshToken, getToken, getTokenExpiresAt } from './shared'
 import { SetupStoreId } from '@/enum'
 import { useRouterPush } from '@/hooks/common/router'
 import { defineStore } from 'pinia'
 
 const initialState = {
   token: '',
+  tokenType: 'Bearer',
+  refreshToken: '',
+  tokenExpiresAt: 0,
+  refreshTokenExpiresAt: 0,
   userInfo: {
     userId: '',
     username: '',
@@ -36,8 +40,11 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   const route = useRoute()
   const { toLogin, redirectFromLogin } = useRouterPush(false)
 
-  // token
   const token = ref(getToken())
+  const tokenType = ref(localStg.get('tokenType') || initialState.tokenType)
+  const refreshToken = ref(getRefreshToken())
+  const tokenExpiresAt = ref(getTokenExpiresAt())
+  const refreshTokenExpiresAt = ref(Number(localStg.get('refreshTokenExpiresAt') || initialState.refreshTokenExpiresAt))
 
   // 用户信息
   const userInfo: Api.Auth.UserInfo = reactive(localStg.get('userInfo') ?? initialState.userInfo)
@@ -48,6 +55,26 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   const setToken = (value: string) => {
     token.value = value
     localStg.set('token', value)
+  }
+
+  const setTokenType = (value: string) => {
+    tokenType.value = value || 'Bearer'
+    localStg.set('tokenType', tokenType.value)
+  }
+
+  const setRefreshToken = (value: string) => {
+    refreshToken.value = value
+    localStg.set('refreshToken', value)
+  }
+
+  const setRefreshTokenExpiresAt = (value: number) => {
+    refreshTokenExpiresAt.value = value
+    localStg.set('refreshTokenExpiresAt', value)
+  }
+
+  const setTokenExpiresAt = (value: number) => {
+    tokenExpiresAt.value = value
+    localStg.set('tokenExpiresAt', value)
   }
 
   const setUserInfo = (value: Api.Auth.UserInfo) => {
@@ -65,6 +92,12 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     const { data, error } = await fetchLogin(username.trim(), password.trim())
     if (error) return
     setToken(data?.accessToken ?? initialState.token)
+    setTokenType(data?.tokenType ?? initialState.tokenType)
+    setRefreshToken(data?.refreshToken ?? initialState.refreshToken)
+    setTokenExpiresAt(Date.now() + Number(data?.expiresIn ?? initialState.tokenExpiresAt) * 1000)
+    if (data?.refreshExpiresIn) {
+      setRefreshTokenExpiresAt(Date.now() + Number(data.refreshExpiresIn) * 1000)
+    }
     const { data: userInfoData } = await fetchUserInfo()
     setUserInfo(userInfoData ?? initialState.userInfo)
 
@@ -82,6 +115,8 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     fetchLogout().then(async () => {
       setUserInfo(initialState.userInfo)
       setToken(initialState.token)
+      setRefreshToken(initialState.refreshToken)
+      setTokenExpiresAt(initialState.tokenExpiresAt)
       themeStore.resetStore()
       clearAuthStorage()
       if (route.meta.isAuth) {
@@ -91,10 +126,18 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   }
   return {
     token,
+    tokenType,
+    refreshToken,
+    tokenExpiresAt,
+    refreshTokenExpiresAt,
     userInfo,
     isLogin,
     login,
     setToken,
+    setTokenType,
+    setRefreshToken,
+    setTokenExpiresAt,
+    setRefreshTokenExpiresAt,
     setUserInfo,
     resetStore,
   }
