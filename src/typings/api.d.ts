@@ -31,7 +31,6 @@ declare namespace Api {
     interface LoginToken {
       accessToken: string
       refreshToken: string
-      tokenType: string
       expiresIn: number
       refreshExpiresIn: number
       tokenType: string
@@ -86,7 +85,7 @@ declare namespace Api {
 
     type MenuRoute = {
       id: string
-    } & import('@elegant-router/types').AutoRouterRoute
+    } & import('vue-router').RouteMeta
 
     interface UserRoute {
       routes: MenuRoute[]
