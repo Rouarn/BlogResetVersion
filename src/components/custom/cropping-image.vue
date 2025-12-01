@@ -1,11 +1,11 @@
 <template>
-  <!--
+  <NModal v-model:show="modalShow" :mask-closable="maskClosable">
+    <!--
     组件：CroppingImage（基于 vue-cropper 的图片裁剪弹窗）
     结构：模态框 -> 工作台（左：裁剪器 | 右：实时预览） -> 工具栏
     交互：选择图片 -> 设置比例/旋转/缩放 -> 实时预览 -> 确认裁剪
     事件：done（完成）、preview（预览）、error（错误）、clear（清空）、v-model 同步
   -->
-  <NModal v-model:show="modalShow" :mask-closable="maskClosable">
     <div class="cutter flex-col gap-12px">
       <NSpace justify="space-between">
         <!-- 弹窗标题 -->

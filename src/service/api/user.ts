@@ -6,19 +6,7 @@ import servicePort from '../request/servicePort'
 /**
  * 创建用户
  */
-export function createUser(userData: {
-  authId: string
-  nickname?: string
-  avatar?: string
-  gender?: string
-  mobile?: string
-  email?: string
-  bio?: string
-  birthday?: string
-  city?: string
-  profession?: string
-  roles?: string
-}) {
+export function createUser(userData: Api.Auth.UserInfo) {
   return http.post<Api.Auth.UserInfo>(`${servicePort.user}`, userData)
 }
 

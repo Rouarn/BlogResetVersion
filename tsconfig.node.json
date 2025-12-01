@@ -4,7 +4,6 @@
     "target": "ESNext",
     "jsx": "preserve",
     "jsxImportSource": "vue",
-    "lib": ["DOM", "ESNext"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "resolveJsonModule": true,
@@ -15,7 +14,5 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true
-  },
-  "include": ["./**/*.ts", "./**/*.tsx", "./**/*.vue", "./**/*.d.ts"],
-  "exclude": ["node_modules", "dist"]
+  }
 }
