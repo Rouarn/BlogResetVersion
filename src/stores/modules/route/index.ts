@@ -12,7 +12,6 @@ import {
 } from './shared'
 import { SetupStoreId } from '@/enum'
 import useBoolean from '@/hooks/common/use-boolean'
-import { $t } from '@/locales'
 import { defineStore } from 'pinia'
 import type { RouteComponent, RouteRecordRaw } from 'vue-router'
 
@@ -20,17 +19,9 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   const { bool: isInitAuthRoute, setBool: setIsInitAuthRoute } = useBoolean()
 
   /** 全局菜单（保留分组层级用于侧边/头部） */
-  const menus = ref<App.Global.Menu[]>([
-    {
-      key: 'home',
-      i18nKey: 'route.home',
-      label: $t('route.home'),
-      routeKey: 'home',
-      routePath: '/home',
-      order: 0,
-    },
-  ])
+  const menus = ref<App.Global.Menu[]>([])
   const searchMenus = computed(() => transformMenuToSearchMenus(menus.value))
+  menus.value = getGlobalMenuByBaseRoute(filterRoutesByHideInMenu(builtinRoutes))
 
   /**
    * 获取全局菜单
