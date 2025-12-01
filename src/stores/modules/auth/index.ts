@@ -2,6 +2,7 @@ import { computed, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchLogin, fetchLogout, fetchUserInfo } from '@/service/api/login'
 import { localStg } from '@/utils/storage'
+import { useRouteStore } from '../route'
 import { useThemeStore } from '../theme'
 import { clearAuthStorage, getRefreshToken, getToken, getTokenExpiresAt } from './shared'
 import { SetupStoreId } from '@/enum'
@@ -111,18 +112,28 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   }
 
   /** 重置认证状态（退出登录并清理本地数据） */
-  function resetStore() {
-    fetchLogout().then(async () => {
-      setUserInfo(initialState.userInfo)
-      setToken(initialState.token)
-      setRefreshToken(initialState.refreshToken)
-      setTokenExpiresAt(initialState.tokenExpiresAt)
-      themeStore.resetStore()
-      clearAuthStorage()
-      if (route.meta.isAuth) {
-        await toLogin()
-      }
-    })
+  async function resetStore() {
+    const routeStore = useRouteStore()
+    const authStore = useAuthStore()
+
+    try {
+      const { error } = await fetchLogout()
+      if (error) return
+    } catch {
+      return
+    }
+
+    setUserInfo(initialState.userInfo)
+    setToken(initialState.token)
+    setRefreshToken(initialState.refreshToken)
+    setTokenExpiresAt(initialState.tokenExpiresAt)
+    themeStore.resetStore()
+    authStore.$reset()
+    routeStore.$reset()
+    clearAuthStorage()
+    if (route.meta.isAuth) {
+      await toLogin()
+    }
   }
   return {
     token,
