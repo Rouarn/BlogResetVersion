@@ -1,6 +1,8 @@
+import { builtinRoutes } from '@/router/routes'
 import router from '@/router'
 import { fetchGetUserRoutes } from '@/service/api'
 import {
+  filterRoutesByHideInMenu,
   getCacheRouteNames,
   getFlatMenuList,
   getGlobalMenuByBaseRoute,
@@ -10,6 +12,7 @@ import {
 } from './shared'
 import { SetupStoreId } from '@/enum'
 import useBoolean from '@/hooks/common/use-boolean'
+import { $t } from '@/locales'
 import { defineStore } from 'pinia'
 import type { RouteComponent, RouteRecordRaw } from 'vue-router'
 
@@ -17,7 +20,16 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   const { bool: isInitAuthRoute, setBool: setIsInitAuthRoute } = useBoolean()
 
   /** 全局菜单（保留分组层级用于侧边/头部） */
-  const menus = ref<App.Global.Menu[]>([])
+  const menus = ref<App.Global.Menu[]>([
+    {
+      key: 'home',
+      i18nKey: 'route.home',
+      label: $t('route.home'),
+      routeKey: 'home',
+      routePath: '/home',
+      order: 0,
+    },
+  ])
   const searchMenus = computed(() => transformMenuToSearchMenus(menus.value))
 
   /**
@@ -119,8 +131,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   /** 创建内置 Vue 路由（从后端拉取权限路由） */
   async function createBuiltinVueRoutes(): Promise<RouteRecordRaw[]> {
     const { data } = await fetchGetUserRoutes()
-    const routes = [...data] as unknown as RouteRecordRaw[]
-    return routes
+    return [...data] as unknown as RouteRecordRaw[]
   }
 
   /** 初始化应用路由（仅在登录后首次执行） */
@@ -132,15 +143,19 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
 
     // 转换为单层
     const flatRoutes = getFlatMenuList(routes)
+    const filteredRoutes = filterRoutesByHideInMenu(flatRoutes)
+
+    // 合并所有路由（包含内置路由）
+    const allMenus = filterRoutesByHideInMenu([...routes, ...builtinRoutes])
 
     // 添加路由到 Vue Router
-    addRoutesToVueRouter(flatRoutes)
+    addRoutesToVueRouter(filteredRoutes)
 
     // 获取全局菜单（保留分组层级）
-    getGlobalMenus(routes)
+    getGlobalMenus(allMenus)
 
     // 获取需要缓存的路由名称
-    getCacheRoutes(routes)
+    getCacheRoutes(allMenus)
 
     setIsInitAuthRoute(true)
   }

@@ -18,7 +18,7 @@ export const ROOT_ROUTE: RouteRecordRaw = {
         title: 'Home',
         i18nKey: 'route.home',
         icon: '',
-        order: 1,
+        order: 0,
         hideInMenu: false,
         isKeepAlive: true,
         isAuth: false,
@@ -82,6 +82,7 @@ export const ERROR_ROUTER: RouteRecordRaw[] = [
     meta: {
       title: '403',
       i18nKey: 'route.403',
+      hideInMenu: true,
     },
   },
   {
@@ -91,6 +92,7 @@ export const ERROR_ROUTER: RouteRecordRaw[] = [
     meta: {
       title: '500',
       i18nKey: 'route.500',
+      hideInMenu: true,
     },
   },
   {
@@ -100,6 +102,7 @@ export const ERROR_ROUTER: RouteRecordRaw[] = [
     meta: {
       title: 'not-found',
       i18nKey: 'route.404',
+      hideInMenu: true,
     },
     children: [],
   },

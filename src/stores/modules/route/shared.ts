@@ -39,6 +39,34 @@ export function sortRoutesByOrder(routes: RouteRecordRaw[]) {
 }
 
 /**
+ * 排除 route.meta?.hideInMenu 为 true 的路由
+ */
+export function filterRoutesByHideInMenu(routes: RouteRecordRaw[]): RouteRecordRaw[] {
+  if (!routes?.length) return []
+
+  const result: RouteRecordRaw[] = []
+  routes.forEach((route) => {
+    const isRoot = route.name === 'Root' || route.path === '/'
+    const filteredChildren = filterRoutesByHideInMenu(route.children || [])
+
+    if (isRoot) {
+      result.push(...filteredChildren)
+      return
+    }
+
+    const visible = route.meta?.hideInMenu !== true
+    if (!visible) return
+
+    const newRoute: RouteRecordRaw = { ...route }
+    newRoute.children = filteredChildren.length ? filteredChildren : undefined
+
+    result.push(newRoute)
+  })
+
+  return result
+}
+
+/**
  * 根据语言更新全局菜单
  *
  * @param menus 菜单列表
