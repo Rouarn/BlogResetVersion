@@ -21,7 +21,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   /** 全局菜单（保留分组层级用于侧边/头部） */
   const menus = ref<App.Global.Menu[]>([])
   const searchMenus = computed(() => transformMenuToSearchMenus(menus.value))
-  menus.value = getGlobalMenuByBaseRoute(filterRoutesByHideInMenu(builtinRoutes))
+  menus.value = getGlobalMenuByBaseRoute(filterRoutesByHideInMenu(builtinRoutes)) // 未登录时显示的全局菜单
 
   /**
    * 获取全局菜单

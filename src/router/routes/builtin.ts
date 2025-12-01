@@ -33,7 +33,7 @@ export const ROOT_ROUTE: RouteRecordRaw = {
         i18nKey: 'route.user-center',
         icon: '',
         order: 2,
-        hideInMenu: false,
+        hideInMenu: true,
         isKeepAlive: true,
         isAuth: true,
       },
