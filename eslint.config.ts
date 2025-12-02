@@ -4,7 +4,7 @@ import { globalIgnores } from 'eslint/config'
 import eslintPluginSimpleImportSort from 'eslint-plugin-simple-import-sort'
 import pluginVue from 'eslint-plugin-vue'
 
-export default defineConfigWithVueTs(
+const config: ReturnType<typeof defineConfigWithVueTs> = defineConfigWithVueTs(
   {
     name: 'app/files-to-lint',
     files: ['**/*.{ts,mts,tsx,vue}'],
@@ -152,3 +152,4 @@ export default defineConfigWithVueTs(
     },
   },
 )
+export default config

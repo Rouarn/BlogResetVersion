@@ -1,11 +1,29 @@
 {
-  "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ESNext",
+    "jsx": "preserve",
+    "jsxImportSource": "vue",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": false,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "lib": ["DOM", "ESNext"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "~/*": ["./*"]
     },
-    {
-      "path": "./tsconfig.app.json"
-    }
-  ]
+    "types": ["node", "naive-ui/volar", "vite-plugin-pwa/client"],
+    "incremental": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "composite": true
+  },
+  "include": ["./**/*.ts", "./**/*.tsx", "./**/*.vue", "./**/*.d.ts", "./**/*.json"],
+  "exclude": ["node_modules", "dist"]
 }
