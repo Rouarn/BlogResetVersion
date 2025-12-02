@@ -25,6 +25,21 @@ export const ROOT_ROUTE: RouteRecordRaw = {
       },
     },
     {
+      name: 'about',
+      path: '/about',
+      component: () => import('@/views/about/index.vue'),
+      meta: {
+        title: 'About',
+        i18nKey: 'route.about',
+        icon: '',
+        order: 999,
+        hideInMenu: false,
+        isKeepAlive: true,
+        isAuth: false,
+        menuType: 2,
+      },
+    },
+    {
       name: 'user-center',
       path: '/user-center',
       component: () => import('@/views/user-center/index.vue'),

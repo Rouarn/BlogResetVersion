@@ -2,21 +2,6 @@
   "code": 200,
   "data": [
     {
-      "name": "about",
-      "path": "/about",
-      "component": "/about/index",
-      "meta": {
-        "title": "About",
-        "i18nKey": "route.about",
-        "icon": "",
-        "order": 999,
-        "hideInMenu": false,
-        "isKeepAlive": true,
-        "isAuth": false,
-        "menuType": 2
-      }
-    },
-    {
       "name": "demos",
       "path": "/demos",
       "redirect": "/demos/loading-demo",
