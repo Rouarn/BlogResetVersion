@@ -24,6 +24,7 @@
         <div class="cropper-wrap">
           <VueCropper
             v-if="option.img"
+            :key="option.img"
             ref="cropperRef"
             :img="option.img"
             :output-size="option.outputSize"
@@ -472,6 +473,9 @@ function confirmCrop() {
       }
       emit('done', payload)
       closeCropper()
+      nextTick(() => {
+        clearImage()
+      })
     })
   })
 }

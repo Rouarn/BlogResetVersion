@@ -180,7 +180,7 @@ async function handlePasswordChange() {
 // 头像上传
 const cutterRef = ref<InstanceType<typeof CroppingImage> | null>(null)
 function onAvatarFileChange({ fileList }: { fileList: Array<UploadFileInfo> }) {
-  const f = fileList?.[0]?.file
+  const f = fileList?.[fileList.length - 1]?.file
   if (!f) return
   cutterRef.value?.openCropper()
   nextTick(() => cutterRef.value?.setImage(f))
