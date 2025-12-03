@@ -456,6 +456,16 @@ function closeCropper() {
   modalShow.value = false
 }
 
+function clearImage() {
+  option.img = ''
+  if (state.objectUrl) URL.revokeObjectURL(state.objectUrl)
+  state.objectUrl = null
+  state.previewUrl = ''
+  state.previewMeta = { width: 0, height: 0 }
+  emit('clear')
+  emit('update:modelValue', null)
+}
+
 /**
  * 确认裁剪：同时输出 Base64 与 Blob，并透传宽高等信息
  * 关闭弹窗以完成一次流程
@@ -478,17 +488,6 @@ function confirmCrop() {
       })
     })
   })
-}
-
-/** 清空当前图片：释放对象 URL、重置预览与 v-model */
-function clearImage() {
-  option.img = ''
-  if (state.objectUrl) URL.revokeObjectURL(state.objectUrl)
-  state.objectUrl = null
-  state.previewUrl = ''
-  state.previewMeta = { width: 0, height: 0 }
-  emit('clear')
-  emit('update:modelValue', null)
 }
 
 /** 对外暴露方法：兼容外部上传组件主动传入 File */

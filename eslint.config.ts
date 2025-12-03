@@ -17,7 +17,6 @@ const config: ReturnType<typeof defineConfigWithVueTs> = defineConfigWithVueTs(
     // 从 .prettierignore 同步的忽略规则
     'src/typings/auto-imports.d.ts',
     'src/typings/components.d.ts',
-    'src/components/custom/cropping-image.vue',
   ]),
 
   pluginVue.configs['flat/essential'],
