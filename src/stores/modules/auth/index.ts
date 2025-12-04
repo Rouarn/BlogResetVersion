@@ -37,6 +37,8 @@ const initialState = {
 
 export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   const themeStore = useThemeStore()
+  const routeStore = useRouteStore()
+  const authStore = useAuthStore()
 
   const route = useRoute()
   const { toLogin, redirectFromLogin } = useRouterPush(false)
@@ -113,9 +115,6 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
 
   /** 重置认证状态（清理本地数据） */
   function resetAuthStore() {
-    const routeStore = useRouteStore()
-    const authStore = useAuthStore()
-
     setUserInfo(initialState.userInfo)
     setToken(initialState.token)
     setRefreshToken(initialState.refreshToken)
