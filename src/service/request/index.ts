@@ -5,7 +5,7 @@ import { checkStatus, isServerError } from './checkStatus'
 import { computeRetryDelay } from './utils'
 import { ResultEnum } from '@/enum'
 import type { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
-import axios from 'axios'
+import axios, { HttpStatusCode } from 'axios'
 
 /* ---------------- 类型与结构 ---------------- */
 /**
@@ -222,7 +222,7 @@ class RequestHttp {
             }
           }
 
-          authStore.setToken('')
+          authStore.resetAuthStore()
           router.replace('/_builtin/login')
 
           if (!config.skipErrorHandler) {
@@ -316,7 +316,7 @@ class RequestHttp {
         }
 
         // 401 未授权：尝试刷新后重试原请求（避免死循环）
-        if (ENABLE_TOKEN_REFRESH && error.response?.status === 401 && config && !config.__retriedAfterRefresh) {
+        if (ENABLE_TOKEN_REFRESH && error.response?.status === HttpStatusCode.Unauthorized && config && !config.__retriedAfterRefresh) {
           const ok = await refreshTokenOnce()
           if (ok) {
             const newConfig: CustomAxiosRequestConfig = { ...config, __retriedAfterRefresh: true }
@@ -342,7 +342,7 @@ class RequestHttp {
       let type: ErrorType = 'network'
       const rawMsg = typeof response.message === 'string' ? response.message : String(response.message ?? '')
       if (rawMsg.includes('timeout')) type = 'timeout'
-      else if (response.response?.status === 401) type = 'overdue'
+      else if (response.response?.status === HttpStatusCode.Unauthorized) type = 'overdue'
       else if (typeof response.response?.status === 'number' && isServerError(response.response.status)) type = 'server'
       return { data: null as unknown as T, error: true, message, errorType: type }
     }

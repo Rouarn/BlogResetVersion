@@ -111,17 +111,10 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     })
   }
 
-  /** 重置认证状态（退出登录并清理本地数据） */
-  async function resetStore() {
+  /** 重置认证状态（清理本地数据） */
+  function resetAuthStore() {
     const routeStore = useRouteStore()
     const authStore = useAuthStore()
-
-    try {
-      const { error } = await fetchLogout()
-      if (error) return
-    } catch {
-      return
-    }
 
     setUserInfo(initialState.userInfo)
     setToken(initialState.token)
@@ -131,6 +124,19 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     authStore.$reset()
     routeStore.$reset()
     clearAuthStorage()
+  }
+
+  /** 重置认证状态（退出登录并清理本地数据） */
+  async function resetStore() {
+    try {
+      const { error } = await fetchLogout()
+      if (error) return
+    } catch {
+      return
+    }
+
+    resetAuthStore()
+
     if (route.meta.isAuth) {
       await toLogin()
     }
@@ -151,5 +157,6 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     setRefreshTokenExpiresAt,
     setUserInfo,
     resetStore,
+    resetAuthStore,
   }
 })
