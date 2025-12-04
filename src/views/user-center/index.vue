@@ -168,7 +168,7 @@ async function handlePasswordChange() {
         confirmPassword: '',
       })
       window.$message?.success(result.data?.message || '密码修改成功')
-      authStore.resetStore()
+      await authStore.resetStore()
     }
   } catch (_) {
     window.$message?.error('密码修改失败，请检查当前密码是否正确')
@@ -190,8 +190,8 @@ async function onCropDone(payload: { blob?: Blob; fileName?: string }) {
   const type = payload.blob.type || 'image/jpeg'
   const name = `avatar_${authStore.userInfo.userId}_${userForm.nickname || 'user'}_${Date.now()}.${type.split('/')[1] || 'jpeg'}`
   const file = new File([payload.blob], name, { type })
-  const localUrl = URL.createObjectURL(payload.blob)
-  userForm.avatar = localUrl
+
+  userForm.avatar = URL.createObjectURL(payload.blob)
   try {
     const res = await uploadAvatar(file)
     if (res.data && res.data.downloadUrl) {

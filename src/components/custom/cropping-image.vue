@@ -386,7 +386,7 @@ async function onFileChange(e: Event) {
   emit('update:modelValue', fileToUse)
 
   // 加载后生成预览
-  nextTick(updatePreviewDebounced)
+  await nextTick(updatePreviewDebounced)
 }
 
 /**
@@ -404,7 +404,7 @@ watch(
     if (state.objectUrl) URL.revokeObjectURL(state.objectUrl)
     state.objectUrl = url
     option.img = url
-    nextTick(updatePreviewDebounced)
+    await nextTick(updatePreviewDebounced)
   },
   { immediate: true },
 )
