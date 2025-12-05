@@ -78,7 +78,6 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
 
     if (settings.value.recommendColor) {
       // 基于提供的颜色生成调色板，并使用更适合的颜色
-
       colorValue = getPaletteColorByNumber(color, 500, true)
     }
 
@@ -107,7 +106,7 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
   })
 
   /** Naive UI 主题配置 */
-  const naiveTheme = computed(() => getNaiveTheme(themeColors.value))
+  const naiveTheme = computed(() => getNaiveTheme(themeColors.value, settings.value))
 
   /**
    * 设置 JSON
