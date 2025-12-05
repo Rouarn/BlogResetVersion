@@ -73,12 +73,12 @@ function getNaiveThemeColors(colors: App.Theme.ThemeColor, recommended = false) 
  *
  * @param colors 主题色集合
  */
-export function getNaiveTheme(colors: App.Theme.ThemeColor) {
+export function getNaiveTheme(colors: App.Theme.ThemeColor, settings: App.Theme.ThemeSetting) {
   const { primary: colorLoading } = colors
 
   const theme: GlobalThemeOverrides = {
     common: {
-      ...getNaiveThemeColors(colors),
+      ...getNaiveThemeColors(colors, settings.recommendColor),
       borderRadius: '6px',
     },
     LoadingBar: {
