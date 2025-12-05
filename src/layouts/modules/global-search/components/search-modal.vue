@@ -34,7 +34,7 @@ const handleSearch = useDebounceFn(search, 300)
 const visible = defineModel<boolean>('show', { required: true })
 
 function handleClose() {
-  // handle with setTimeout to prevent user from seeing some operations
+  // 使用 setTimeout 处理，避免用户看到一些操作过程
   setTimeout(() => {
     visible.value = false
     resultOptions.value = []
@@ -46,7 +46,7 @@ function getActivePathIndex() {
   return resultOptions.value.findIndex((item) => item.routePath === activePath.value)
 }
 
-/** key up */
+/** 按键上移 */
 function handleUp() {
   const { length } = resultOptions.value
   if (length === 0) return
@@ -59,7 +59,7 @@ function handleUp() {
   activePath.value = resultOptions.value[activeIndex].routePath
 }
 
-/** key down */
+/** 按键下移 */
 function handleDown() {
   const { length } = resultOptions.value
   if (length === 0) return
@@ -72,7 +72,7 @@ function handleDown() {
   activePath.value = resultOptions.value[activeIndex].routePath
 }
 
-/** key enter */
+/** 按下回车 */
 function handleEnter() {
   if (resultOptions.value?.length === 0 || activePath.value === '') return
   handleClose()

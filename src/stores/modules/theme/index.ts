@@ -1,21 +1,25 @@
 import { computed, effectScope, onScopeDispose, ref, toRefs, watch } from 'vue'
 import { toggleHtmlClass } from '@/utils/common'
 import { localStg } from '@/utils/storage'
+import { useAuthStore } from '../auth'
 import { addThemeVarsToGlobal, createThemeToken, getNaiveTheme, initThemeSettings, toggleAuxiliaryColorModes } from './shared'
 import { SetupStoreId } from '@/enum'
 import { getPaletteColorByNumber } from '@sa/color'
-import { usePreferredColorScheme } from '@vueuse/core'
+import { useDateFormat, useNow, usePreferredColorScheme } from '@vueuse/core'
 import { defineStore } from 'pinia'
 import type { Ref } from 'vue'
 
 export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
   const scope = effectScope()
   const osTheme = usePreferredColorScheme()
+  const authStore = useAuthStore()
 
-  /** Theme settings */
+  /** 主题设置 */
   const settings: Ref<App.Theme.ThemeSetting> = ref(initThemeSettings())
 
-  /** Dark mode */
+  const { now: watermarkTime, pause: pauseWatermarkTime, resume: resumeWatermarkTime } = useNow({ controls: true })
+
+  /** 深色模式 */
   const darkMode = computed(() => {
     if (settings.value.themeScheme === 'auto') {
       return osTheme.value === 'dark'
@@ -24,7 +28,7 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
   })
 
   /**
-   * Set theme scheme
+   * 设置主题方案
    *
    * @param themeScheme
    */
@@ -33,7 +37,7 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
   }
 
   /**
-   * Set grayscale value
+   * 设置灰度模式
    *
    * @param isGrayscale
    */
@@ -42,7 +46,7 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
   }
 
   /**
-   * Set colourWeakness value
+   * 设置色弱模式
    *
    * @param isColourWeakness
    */
@@ -50,7 +54,7 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
     settings.value.colourWeakness = isColourWeakness
   }
 
-  /** Toggle theme scheme */
+  /** 切换主题方案 */
   function toggleThemeScheme() {
     const themeSchemes: UnionKey.ThemeScheme[] = ['light', 'dark', 'auto']
 
@@ -60,20 +64,20 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
 
     const nextThemeScheme = themeSchemes[nextIndex]
 
-    setThemeScheme(nextThemeScheme)
+    setThemeScheme(nextThemeScheme ?? 'light')
   }
 
   /**
-   * Update theme colors
+   * 更新主题色
    *
-   * @param key Theme color key
-   * @param color Theme color
+   * @param key 主题色键
+   * @param color 主题色
    */
   function updateThemeColors(key: App.Theme.ThemeColorKey, color: string) {
     let colorValue = color
 
     if (settings.value.recommendColor) {
-      // get a color palette by provided color and color name, and use the suitable color
+      // 基于提供的颜色生成调色板，并使用更适合的颜色
 
       colorValue = getPaletteColorByNumber(color, 500, true)
     }
@@ -85,13 +89,13 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
     }
   }
 
-  /** grayscale mode */
+  /** 灰度模式是否启用 */
   const grayscaleMode = computed(() => settings.value.grayscale)
 
-  /** colourWeakness mode */
+  /** 色弱模式是否启用 */
   const colourWeaknessMode = computed(() => settings.value.colourWeakness)
 
-  /** Theme colors */
+  /** 主题色集合 */
   const themeColors = computed(() => {
     const { themeColor, otherColor, isInfoFollowPrimary } = settings.value
     const colors: App.Theme.ThemeColor = {
@@ -102,13 +106,49 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
     return colors
   })
 
-  /** Naive theme */
+  /** Naive UI 主题配置 */
   const naiveTheme = computed(() => getNaiveTheme(themeColors.value))
 
   /**
-   * Toggle css dark mode
+   * 设置 JSON
    *
-   * @param darkMode Is dark mode
+   * 用于复制配置
+   */
+  const settingsJson = computed(() => JSON.stringify(settings.value))
+
+  /** 水印时间格式化 */
+  const formattedWatermarkTime = computed(() => {
+    const { watermark } = settings.value
+    const date = useDateFormat(watermarkTime, watermark.timeFormat)
+    return date.value
+  })
+
+  /** 水印内容 */
+  const watermarkContent = computed(() => {
+    const { watermark } = settings.value
+
+    if (watermark.enableUserName && authStore.userInfo.username) {
+      return authStore.userInfo.username
+    }
+
+    if (watermark.enableTime) {
+      return formattedWatermarkTime.value
+    }
+
+    return watermark.text
+  })
+
+  /** 重置 Store */
+  function resetStore() {
+    const themeStore = useThemeStore()
+
+    themeStore.$reset()
+  }
+
+  /**
+   * 切换 CSS 深色模式
+   *
+   * @param darkMode 是否深色模式
    */
   function toggleCssDarkMode(darkMode = false) {
     const { add, remove } = toggleHtmlClass('dark')
@@ -120,15 +160,53 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
     }
   }
 
-  /** Setup theme vars to global */
+  /** 注入主题变量到全局 */
   function setupThemeVarsToGlobal() {
     const { themeTokens, darkThemeTokens } = createThemeToken(themeColors.value, settings.value.tokens)
     addThemeVarsToGlobal(themeTokens, darkThemeTokens)
   }
 
-  // watch store
+  /** 仅在水印可见且启用时间显示时运行计时器 */
+  function updateWatermarkTimer() {
+    const { watermark } = settings.value
+    const shouldRunTimer = watermark.visible && watermark.enableTime
+
+    if (shouldRunTimer) {
+      resumeWatermarkTime()
+    } else {
+      pauseWatermarkTime()
+    }
+  }
+
+  /**
+   * 设置水印显示用户名
+   *
+   * @param enable 是否启用用户名水印
+   */
+  function setWatermarkEnableUserName(enable: boolean) {
+    settings.value.watermark.enableUserName = enable
+
+    if (enable) {
+      settings.value.watermark.enableTime = false
+    }
+  }
+
+  /**
+   * 设置水印显示时间
+   *
+   * @param enable 是否启用时间水印
+   */
+  function setWatermarkEnableTime(enable: boolean) {
+    settings.value.watermark.enableTime = enable
+
+    if (enable) {
+      settings.value.watermark.enableUserName = false
+    }
+  }
+
+  // 监听 Store
   scope.run(() => {
-    // watch dark mode
+    // 监听深色模式
     watch(
       darkMode,
       (val) => {
@@ -146,7 +224,7 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
       { immediate: true },
     )
 
-    // themeColors change, update css vars and storage theme color
+    // 主题色变化时，更新 CSS 变量并写入存储主色
     watch(
       themeColors,
       (val) => {
@@ -155,9 +233,18 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
       },
       { immediate: true },
     )
+
+    // 监听水印设置以控制计时器
+    watch(
+      () => [settings.value.watermark.visible, settings.value.watermark.enableTime],
+      () => {
+        updateWatermarkTimer()
+      },
+      { immediate: true },
+    )
   })
 
-  /** On scope dispose */
+  /** 作用域销毁时 */
   onScopeDispose(() => {
     scope.stop()
   })
@@ -167,10 +254,15 @@ export const useThemeStore = defineStore(SetupStoreId.Theme, () => {
     darkMode,
     themeColors,
     naiveTheme,
+    settingsJson,
+    watermarkContent,
     setThemeScheme,
     toggleThemeScheme,
     updateThemeColors,
     setGrayscale,
     setColourWeakness,
+    resetStore,
+    setWatermarkEnableUserName,
+    setWatermarkEnableTime,
   }
 })

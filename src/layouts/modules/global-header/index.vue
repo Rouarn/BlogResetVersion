@@ -20,7 +20,7 @@ const { isFullscreen, toggle } = useFullscreen()
 
 <template>
   <DarkModeContainer class="px-12px shadow-header sticky top-0 z-50">
-    <div class="max-w-screen-xl mx-auto px-4 h-16 flex items-center justify-between">
+    <header class="max-w-screen-xl mx-auto px-4 h-16 flex items-center justify-between">
       <!-- 左侧：Logo和系统名称 -->
       <GlobalLogo class="h-full" v-if="!appStore.isMobile" />
 
@@ -37,11 +37,12 @@ const { isFullscreen, toggle } = useFullscreen()
         <LangSwitch :lang="appStore.locale" :lang-options="appStore.localeOptions" @change-lang="appStore.changeLocale" />
         <!-- 主题切换 -->
         <ThemeSchemaSwitch :theme-schema="themeStore.themeScheme" :is-dark="themeStore.darkMode" @switch="themeStore.toggleThemeScheme" />
+        <!-- 主题配置按钮 -->
         <ThemeButton />
         <!-- 用户头像 -->
         <UserAvatar />
       </div>
-    </div>
+    </header>
   </DarkModeContainer>
 </template>
 

@@ -40,31 +40,22 @@ declare module 'vue-router' {
     localIcon?: string
     /** 图标大小，宽度和高度相同 */
     iconFontSize?: number
-    /** Router order */
+    /** 路由排序权重 */
     order?: number | null
     /** 是否在菜单中隐藏该路由 */
     hideInMenu?: boolean | null
     /**
-     * The menu key will be activated when entering the route
+     * 进入该路由时将激活指定的菜单键
      *
-     * The route is not in the menu
+     * 当路由不在菜单中时可用
      *
      * @example
-     *   the route is "user_detail", if it is set to "user_list", the menu "user_list" will be activated
+     * 路由为 "user_detail"，如果设置为 "user_list"，菜单 "user_list" 将被激活
      */
     activeMenu?: App.Global.RouteKey | null
-    /**
-     * 默认情况下，相同的路由路径会共用一个标签页，即使查询参数不同。如果设置为 true，则不同查询参数的路由会使用不同的标签页
-     */
-    multiTab?: boolean | null
     /** 如果设置了查询参数，则在输入路由时自动携带 */
     query?: { key: string; value: string }[] | null
-    /**
-     * 菜单的布局，可选值有 base-layout 和 blank-layout
-     * @default 'base-layout'
-     */
-    layout?: 'base-layout' | 'blank-layout'
-    /** 分组 */
-    group?: App.Global.MenuGroup['group'] | null
+    /** 菜单类型 (1: 目录; 2: 菜单) */
+    menuType?: App.Global.MenuType | null
   }
 }

@@ -28,7 +28,7 @@ export function setupI18n(app: App) {
 export const $t = i18n.global.t as App.I18n.$T
 
 // 定义全局 $te 方法，用于检查是否存在某个翻译键值
-export const $te = i18n.global.te
+export const $te: typeof i18n.global.te = i18n.global.te
 
 /**
  * 修改当前语言环境

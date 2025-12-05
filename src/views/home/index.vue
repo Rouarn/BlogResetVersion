@@ -1,212 +1,223 @@
-<script lang="ts" setup>
-import { computed, reactive, ref } from 'vue'
-import LatestBlog from './module/latest-blog.vue'
-import WaterfallFlow from './module/waterfall-flow.vue'
-import { useThemeStore } from '@/stores/modules/theme'
-import { useRouterPush } from '@/hooks/common/router'
-import dayjs from 'dayjs'
+<script setup lang="ts">
+import { useRouter } from 'vue-router'
+import pkg from '~/package.json'
 
-defineOptions({
-  name: 'BaseHome',
-})
-definePage({
-  meta: {
-    layout: 'base-layout',
-    title: '首页',
-    i18nKey: 'route.home',
-    order: 0,
-    icon: 'material-symbols:home-app-logo',
-  },
-})
+const router = useRouter()
 
-const themeStore = useThemeStore()
-const { routerPushByKey } = useRouterPush()
+const features = [
+  {
+    icon: 'material-symbols:speed',
+    title: '高性能',
+    description: '基于 Vite 构建，开发体验极佳，构建速度超快',
+    color: '#52c41a',
+  },
+  {
+    icon: 'material-symbols:palette',
+    title: '现代设计',
+    description: '采用 Naive UI 组件库，界面简洁美观，支持暗黑模式',
+    color: '#2080f0',
+  },
+  {
+    icon: 'material-symbols:code',
+    title: 'TypeScript',
+    description: '完整的 TypeScript 支持，提供更好的开发体验',
+    color: '#faad14',
+  },
+  {
+    icon: 'material-symbols:responsive-layout',
+    title: '响应式',
+    description: '完美适配各种设备，移动端体验优秀',
+    color: '#f5222d',
+  },
+]
 
-const showVideo = computed(() => themeStore.background.showVideo)
+const techStack = [
+  { name: 'Vue 3', version: '3.5+', icon: 'logos:vue', description: '渐进式 JavaScript 框架' },
+  { name: 'Vite', version: '7.x', icon: 'logos:vitejs', description: '下一代前端构建工具' },
+  { name: 'TypeScript', version: '5.x', icon: 'logos:typescript-icon', description: '类型安全的 JavaScript' },
+  { name: 'Naive UI', version: '2.x', icon: 'material-symbols:widgets', description: '现代化 Vue 3 组件库' },
+  { name: 'UnoCSS', version: '0.x', icon: 'logos:unocss', description: '即时原子化 CSS 引擎' },
+  { name: 'Pinia', version: '3.x', icon: 'logos:pinia', description: 'Vue 状态管理库' },
+]
 
-// 分类
-const isActiveType = ref('All')
-const workType = ref([
-  {
-    name: 'All',
-    value: 'All',
-  },
-  {
-    name: 'Branding',
-    value: 'Branding',
-  },
-  {
-    name: 'Graphic',
-    value: 'Graphic',
-  },
-  {
-    name: 'Design',
-    value: 'Design',
-  },
-  {
-    name: 'Video',
-    value: 'Video',
-  },
-])
-const handleWorkType = (type: string) => {
-  isActiveType.value = type
+// 按钮功能函数
+const handleGetStarted = () => {
+  // 使用Vue Router跳转到关于页面
+  router.push('/about')
 }
 
-const workList = reactive<Api.Home.WorkItem[]>([
-  { id: 1, type: 'Graphic', url: '/picture/project5.jpg' },
-  { id: 2, type: 'Branding', url: '/picture/m-project1.jpg' },
-  { id: 3, type: 'Graphic', url: '/picture/project2.jpg' },
-  { id: 4, type: 'Branding', url: '/picture/m-project2.jpg' },
-  { id: 5, type: 'Video', url: '/picture/project4.jpg' },
-  { id: 6, type: 'Video', url: '/picture/project1.jpg' },
-  { id: 7, type: 'image', url: '/picture/project3.jpg' },
-  { id: 8, type: 'Design', url: '/picture/project2.jpg' },
-  { id: 9, type: 'Design', url: '/picture/m-project3.jpg' },
-])
-
-const handleMore = () => {
-  const newItems = [
-    { id: 10, type: 'Design', url: '/picture/project5.jpg' },
-    { id: 11, type: 'Video', url: '/picture/project2.jpg' },
-    { id: 12, type: 'image', url: '/picture/project4.jpg' },
-  ]
-
-  workList.push(...newItems)
+const handleViewSource = () => {
+  // 跳转到GitHub仓库（外部链接）
+  window.open(pkg.homepage, '_blank')
 }
 
-const blogs = reactive<Api.Home.BlogItem[]>([
-  {
-    id: 1,
-    cover: '/picture/1.jpg',
-    title: 'Tips for Delivering a Great Perfor mance in Your Next',
-    description: 'At tincidunt vulputate dis natoque parturient proine mperdiet. Quisque lig pede males us. Semper orc gue lorem ipsum',
-    author: 'Soybean',
-    date: 'January 26, 2020',
-  },
-  {
-    id: 2,
-    cover: '/picture/4.jpg',
-    title: 'How To Be The Highest Marketer On Your Team And Skills',
-    description: 'At tincidunt vulputate dis natoque parturient proine mperdiet. Quisque lig pede males us. Semper orc gue lorem ipsum',
-    author: 'Soybean',
-    date: 'January 28, 2025',
-  },
-  {
-    id: 3,
-    cover: '/picture/3.jpg',
-    title: '4 Myths Rand Fishkin Wants You to Question Launching ',
-    description: 'At tincidunt vulputate dis natoque parturient proine mperdiet. Quisque lig pede males us. Semper orc gue lorem ipsum',
-    author: 'Soybean',
-    date: 'August 29, 2025',
-  },
-])
+const handleDownload = () => {
+  // 跳转到GitHub releases页面（外部链接）
+  window.open(`${pkg.homepage}/releases`, '_blank')
+}
 
-const timeProgress = ref(dayjs().format('YYYY-MM-DD HH:mm:ss'))
-
-const time = setInterval(() => {
-  timeProgress.value = dayjs().format('YYYY-MM-DD HH:mm:ss')
-}, 100)
-
-onUnmounted(() => {
-  clearInterval(time)
-})
+const handleViewDocs = () => {
+  // 跳转到项目网站（外部链接）
+  window.open(pkg.website, '_blank')
+}
 </script>
 
 <template>
-  <NSpace vertical>
-    <NSpace
-      class="home-area relative z-0 h-screen overflow-hidden bg-cover bg-fixed bg-center bg-no-repeat"
-      align="center"
-      justify="center"
-      vertical
-      :size="0"
-      :wrap-item="false"
-    >
-      <NH2 class="z-3 text-[2.625rem] font-bold tracking-[0.125rem]" :class="[showVideo ? 'c-#FFFFFF' : '']"> Wo Yu Xia Ji </NH2>
-      <NP class="z-3 text-[0.875rem] text-[#444] font-normal leading-[1.625rem] capitalize" :class="[showVideo ? 'c-#FFFFFF' : '']">
-        <!-- 时间进度 -->
-        {{ timeProgress }}
-      </NP>
-      <NButton
-        class="z-3"
-        :class="[showVideo ? 'c-#FFFFFF' : 'primary-button']"
-        ghost
-        :bordered="false"
-        :focusable="false"
-        size="large"
-        @click="routerPushByKey('/user-center/')"
-      >
-        About Us
-      </NButton>
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+    <!-- Hero Section -->
+    <div class="relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-r from-primary/10 to-blue-500/10"></div>
+      <div class="relative px-6 py-24 mx-auto max-w-7xl sm:py-32 lg:px-8">
+        <div class="text-center">
+          <div class="flex justify-center mb-8">
+            <div class="p-4 bg-white dark:bg-gray-800 rounded-full shadow-lg">
+              <SvgIcon icon="material-symbols:rocket-launch" class="w-16 h-16 text-primary" />
+            </div>
+          </div>
+          <h1 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
+            <span class="text-primary">Frontend</span> Template
+          </h1>
+          <p class="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            {{ pkg.description }}
+          </p>
+          <div class="flex items-center justify-center mt-10 gap-x-6">
+            <NButton type="primary" size="large" class="px-8 py-3" @click="handleGetStarted">
+              <template #icon>
+                <SvgIcon icon="material-symbols:play-arrow" />
+              </template>
+              开始使用
+            </NButton>
+            <NButton quaternary size="large" class="px-8 py-3" @click="handleViewSource">
+              <template #icon>
+                <SvgIcon icon="material-symbols:code" />
+              </template>
+              查看源码
+            </NButton>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      <video
-        v-if="themeStore.background.showVideo"
-        class="pointer-events-none absolute left-0 top-0 z-0 size-full object-none scale-102"
-        autoplay
-        muted
-        loop
-      >
-        <source src="/video/bg.mp4" type="video/mp4" />
-      </video>
-    </NSpace>
-
-    <NSpace vertical class="my-25">
-      <NSpace justify="center" wrap class="mb-[2rem]">
-        <NButton
-          v-for="(item, index) in workType"
-          :key="index"
-          ghost
-          :bordered="false"
-          class="mx-3 text-12px font-bold uppercase"
-          @click="handleWorkType(item.value)"
-        >
-          {{ item.name }}
-        </NButton>
-      </NSpace>
-
-      <WaterfallFlow :initial-items="workList" :is-active-type="isActiveType" />
-
-      <!-- 更多 -->
+    <!-- Features Section -->
+    <div class="px-6 py-24 mx-auto max-w-7xl lg:px-8">
       <div class="text-center">
-        <NButton class="primary-button" ghost :bordered="false" size="large" :focusable="false" @click="handleMore"> View More </NButton>
+        <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">核心特性</h2>
+        <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">现代化的前端开发体验</p>
       </div>
-    </NSpace>
+      <div class="grid grid-cols-1 gap-8 mt-16 sm:grid-cols-2 lg:grid-cols-4">
+        <NCard
+          v-for="feature in features"
+          :key="feature.title"
+          class="card-wrapper hover:shadow-lg transition-shadow duration-300"
+          :bordered="false"
+        >
+          <div class="text-center">
+            <div class="flex justify-center mb-4">
+              <div class="p-3 rounded-full" :style="{ backgroundColor: feature.color + '20' }">
+                <SvgIcon :icon="feature.icon" class="w-8 h-8" :style="{ color: feature.color }" />
+              </div>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+              {{ feature.title }}
+            </h3>
+            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+              {{ feature.description }}
+            </p>
+          </div>
+        </NCard>
+      </div>
+    </div>
 
-    <NSpace vertical :size="24" class="bg-#F4F7FC pb-90px pt-10">
-      <div>
-        <NH2 class="blogTitle mb-10 text-center text-28px font-700 uppercase">Latest Blog</NH2>
-        <NP class="mx-a text-center text-14px text-#666 font-normal lg:w-600px">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sequi tempora veritatis nemo aut ea iusto eos est expedita, quas ab
-          adipisci.
-        </NP>
+    <!-- Tech Stack Section -->
+    <div class="px-6 py-24 mx-auto max-w-7xl lg:px-8 bg-white/50 dark:bg-gray-800/50">
+      <div class="text-center">
+        <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">技术栈</h2>
+        <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">基于现代化的前端技术构建</p>
       </div>
-      <LatestBlog :blog-list="blogs" />
-    </NSpace>
-  </NSpace>
+      <div class="grid grid-cols-1 gap-6 mt-16 sm:grid-cols-2 lg:grid-cols-3">
+        <NCard
+          v-for="tech in techStack"
+          :key="tech.name"
+          class="card-wrapper hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+          :bordered="false"
+        >
+          <div class="flex items-center space-x-4">
+            <div class="flex-shrink-0">
+              <SvgIcon :icon="tech.icon" class="w-12 h-12" />
+            </div>
+            <div class="flex-1">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                {{ tech.name }}
+              </h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                {{ tech.version }}
+              </p>
+              <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                {{ tech.description }}
+              </p>
+            </div>
+          </div>
+        </NCard>
+      </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="px-6 py-24 mx-auto max-w-7xl lg:px-8">
+      <div class="text-center">
+        <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">项目信息</h2>
+      </div>
+      <div class="grid grid-cols-1 gap-8 mt-16 sm:grid-cols-3">
+        <div class="text-center">
+          <div class="text-4xl font-bold text-primary">{{ pkg.version }}</div>
+          <div class="mt-2 text-lg text-gray-600 dark:text-gray-300">当前版本</div>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl font-bold text-primary">{{ Object.keys(pkg.dependencies).length }}</div>
+          <div class="mt-2 text-lg text-gray-600 dark:text-gray-300">生产依赖</div>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl font-bold text-primary">{{ pkg.license }}</div>
+          <div class="mt-2 text-lg text-gray-600 dark:text-gray-300">开源协议</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="px-6 py-24 mx-auto max-w-7xl lg:px-8">
+      <div class="text-center bg-gradient-to-r from-primary/10 to-blue-500/10 rounded-2xl p-12">
+        <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">开始你的项目</h2>
+        <p class="mt-4 text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          使用这个模板快速启动你的前端项目，享受现代化的开发体验
+        </p>
+        <div class="flex items-center justify-center mt-8 gap-x-6">
+          <NButton type="primary" size="large" class="px-8 py-3" @click="handleDownload">
+            <template #icon>
+              <SvgIcon icon="material-symbols:download" />
+            </template>
+            立即下载
+          </NButton>
+          <NButton quaternary size="large" class="px-8 py-3" @click="handleViewDocs">
+            <template #icon>
+              <SvgIcon icon="material-symbols:description" />
+            </template>
+            查看文档
+          </NButton>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
-.home-area {
-  background-clip: initial;
-  background-origin: initial;
-  background-image: url('@/assets/images/slider-2.jpg');
-  background-color: rgba(0, 0, 0, 0);
+.bg-gradient-to-br {
+  background: linear-gradient(to bottom right, var(--uno-colors-blue-50), var(--uno-colors-indigo-100));
 }
 
-.blogTitle {
-  position: relative;
-  &::after {
-    background: #444444 none repeat scroll 0 0;
-    bottom: -15px;
-    content: '';
-    display: block;
-    font-size: 20px;
-    height: 2px;
-    left: 0;
-    margin: auto;
-    position: absolute;
-    right: 0;
-    width: 50px;
-  }
+.dark .bg-gradient-to-br {
+  background: linear-gradient(to bottom right, var(--uno-colors-gray-900), var(--uno-colors-gray-800));
+}
+
+.text-primary {
+  color: var(--primary-color);
 }
 </style>

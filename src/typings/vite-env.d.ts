@@ -1,46 +1,53 @@
-import type { ImportGlobFunction } from 'vite'
-import type { VitePluginVueDevToolsOptions } from 'vite-plugin-vue-devtools'
-
 /**
- * Namespace Env
+ * Env 命名空间
  *
- * It is used to declare the type of the import.meta object
+ * 用于声明 import.meta 对象的类型
  */
 declare namespace Env {
-  /** The router history mode */
+  /** 路由历史模式 */
   type RouterHistoryMode = 'hash' | 'history' | 'memory'
 
-  /** Interface for import.meta */
+  /** import.meta 接口 */
   interface ImportMeta extends ImportMetaEnv {
-    /** The base url of the application */
-    /** The public path of the application */
+    /** 应用基础路径 */
+    /** 应用的公共路径 */
     readonly VITE_BASE_URL: string
-    /** The title of the application */
+    /** 应用标题 */
     readonly VITE_APP_TITLE: string
-    /** The port of the application */
+    /** 应用端口 */
     readonly VITE_PORT: number
-    /** Whether to open the application in the browser */
+    /** 是否在浏览器中自动打开应用 */
     readonly VITE_OPEN: CommonType.YesOrNo
-    /** Whether to use https */
+    /** 是否使用 https */
     readonly VITE_PROXY: string
-    /** The mode of the application */
+    /** 是否启用 HTTP 代理 */
+    readonly VITE_HTTP_PROXY: CommonType.YesOrNo
+    /** 是否启用代理日志 */
+    readonly VITE_PROXY_LOG: CommonType.YesOrNo
+    /** 是否移除 console */
+    readonly VITE_DROP_CONSOLE: CommonType.YesOrNo
+    /** 应用的路由模式 */
     readonly VITE_ROUTER_MODE: RouterHistoryMode
-    /** Whether to enable the Vue DevTools */
-    readonly VITE_DEVTOOLS_LAUNCH_EDITOR: VitePluginVueDevToolsOptions['launchEditor']
-    /** Whether to automatically detect updates */
+    /** 存储键前缀 */
+    readonly VITE_STORAGE_PREFIX: string
+    /** Node 运行环境 */
+    readonly VITE_USER_NODE_ENV: 'development' | 'production'
+    /** 是否启用 Vue DevTools */
+    readonly VITE_DEVTOOLS_LAUNCH_EDITOR: import('vite-plugin-vue-devtools').VitePluginVueDevToolsOptions['launchEditor']
+    /** 是否自动检测更新 */
     readonly VITE_AUTOMATICALLY_DETECT_UPDATE: CommonType.YesOrNo
-    /** The prefix of the iconify icon */
+    /** Iconify 图标前缀 */
     readonly VITE_ICON_PREFIX: 'icon'
     /**
-     * The prefix of the local icon
+     * 本地图标前缀
      *
-     * This prefix is start with the icon prefix
+     * 该前缀以图标前缀开头
      */
     readonly VITE_ICON_LOCAL_PREFIX: 'icon-local'
     /**
-     * Iconify api provider url
+     * Iconify API 提供者地址
      *
-     * If the project is deployed in intranet, you can set the api provider url to the local iconify server
+     * 如果项目部署在内网，可以将 API 提供者地址设置为本地 Iconify 服务器
      *
      * @link https://docs.iconify.design/api/providers.html
      */
@@ -50,5 +57,5 @@ declare namespace Env {
 
 interface ImportMeta {
   readonly env: Env.ImportMeta
-  glob: ImportGlobFunction
+  glob: import('vite').ImportGlobFunction
 }

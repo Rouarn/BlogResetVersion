@@ -1,25 +1,56 @@
 import { computed, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { fetchLogin } from '@/service/api/login'
+import { fetchLogin, fetchLogout, fetchUserInfo } from '@/service/api/login'
 import { localStg } from '@/utils/storage'
-import { clearAuthStorage, getToken } from './shared'
+import { useRouteStore } from '../route'
+import { useThemeStore } from '../theme'
+import { clearAuthStorage, getRefreshToken, getToken, getTokenExpiresAt } from './shared'
 import { SetupStoreId } from '@/enum'
 import { useRouterPush } from '@/hooks/common/router'
 import { defineStore } from 'pinia'
 
+const initialState = {
+  token: '',
+  tokenType: 'Bearer',
+  refreshToken: '',
+  tokenExpiresAt: 0,
+  refreshTokenExpiresAt: 0,
+  userInfo: {
+    userId: '',
+    username: '',
+    nickname: '',
+    avatar: '',
+    gender: 2 as Api.Common.Gender,
+    mobile: '',
+    email: '',
+    bio: '',
+    birthday: '',
+    city: '',
+    profession: '',
+    roles: 'user' as Api.Auth.UserRole,
+    lastLoginAt: '',
+    lastLoginIp: '',
+    loginAttempts: 0,
+    status: '1' as Api.Common.EnableStatus,
+  },
+}
+
 export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
-  const route = useRoute()
+  const themeStore = useThemeStore()
+  const routeStore = useRouteStore()
   const authStore = useAuthStore()
+
+  const route = useRoute()
   const { toLogin, redirectFromLogin } = useRouterPush(false)
 
-  // token
   const token = ref(getToken())
+  const tokenType = ref(localStg.get('tokenType') || initialState.tokenType)
+  const refreshToken = ref(getRefreshToken())
+  const tokenExpiresAt = ref(getTokenExpiresAt())
+  const refreshTokenExpiresAt = ref(Number(localStg.get('refreshTokenExpiresAt') || initialState.refreshTokenExpiresAt))
 
   // 用户信息
-  const userInfo: Api.Auth.UserInfo = reactive({
-    userId: '',
-    userName: '夏季',
-  })
+  const userInfo: Api.Auth.UserInfo = reactive(localStg.get('userInfo') ?? initialState.userInfo)
 
   // 是否已登录
   const isLogin = computed(() => Boolean(token.value))
@@ -29,31 +60,81 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     localStg.set('token', value)
   }
 
+  const setTokenType = (value: string) => {
+    tokenType.value = value || 'Bearer'
+    localStg.set('tokenType', tokenType.value)
+  }
+
+  const setRefreshToken = (value: string) => {
+    refreshToken.value = value
+    localStg.set('refreshToken', value)
+  }
+
+  const setRefreshTokenExpiresAt = (value: number) => {
+    refreshTokenExpiresAt.value = value
+    localStg.set('refreshTokenExpiresAt', value)
+  }
+
+  const setTokenExpiresAt = (value: number) => {
+    tokenExpiresAt.value = value
+    localStg.set('tokenExpiresAt', value)
+  }
+
+  const setUserInfo = (value: Api.Auth.UserInfo) => {
+    Object.assign(userInfo, value)
+    localStg.set('userInfo', userInfo)
+  }
+
   /**
-   * Login
-   *
-   * @param userName User name
-   * @param password Password
-   * @param [redirect=true]登录后是否重定向。默认为“true”
+   * 登录
+   * @param username 用户名
+   * @param password 密码
+   * @param [redirect=true] 登录后是否重定向，默认 true
    */
-  async function login(userName: string, password: string, redirect = true) {
-    const { data } = await fetchLogin(userName, password)
-    setToken(data.token)
+  async function login(username: string, password: string, redirect = true) {
+    const { data, error } = await fetchLogin(username.trim(), password.trim())
+    if (error) return
+    setToken(data?.accessToken ?? initialState.token)
+    setTokenType(data?.tokenType ?? initialState.tokenType)
+    setRefreshToken(data?.refreshToken ?? initialState.refreshToken)
+    setTokenExpiresAt(Date.now() + Number(data?.expiresIn ?? initialState.tokenExpiresAt) * 1000)
+    if (data?.refreshExpiresIn) {
+      setRefreshTokenExpiresAt(Date.now() + Number(data.refreshExpiresIn) * 1000)
+    }
+    const { data: userInfoData } = await fetchUserInfo()
+    setUserInfo(userInfoData ?? initialState.userInfo)
 
     await redirectFromLogin(redirect)
 
     window.$notification?.success({
       title: '登录成功',
-      content: '欢迎回来：' + userInfo.userName,
+      content: `欢迎回来：${userInfo.nickname || userInfo.username || userInfo.mobile || userInfo.email}`,
       duration: 4500,
     })
   }
 
-  /** Reset auth store */
-  async function resetStore() {
-    clearAuthStorage()
-
+  /** 重置认证状态（清理本地数据） */
+  function resetAuthStore() {
+    setUserInfo(initialState.userInfo)
+    setToken(initialState.token)
+    setRefreshToken(initialState.refreshToken)
+    setTokenExpiresAt(initialState.tokenExpiresAt)
+    themeStore.resetStore()
     authStore.$reset()
+    routeStore.$reset()
+    clearAuthStorage()
+  }
+
+  /** 重置认证状态（退出登录并清理本地数据） */
+  async function resetStore() {
+    try {
+      const { error } = await fetchLogout()
+      if (error) return
+    } catch {
+      return
+    }
+
+    resetAuthStore()
 
     if (route.meta.isAuth) {
       await toLogin()
@@ -61,10 +142,20 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   }
   return {
     token,
+    tokenType,
+    refreshToken,
+    tokenExpiresAt,
+    refreshTokenExpiresAt,
     userInfo,
     isLogin,
     login,
     setToken,
+    setTokenType,
+    setRefreshToken,
+    setTokenExpiresAt,
+    setRefreshTokenExpiresAt,
+    setUserInfo,
     resetStore,
+    resetAuthStore,
   }
 })

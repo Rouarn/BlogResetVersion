@@ -1,4 +1,4 @@
-/** Create color palette vars */
+/** 创建颜色调色板变量 */
 function createColorPaletteVars() {
   const colors: App.Theme.ThemeColorKey[] = ['primary', 'info', 'success', 'warning', 'error']
   const colorPaletteNumbers: App.Theme.ColorPaletteNumber[] = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]
@@ -17,7 +17,7 @@ function createColorPaletteVars() {
 
 const colorPaletteVars = createColorPaletteVars()
 
-/** Theme vars */
+/** 主题变量 */
 export const themeVars: App.Theme.ThemeTokenCSSVars = {
   colors: {
     ...colorPaletteVars,

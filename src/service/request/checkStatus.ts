@@ -1,41 +1,25 @@
 /**
- * @description: 校验网络请求状态码
- * @param {Number} status
- * @return void
+ * 检查 HTTP 状态码并提示
+ * - 当无后端 message 且存在状态码时使用内置文案
  */
-export const checkStatus = (status: number) => {
-  switch (status) {
-    case 400:
-      window.$message?.error('请求失败！请您稍后重试')
-      break
-    case 401:
-      window.$message?.error('登录失效！请您重新登录')
-      break
-    case 403:
-      window.$message?.error('当前账号无权限访问！')
-      break
-    case 404:
-      window.$message?.error('你所访问的资源不存在！')
-      break
-    case 405:
-      window.$message?.error('请求方式错误！请您稍后重试')
-      break
-    case 408:
-      window.$message?.error('请求超时！请您稍后重试')
-      break
-    case 500:
-      window.$message?.error('服务异常！')
-      break
-    case 502:
-      window.$message?.error('网关错误！')
-      break
-    case 503:
-      window.$message?.error('服务不可用！')
-      break
-    case 504:
-      window.$message?.error('网关超时！')
-      break
-    default:
-      window.$message?.error('请求失败！')
-  }
+const STATUS_TEXT: Record<number, string> = {
+  400: '请求参数错误',
+  401: '未授权或登录已过期',
+  403: '没有权限访问',
+  404: '请求地址不存在',
+  408: '请求超时',
+  500: '服务器内部错误',
+  502: '网关错误',
+  503: '服务不可用',
+  504: '网关超时',
+}
+
+export function checkStatus(status: number, customMessage?: string): void {
+  const message = customMessage || STATUS_TEXT[status] || `请求错误：${status}`
+  if (message) window.$message?.error(message)
+}
+
+/** 是否为服务端错误（5xx） */
+export function isServerError(status: number): boolean {
+  return status >= 500 && status < 600
 }

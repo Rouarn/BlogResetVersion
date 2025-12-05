@@ -12,7 +12,7 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  showPadding: false,
+  showPadding: true,
 })
 
 const appStore = useAppStore()
@@ -22,7 +22,7 @@ const routeStore = useRouteStore()
 <template>
   <RouterView v-slot="{ Component, route }">
     <Transition name="fade" mode="out-in">
-      <KeepAlive :include="routeStore.cacheRoutes">
+      <KeepAlive :include="routeStore.cacheRoutes" :exclude="routeStore.excludeCacheRoutes">
         <component
           :is="Component"
           v-if="appStore.reloadFlag"

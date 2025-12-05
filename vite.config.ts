@@ -1,6 +1,5 @@
 import { createViteProxy, getBuildTime } from './build/config'
 import { setupVitePlugins } from './build/plugins'
-import type { Env } from '@/typings/vite-env'
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig, loadEnv } from 'vite'
 
@@ -17,7 +16,7 @@ export default defineConfig((configEnv) => {
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
-        '~': fileURLToPath(new URL('./', import.meta.url)),
+        '~': fileURLToPath(new URL('.', import.meta.url)),
       },
     },
     css: {
@@ -43,32 +42,68 @@ export default defineConfig((configEnv) => {
       port: 9725,
     },
     esbuild: {
-      pure: [...(viteEnv.VITE_DROP_CONSOLE === 'Y' ? ['console.log'] : [])], // 只删除 console.log
-      drop: ['debugger' /** 'console' */], // 删除 所有的console 和 debugger
+      // 开发环境下保持简单配置，主要的调试代码清理由 terser 在生产环境处理
+      drop: ['debugger'], // 开发环境只删除 debugger
     },
     build: {
       outDir: 'dist',
-      minify: 'esbuild',
-      // esbuild 打包更快，但是不能去除 console.log，terser打包慢，但能去除 console.log
-      // minify: "terser", // 需自行安装 terser, 并注释 esbuild 相关配置
-      // terserOptions: {
-      // 	compress: {
-      // 		drop_console: viteEnv.VITE_DROP_CONSOLE === 'Y',
-      // 		drop_debugger: true
-      // 	}
-      // },
+      // 开发环境使用 esbuild（快速），生产环境使用 terser（更好的压缩）
+      minify: configEnv.command === 'build' ? 'terser' : 'esbuild',
+      // terser 配置：生产环境下更好的代码压缩和清理
+      terserOptions: {
+        compress: {
+          // 根据环境变量控制是否移除 console
+          drop_console: viteEnv.VITE_DROP_CONSOLE === 'Y',
+          drop_debugger: true,
+          // 移除未使用的代码
+          dead_code: true,
+          // 移除无用的条件判断
+          conditionals: true,
+          // 压缩布尔值
+          booleans: true,
+          // 优化 if-return 和 if-continue
+          if_return: true,
+          // 合并连续的 var 声明
+          join_vars: true,
+          // 移除无用的分号
+          sequences: true,
+        },
+        mangle: {
+          // 混淆变量名以减少文件大小
+          toplevel: true,
+          // 保留类名（可选，根据需要调整）
+          keep_classnames: false,
+          // 保留函数名（可选，根据需要调整）
+          keep_fnames: false,
+        },
+        format: {
+          // 移除注释
+          comments: false,
+        },
+      },
       // 是否生成源码视图
       sourcemap: false,
       // 禁用 gzip 压缩大小报告，可略微减少打包时间
       reportCompressedSize: false,
       // 规定触发警告的 chunk 大小
-      chunkSizeWarningLimit: 2000,
+      chunkSizeWarningLimit: 1000,
       rollupOptions: {
         output: {
-          // Static resource classification and packaging
+          // 静态资源分类与打包
           chunkFileNames: 'assets/js/[name]-[hash].js',
           entryFileNames: 'assets/js/[name]-[hash].js',
           assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
+          // 优化代码分割策略
+          manualChunks: {
+            // 将Vue相关库分离到单独的chunk
+            'vue-vendor': ['vue', 'vue-router', 'pinia'],
+            // 将UI库分离到单独的chunk
+            'ui-vendor': ['naive-ui'],
+            // 将工具库分离到单独的chunk
+            'utils-vendor': ['axios', 'dayjs', '@vueuse/core'],
+            // 将图标库分离到单独的chunk
+            'icons-vendor': ['@iconify/vue'],
+          },
         },
       },
     },

@@ -4,13 +4,20 @@ import { globalIgnores } from 'eslint/config'
 import eslintPluginSimpleImportSort from 'eslint-plugin-simple-import-sort'
 import pluginVue from 'eslint-plugin-vue'
 
-export default defineConfigWithVueTs(
+const config: ReturnType<typeof defineConfigWithVueTs> = defineConfigWithVueTs(
   {
     name: 'app/files-to-lint',
     files: ['**/*.{ts,mts,tsx,vue}'],
   },
 
-  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
+  globalIgnores([
+    '**/dist/**',
+    '**/dist-ssr/**',
+    '**/coverage/**',
+    // 从 .prettierignore 同步的忽略规则
+    'src/typings/auto-imports.d.ts',
+    'src/typings/components.d.ts',
+  ]),
 
   pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,
@@ -32,7 +39,7 @@ export default defineConfigWithVueTs(
       'vue/multi-word-component-names': [
         'warn',
         {
-          ignores: ['index', 'App', 'Register', '[id]', '[url]'],
+          ignores: ['index', 'App', 'Register', '[id]', '[url]', 'composer'],
         },
       ],
       // 强制模板中的组件名使用 PascalCase（大驼峰）命名，除了以 icon- 开头的
@@ -145,3 +152,4 @@ export default defineConfigWithVueTs(
     },
   },
 )
+export default config

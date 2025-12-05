@@ -10,12 +10,48 @@ interface ElType extends HTMLElement {
   copyData: string | number
 }
 
-async function handleClick(this: ElType) {
+// 传统复制方法（兼容性降级）
+function fallbackCopyTextToClipboard(text: string) {
+  const textArea = document.createElement('textarea')
+  textArea.value = text
+
+  // 避免在页面上显示
+  textArea.style.position = 'fixed'
+  textArea.style.left = '-999999px'
+  textArea.style.top = '-999999px'
+  textArea.setAttribute('readonly', '')
+
+  document.body.appendChild(textArea)
+  textArea.focus()
+  textArea.select()
+
   try {
-    await navigator.clipboard.writeText(String(this.copyData))
+    const successful = document.execCommand('copy')
+    if (!successful) {
+      throw new Error('execCommand copy failed')
+    }
+  } finally {
+    document.body.removeChild(textArea)
+  }
+}
+
+async function handleClick(this: ElType) {
+  const text = String(this.copyData)
+
+  try {
+    // 优先使用现代 Clipboard API
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text)
+      window.$message?.success('复制成功')
+      return
+    }
+
+    // 降级到传统方法
+    fallbackCopyTextToClipboard(text)
     window.$message?.success('复制成功')
   } catch (err) {
-    console.error('复制操作不被支持或失败: ', err)
+    console.error('复制操作失败: ', err)
+    window.$message?.error('复制失败，请手动复制')
   }
 }
 

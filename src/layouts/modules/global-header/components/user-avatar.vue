@@ -18,7 +18,7 @@ function loginOrRegister() {
   toLogin()
 }
 
-type DropdownKey = '/user-center/' | 'logout'
+type DropdownKey = 'user-center' | 'logout'
 
 type DropdownOption =
   | {
@@ -35,7 +35,7 @@ const options = computed(() => {
   const opts: DropdownOption[] = [
     {
       label: $t('common.userCenter'),
-      key: '/user-center/',
+      key: 'user-center',
       icon: SvgIconVNode({ icon: 'ph:user-circle', fontSize: 18 }),
     },
     {
@@ -65,13 +65,16 @@ function logout() {
 }
 
 function handleDropdown(key: DropdownKey) {
-  console.log('key: ', key)
   if (key === 'logout') {
     logout()
   } else {
-    // If your other options are jumps from other routes, they will be directly supported here
+    // 如果你的其他选项是跳转到路由，这里会直接支持
     routerPushByKey(key)
   }
+}
+
+function handleError() {
+  authStore.userInfo.avatar = ''
 }
 </script>
 
@@ -82,8 +85,16 @@ function handleDropdown(key: DropdownKey) {
   <NDropdown v-else placement="bottom" trigger="click" :options="options" @select="handleDropdown">
     <div>
       <ButtonIcon>
-        <SvgIcon icon="ph:user-circle" class="text-lg" />
-        <span class="text-16px font-medium">{{ authStore.userInfo.userName }}</span>
+        <SvgIcon icon="ph:user-circle" class="text-lg" v-if="!authStore.userInfo.avatar" />
+        <NImage
+          :src="authStore.userInfo.avatar"
+          class="w-20px h-20px rounded-full"
+          fit="cover"
+          v-else
+          @error="handleError"
+          preview-disabled
+        />
+        <span class="text-16px font-medium">{{ authStore.userInfo.nickname }}</span>
       </ButtonIcon>
     </div>
   </NDropdown>

@@ -1,6 +1,6 @@
-/** The global namespace for the app */
+/** 应用的全局命名空间 */
 declare namespace App {
-  /** Theme namespace */
+  /** 主题命名空间 */
   namespace Theme {
     type ColorPaletteNumber = 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950
 
@@ -11,32 +11,43 @@ declare namespace App {
       error: string
     }
 
-    /** Theme setting */
+    /** 主题设置 */
     interface ThemeSetting {
-      /** Theme scheme */
+      /** 主题方案 */
       themeScheme: UnionKey.ThemeScheme
-      /** grayscale mode */
+      /** 灰度模式 */
       grayscale: boolean
-      /** colour weakness mode */
+      /** 色弱模式 */
       colourWeakness: boolean
-      /** Theme color */
+      /** 主题颜色 */
       themeColor: string
-      /** Other color */
+      /** 其他颜色 */
       otherColor: OtherColor
-      /** Whether the info color is followed by the primary color */
+      /** 信息色是否跟随主色 */
       isInfoFollowPrimary: boolean
-      /** Whether to recommend color */
+      /** 是否推荐颜色 */
       recommendColor: boolean
 
-      /** define some theme settings tokens, will transform to css variables */
+      /** 水印设置 */
+      watermark: {
+        /** 是否显示水印 */
+        visible: boolean
+        /** 水印文本 */
+        text: string
+        /** 是否显示用户名 */
+        enableUserName: boolean
+        /** 是否显示时间 */
+        enableTime: boolean
+        /** 时间格式 */
+        timeFormat: string
+      }
+
+      /** 定义部分主题设置的 tokens，将转换为 CSS 变量 */
       tokens: {
         light: ThemeSettingToken
         dark?: {
           [K in keyof ThemeSettingToken]?: Partial<ThemeSettingToken[K]>
         }
-      }
-      background: {
-        showVideo: boolean
       }
     }
 
@@ -53,7 +64,7 @@ declare namespace App {
     type BaseToken = Record<string, Record<string, string>>
 
     interface ThemeSettingTokenColor {
-      /** the progress bar color, if not set, will use the primary color */
+      /** 进度条颜色，未设置则使用主色 */
       nprogress?: string
       container: string
       layout: string
@@ -74,7 +85,7 @@ declare namespace App {
       boxShadow: ThemeSettingTokenBoxShadow
     }
 
-    /** Theme token CSS variables */
+    /** 主题 Token 的 CSS 变量 */
     type ThemeTokenCSSVars = {
       colors: ThemeTokenColor & { [key: string]: string }
       boxShadow: ThemeSettingTokenBoxShadow & { [key: string]: string }
@@ -82,9 +93,9 @@ declare namespace App {
   }
 
   /**
-   * I18n namespace
+   * I18n 命名空间
    *
-   * Locales type
+   * 语言类型
    */
   namespace I18n {
     type LangType = 'en-US' | 'zh-CN'
@@ -128,14 +139,59 @@ declare namespace App {
         themeColor: {
           title: string
           followPrimary: string
-        } & Theme.ThemeColor
+        } & Record<Theme.ThemeColorKey, string>
         themeDrawerTitle: string
+
+        watermark: {
+          title: string
+          visible: string
+          text: string
+          enableUserName: string
+          enableTime: string
+          timeFormat: string
+        }
+        configOperation: {
+          copyConfig: string
+          copySuccessMsg: string
+          resetConfig: string
+          resetSuccessMsg: string
+        }
       }
       route: {
-        link: string
-        about: string
-        directives: string
+        root: string
         home: string
+        notFound: string
+        '403': string
+        '404': string
+        '500': string
+        iframe: string
+        login: string
+        about: string
+        demos: {
+          title: string
+          'loading-demo': string
+        }
+        directives: {
+          title: string
+          'animate-direct': string
+          'clickoutside-direct': string
+          'copy-direct': string
+          'debounce-direct': string
+          'drag-direct': string
+          'focus-direct': string
+          'highlight-direct': string
+          'lazy-direct': string
+          'loading-direct': string
+          'longpress-direct': string
+          'mask-direct': string
+          'permission-direct': string
+          'scroll-direct': string
+          'throttle-direct': string
+          'tooltip-direct': string
+          'watermark-direct': string
+          'ripple-direct': string
+        }
+        'user-center': string
       }
       page: {
         about: {
@@ -157,6 +213,7 @@ declare namespace App {
           }
         }
       }
+
       icon: {
         themeConfig: string
         themeSchema: string
@@ -194,76 +251,73 @@ declare namespace App {
     }
   }
 
-  /** Global namespace */
+  /** 全局命名空间 */
   namespace Global {
-    /** Route path */
-    type RouteKey = keyof import('vue-router/auto-routes').RouteNamedMap
-    /** Route path */
+    /** 路由键 */
+    type RouteKey = string
+    /** 路由路径 */
     type RoutePath = string
 
-    /** The router push options */
+    /** 路由跳转参数 */
     type RouterPushOptions = {
       query?: Record<string, string>
       params?: Record<string, string>
     }
 
-    /** Base menu item properties */
-    type BaseMenuItem = {
-      /** The menu key */
-      key: string
-      /** The menu label */
-      label: string
-      /** The menu i18n key */
-      i18nKey?: I18n.I18nKey | null
-      /** The menu order */
-      order?: number
-      /** The menu icon */
-      icon?: () => VNode
-      /** The menu parent */
-      parent?: string | null
-    }
-
-    /** Menu group properties */
-    type MenuGroup = {
-      /** The menu group */
-      group?: {
-        enabled: boolean | string
-        title?: string
-        icon?: string
-        i18nKey?: I18n.I18nKey | null
-        order?: number
-        parent?: string
-      } | null
-    }
-
-    /** Route-related properties */
+    /** 路由相关属性 */
     type RouteProperties = {
-      /** The route key */
+      /** 路由键 */
       routeKey: RouteKey
-      /** The route path */
+      /** 路由路径 */
       routePath: RoutePath
     }
 
-    /** The global menu */
-    type Menu = BaseMenuItem & RouteProperties & MenuGroup & { children?: Menu[] }
+    /** 菜单类型 */
+    type MenuType = 1 | 2
+
+    /** 全局菜单 */
+    type Menu = {
+      /**
+       * 菜单键
+       *
+       * 等同于路由键
+       */
+      key: RouteKey
+      /** 菜单标签 */
+      label: string
+      /** 菜单的 i18n 键 */
+      i18nKey?: I18n.I18nKey | null
+      /** 路由键 */
+      routeKey: RouteKey
+      /** 路由路径 */
+      routePath: RoutePath
+      /** 菜单图标 */
+      icon?: () => VNode
+      /** 菜单排序 */
+      order?: number | null
+      /** 子菜单 */
+      children?: Menu[]
+      /** 菜单类型 */
+      menuType?: MenuType
+    }
   }
 
-  /** Service namespace */
+  /** 服务命名空间 */
   namespace Service {
     interface ServiceConfigItem {
-      /** The backend service base url */
+      /** 后端服务基础地址 */
       baseURL: string
-      /** The proxy pattern of the backend service base url */
+      /** 后端服务基础地址的代理匹配模式 */
       proxyPattern: string
     }
 
-    /** The backend service response data */
+    /** 后端服务响应数据 */
     type Response<T = unknown> = {
-      /** The backend service response code */
+      /** 响应码 */
       code: number
-      /** The backend service response message */
-      msg: string
-      /** The backend service response data */
+      /** 响应消息 */
+      message: string
+      /** 响应数据 */
       data: T
     }
   }

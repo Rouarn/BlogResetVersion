@@ -37,8 +37,8 @@ const inverted = computed(() => themeStore.themeScheme === 'dark')
   />
 
   <NIcon v-if="isMobile" size="20" @click="isVisible = !isVisible">
-    <icon-line-md:menu-fold-right v-if="!isVisible" />
-    <icon-line-md:menu-fold-left v-else />
+    <icon-line-md-menu-fold-right v-if="!isVisible" />
+    <icon-line-md-menu-fold-left v-else />
   </NIcon>
   <NDrawer v-model:show="isVisible" width="80%" placement="left" v-if="isMobile">
     <NDrawerContent body-content-class="pa-0!">

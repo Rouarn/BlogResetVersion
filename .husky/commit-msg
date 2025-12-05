@@ -1,4 +1,2 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-npx --no-install commitlint --edit $1
+# 运行 commitlint 检查提交信息
+npx --no -- commitlint --edit ${1}

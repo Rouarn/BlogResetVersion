@@ -1,78 +1,29 @@
 <script setup lang="ts">
-import GlobalLogo from '../global-logo/index.vue'
-
-defineOptions({
-  name: 'GlobalFooter',
-})
+import { NSpace, NText } from 'naive-ui'
 
 const currentYear = new Date().getFullYear()
 </script>
 
 <template>
-  <footer class="h-full flex-center flex-col py-90px shadow-2xl">
-    <GlobalLogo />
-    <NSpace inline class="mb-20px mt-4">
-      <NIcon class="icon">
-        <icon-material-symbols:mail-rounded />
-      </NIcon>
-      <NIcon class="icon">
-        <icon-ri:weibo-fill />
-      </NIcon>
-      <NIcon class="icon">
-        <icon-ri:github-fill />
-      </NIcon>
-      <NIcon class="icon">
-        <icon-simple-icons:bilibili />
-      </NIcon>
-    </NSpace>
-    <NSpace class="item">
-      <NP>Home</NP>
-      <NP>Portfolio</NP>
-      <NP>About</NP>
-      <NP>Blog</NP>
-      <NP>Contact</NP>
-    </NSpace>
-    <NP class="text-#666">Copyright © {{ currentYear }}.Company name All rights reserved.</NP>
+  <footer class="w-full bg-white dark:bg-#18181c border-t border-gray-200 dark:border-gray-700 py-6">
+    <div class="max-w-screen-md mx-auto px-4 text-center">
+      <NSpace vertical size="small">
+        <NText depth="3" class="text-sm"> © {{ currentYear }} 您的公司名称. 保留所有权利 </NText>
+
+        <NSpace justify="center" size="medium">
+          <NText tag="a" href="#" depth="3" class="text-sm hover:text-primary cursor-pointer"> 隐私政策 </NText>
+          <NText tag="a" href="#" depth="3" class="text-sm hover:text-primary cursor-pointer"> 服务条款 </NText>
+          <NText tag="a" href="#" depth="3" class="text-sm hover:text-primary cursor-pointer"> 联系我们 </NText>
+        </NSpace>
+      </NSpace>
+    </div>
   </footer>
 </template>
 
 <style lang="scss" scoped>
-.item p {
-  position: relative;
-  padding: 0 0.5rem;
-  text-transform: uppercase;
-  font-size: 0.7rem;
-  color: #444;
-  &::before {
-    background: #666 none repeat scroll 0 0;
-    bottom: 8px;
-    content: '';
-    height: 4px;
-    right: -14px;
-    margin-right: 6px;
-    position: absolute;
-    width: 4px;
-  }
-}
-
-.icon {
-  background: #252525 none repeat scroll 0 0;
-  border-radius: 50%;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 16px;
-  height: 35px;
-  margin: 0 5px;
-  width: 35px;
-  transition: all 0.3s ease-in-out;
-  cursor: pointer;
-
-  &:hover {
-    background: #fff;
-    color: #252525;
-    font-size: 30px;
-  }
+footer {
+  transition:
+    background-color 0.3s,
+    border-color 0.3s;
 }
 </style>

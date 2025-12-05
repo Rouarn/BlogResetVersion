@@ -1,12 +1,12 @@
-/** The union key namespace */
+/** 联合键命名空间 */
 declare namespace UnionKey {
-  /** Theme scheme */
+  /** 主题方案 */
   type ThemeScheme = 'light' | 'dark' | 'auto'
 
-  /** Page animate mode */
+  /** 页面动画模式 */
   type ThemePageAnimateMode = 'fade' | 'fade-slide' | 'fade-bottom' | 'fade-scale' | 'zoom-fade' | 'zoom-out' | 'none'
 
-  /** Unocss animate key */
+  /** Unocss 动画键 */
   type UnoCssAnimateKey =
     | 'pulse'
     | 'bounce'

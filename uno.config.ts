@@ -1,8 +1,8 @@
 import { themeVars } from './src/theme/vars'
-import type { PresetUnoTheme } from 'unocss'
+import type { PresetUnoTheme, UserConfig } from 'unocss'
 import { defineConfig, presetWind3, transformerDirectives, transformerVariantGroup } from 'unocss'
 
-export default defineConfig<PresetUnoTheme>({
+const config = defineConfig<PresetUnoTheme>({
   content: {
     pipeline: {
       exclude: ['node_modules', 'dist'],
@@ -13,7 +13,7 @@ export default defineConfig<PresetUnoTheme>({
   },
   shortcuts: {
     'card-wrapper': 'rd-8px shadow-sm',
-    card: 'flex-center flex-col justify-start! text-25px',
+    card: 'h-82vh flex flex-col items-center',
   },
   transformers: [transformerDirectives(), transformerVariantGroup()],
   presets: [
@@ -63,4 +63,6 @@ export default defineConfig<PresetUnoTheme>({
       ],
     },
   ],
-})
+}) satisfies UserConfig<PresetUnoTheme>
+
+export default config

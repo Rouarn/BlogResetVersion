@@ -1,9 +1,9 @@
-/** Default theme settings */
+/** 默认主题设置 */
 export const themeSettings: App.Theme.ThemeSetting = {
   themeScheme: 'light',
   grayscale: false,
   colourWeakness: false,
-  themeColor: '#232232',
+  themeColor: '#009688',
   recommendColor: false,
   otherColor: {
     info: '#2080f0',
@@ -12,6 +12,13 @@ export const themeSettings: App.Theme.ThemeSetting = {
     error: '#f5222d',
   },
   isInfoFollowPrimary: true,
+  watermark: {
+    visible: false,
+    text: 'Frontend Template',
+    enableUserName: false,
+    enableTime: false,
+    timeFormat: 'YYYY-MM-DD HH:mm',
+  },
   tokens: {
     light: {
       colors: {
@@ -34,14 +41,11 @@ export const themeSettings: App.Theme.ThemeSetting = {
       },
     },
   },
-  background: {
-    showVideo: true,
-  },
 }
 
 /**
- * Override theme settings
+ * 覆盖主题设置
  *
- * If publish new version, use `overrideThemeSettings` to override certain theme settings
+ * 发布新版本时，可使用 `overrideThemeSettings` 覆盖部分主题设置
  */
 export const overrideThemeSettings: Partial<App.Theme.ThemeSetting> = {}

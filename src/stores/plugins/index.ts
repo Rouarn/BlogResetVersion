@@ -3,7 +3,7 @@ import { jsonClone } from '@sa/utils'
 import type { PiniaPluginContext } from 'pinia'
 
 /**
- * The plugin reset the state of the store which is written by setup syntax
+ * 插件用于重置使用 setup 语法编写的 Store 的状态
  *
  * @param context
  */
