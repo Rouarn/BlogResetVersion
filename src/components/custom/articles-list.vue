@@ -1,6 +1,11 @@
 <template>
   <div class="flex-col gap-24px">
-    <div v-for="item in tableData" :key="item.id" class="card-wrapper bg-white dark:bg-gray-900 p-20px flex gap-20px">
+    <div
+      v-for="item in tableData"
+      :key="item.id"
+      class="card-wrapper bg-white dark:bg-gray-900 p-20px flex gap-20px"
+      @click="handleClick(item.id)"
+    >
       <NImage :src="item.cover" :alt="item.title" class="w-200px h-130px rd-10px object-cover" />
       <NFlex vertical class="flex-1">
         <div class="flex-1">
@@ -21,9 +26,13 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { useRouterPush } from '@/hooks/common/router'
 defineOptions({
   name: 'ArticlesList',
 })
+
+const { routerPush } = useRouterPush()
+
 interface Props {
   modelValue?: string
   modelType?: string
@@ -70,6 +79,10 @@ const getTableData = async () => {
       timeAgo: '8月前',
     },
   ]
+}
+
+const handleClick = (id: number) => {
+  routerPush({ path: `/article/${id}` })
 }
 
 onMounted(() => {

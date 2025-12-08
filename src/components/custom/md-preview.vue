@@ -1,7 +1,5 @@
 <template>
-  <div class="md-preview-wrapper">
-    <MdPreview :model-value="modelValue" :preview-theme="previewTheme" />
-  </div>
+  <MdPreview :model-value="modelValue" :preview-theme="previewTheme" />
 </template>
 
 <script setup lang="ts">

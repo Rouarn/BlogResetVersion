@@ -53,6 +53,19 @@ export const ROOT_ROUTE: RouteRecordRaw = {
         isAuth: true,
       },
     },
+    {
+      name: 'article',
+      path: '/article/:id',
+      component: () => import('@/views/article/[id].vue'),
+      meta: {
+        title: 'Article',
+        icon: '',
+        order: 2,
+        hideInMenu: true,
+        isKeepAlive: true,
+        isAuth: false,
+      },
+    },
   ],
 }
 
