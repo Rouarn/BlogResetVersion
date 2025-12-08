@@ -1,15 +1,11 @@
 <template>
   <div>
-    <MdEditorWrapper v-model="modelValue" />
+    <ArticlesList />
   </div>
 </template>
 
 <script setup lang="ts">
-import MdEditorWrapper from '@/components/custom/md-editor.vue'
-
-defineOptions({ name: 'Home' })
-
-const modelValue = ref('')
+import ArticlesList from '@/components/custom/articles-list.vue'
 </script>
 
 <style lang="scss" scoped></style>

@@ -1,6 +1,6 @@
 <template>
   <div class="md-editor-wrapper">
-    <MdEditor v-model="modelValue" :preview-theme="'github'" :toolbars-exclude="[]" />
+    <MdEditor v-model="modelValue" :preview-theme="previewTheme" :toolbars-exclude="[]" />
   </div>
 </template>
 
@@ -12,10 +12,12 @@ import { MdEditor } from 'md-editor-v3'
 defineOptions({ name: 'MdEditorWrapper' })
 
 interface Props {
-  modelValue: string
+  modelValue?: string
+  previewTheme?: string
 }
 const props = withDefaults(defineProps<Props>(), {
   modelValue: '',
+  previewTheme: 'github',
 })
 
 type Emits = {
