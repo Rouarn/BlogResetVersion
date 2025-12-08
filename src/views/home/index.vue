@@ -1,11 +1,11 @@
 <template>
   <div>
-    <Articles />
+    <MdEditor />
   </div>
 </template>
 
 <script setup lang="ts">
-import Articles from '@/components/articles/index.vue'
+import MdEditor from '@/components/custom/md-editor.vue'
 </script>
 
 <style lang="scss" scoped></style>
