@@ -8,7 +8,7 @@
     >
       <NImage :src="item.cover" :alt="item.title" class="w-200px h-130px rd-10px object-cover" />
       <NFlex vertical class="flex-1">
-        <div class="flex-1">
+        <div class="flex-1 cursor-pointer">
           <div class="text-18px font-600 mb-8px">{{ item.title }}</div>
           <div class="text-14px color-gray-600 dark:color-gray-300 mb-12px">
             {{ item.summary }}
@@ -21,15 +21,23 @@
         </div>
       </NFlex>
     </div>
+    <div class="mt-16px flex justify-center">
+      <NPagination
+        v-model:page="pagination.current"
+        v-model:page-size="pagination.size"
+        :page-count="pagination.pageCount"
+        :page-sizes="[5, 10, 20]"
+        show-size-picker
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRouterPush } from '@/hooks/common/router'
-defineOptions({
-  name: 'ArticlesList',
-})
+
+defineOptions({ name: 'ArticlesList' })
 
 const { routerPush } = useRouterPush()
 
@@ -42,11 +50,6 @@ const _props = withDefaults(defineProps<Props>(), {
   modelType: 'All',
 })
 
-// type Event = {
-//   (e: 'update:modelValue'): void
-// }
-// const emit = defineEmits<Event>()
-
 interface ArticleItem {
   id: number
   title: string
@@ -57,6 +60,13 @@ interface ArticleItem {
 }
 
 const tableData = ref<ArticleItem[]>([])
+
+// 分页
+const pagination = ref({
+  current: 1,
+  size: 10,
+  pageCount: 0,
+})
 
 const getTableData = async () => {
   tableData.value = [
@@ -79,6 +89,8 @@ const getTableData = async () => {
       timeAgo: '8月前',
     },
   ]
+
+  pagination.value.pageCount = Math.max(1, Math.ceil(tableData.value.length / pagination.value.size))
 }
 
 const handleClick = (id: number) => {
