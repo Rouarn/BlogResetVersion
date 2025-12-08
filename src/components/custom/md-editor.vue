@@ -12,12 +12,10 @@ import { MdEditor } from 'md-editor-v3'
 defineOptions({ name: 'MdEditorWrapper' })
 
 interface Props {
-  modelValue?: string
+  modelValue: string
 }
 const props = withDefaults(defineProps<Props>(), {
-  modelValue: `# 🚀 Frontend Template
-
-基于 **Vue 3 + Vite + TypeScript** 构建的现代化前端开发模板，内置路由分组与国际化约定、后端路由数据驱动与视图组件自动解析，并配套丰富的开箱即用功能，助力快速启动项目开发。`,
+  modelValue: '',
 })
 
 type Emits = {

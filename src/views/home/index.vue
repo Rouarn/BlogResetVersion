@@ -1,11 +1,15 @@
 <template>
   <div>
-    <MdEditor />
+    <MdEditorWrapper v-model="modelValue" />
   </div>
 </template>
 
 <script setup lang="ts">
-import MdEditor from '@/components/custom/md-editor.vue'
+import MdEditorWrapper from '@/components/custom/md-editor.vue'
+
+defineOptions({ name: 'Home' })
+
+const modelValue = ref('')
 </script>
 
 <style lang="scss" scoped></style>
