@@ -13,6 +13,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AppProvider: typeof import('./../components/common/app-provider.vue')['default']
+    Articles: typeof import('./../components/articles/index.vue')['default']
     ButtonIcon: typeof import('./../components/custom/button-icon.vue')['default']
     CroppingImage: typeof import('./../components/custom/cropping-image.vue')['default']
     DarkModeContainer: typeof import('./../components/common/dark-mode-container.vue')['default']
@@ -51,6 +52,7 @@ declare module 'vue' {
     NDrawerContent: typeof import('naive-ui')['NDrawerContent']
     NDropdown: typeof import('naive-ui')['NDropdown']
     NEmpty: typeof import('naive-ui')['NEmpty']
+    NFlex: typeof import('naive-ui')['NFlex']
     NForm: typeof import('naive-ui')['NForm']
     NFormItem: typeof import('naive-ui')['NFormItem']
     NH1: typeof import('naive-ui')['NH1']
@@ -89,6 +91,7 @@ declare module 'vue' {
 // For TSX support
 declare global {
   const AppProvider: typeof import('./../components/common/app-provider.vue')['default']
+  const Articles: typeof import('./../components/articles/index.vue')['default']
   const ButtonIcon: typeof import('./../components/custom/button-icon.vue')['default']
   const CroppingImage: typeof import('./../components/custom/cropping-image.vue')['default']
   const DarkModeContainer: typeof import('./../components/common/dark-mode-container.vue')['default']
@@ -127,6 +130,7 @@ declare global {
   const NDrawerContent: typeof import('naive-ui')['NDrawerContent']
   const NDropdown: typeof import('naive-ui')['NDropdown']
   const NEmpty: typeof import('naive-ui')['NEmpty']
+  const NFlex: typeof import('naive-ui')['NFlex']
   const NForm: typeof import('naive-ui')['NForm']
   const NFormItem: typeof import('naive-ui')['NFormItem']
   const NH1: typeof import('naive-ui')['NH1']

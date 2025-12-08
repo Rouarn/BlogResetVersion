@@ -12,7 +12,6 @@ const routeStore = useRouteStore()
 const themeStore = useThemeStore()
 const { routerPushByKeyWithMetaQuery } = useRouterPush()
 
-const isMobile = computed(() => appStore.isMobile)
 const selectedKey = computed(() => {
   const { hideInMenu, activeMenu } = route.meta
   const name = route.name as string
@@ -25,7 +24,7 @@ const inverted = computed(() => themeStore.themeScheme === 'dark')
 
 <template>
   <NMenu
-    v-if="!isMobile"
+    v-if="!appStore.isMobile"
     :value="selectedKey"
     mode="horizontal"
     :options="routeStore.menus"
@@ -36,11 +35,11 @@ const inverted = computed(() => themeStore.themeScheme === 'dark')
     class="flex-1 mx-6"
   />
 
-  <NIcon v-if="isMobile" size="20" @click="isVisible = !isVisible">
+  <NIcon v-if="appStore.isMobile" size="20" @click="isVisible = !isVisible">
     <icon-line-md-menu-fold-right v-if="!isVisible" />
     <icon-line-md-menu-fold-left v-else />
   </NIcon>
-  <NDrawer v-model:show="isVisible" width="80%" placement="left" v-if="isMobile">
+  <NDrawer v-model:show="isVisible" width="80%" placement="left" v-if="appStore.isMobile">
     <NDrawerContent body-content-class="pa-0!">
       <template #header>
         <GlobalLogo />
