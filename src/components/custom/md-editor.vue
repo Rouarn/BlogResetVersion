@@ -1,7 +1,5 @@
 <template>
-  <div class="md-editor-wrapper">
-    <MdEditor v-model="modelValue" :preview-theme="previewTheme" :toolbars-exclude="[]" />
-  </div>
+  <MdEditor v-model="modelValue" :preview-theme="previewTheme" :toolbars-exclude="[]" />
 </template>
 
 <script setup lang="ts">

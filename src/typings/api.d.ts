@@ -91,4 +91,46 @@ declare namespace Api {
       routes: MenuRoute[]
     }
   }
+
+  /**
+   * namespace Article
+   *
+   * backend api module: "article"
+   */
+  namespace Article {
+    /**
+     * 文章类型
+     */
+    type ArticleType = '1' | '2' | '3' | string
+
+    /**
+     * 创建文章请求参数
+     */
+    interface CreateArticleRequest {
+      title: string
+      contentMd: string
+      cover?: string
+      tags?: string[]
+      summary?: string
+      type?: ArticleType
+      visibility?: Common.EnableStatus
+    }
+
+    /**
+     * 更新文章请求参数
+     */
+    interface UpdateArticleRequest extends Omit<CreateArticleRequest, 'contentMd'> {
+      contentMd?: string
+    }
+
+    /**
+     * 文章详情
+     */
+    interface ArticleDetail extends CreateArticleRequest {
+      id: string
+      authorId: string
+      createTime: string
+      updateTime: string
+    }
+  }
 }

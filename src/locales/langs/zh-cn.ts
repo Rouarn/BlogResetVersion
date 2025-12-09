@@ -61,7 +61,7 @@ const local: App.I18n.Schema = {
   },
   route: {
     root: '根页面',
-    home: '首页',
+    home: '文章',
     notFound: '未找到',
     '403': '403',
     '404': '404',

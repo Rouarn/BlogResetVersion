@@ -66,6 +66,32 @@ export const ROOT_ROUTE: RouteRecordRaw = {
         isAuth: false,
       },
     },
+    {
+      name: 'editor',
+      path: '/editor',
+      component: () => import('@/views/article/editor.vue'),
+      meta: {
+        title: 'Article Edit',
+        icon: '',
+        order: 2,
+        hideInMenu: true,
+        isKeepAlive: false,
+        isAuth: false,
+      },
+    },
+    {
+      name: 'my-articles',
+      path: '/my-articles',
+      component: () => import('@/views/my-articles/index.vue'),
+      meta: {
+        title: 'Article List',
+        icon: '',
+        order: 2,
+        hideInMenu: true,
+        isKeepAlive: true,
+        isAuth: false,
+      },
+    },
   ],
 }
 

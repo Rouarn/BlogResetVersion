@@ -7,7 +7,7 @@ const servicePort = {
   auth: '/api/v1/auth',
   route: '/api/v1/route',
   files: '/api/v1/files',
-  product: '/api/v1/product',
+  article: '/api/v1/articles',
 } as const
 
 export type ServicePortKey = keyof typeof servicePort
