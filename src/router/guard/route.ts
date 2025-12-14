@@ -1,3 +1,4 @@
+import { fetchUserInfo } from '@/service/api'
 import { useAuthStore } from '@/stores/modules/auth'
 import { useRouteStore } from '@/stores/modules/route'
 import type { RouteLocationRaw, Router } from 'vue-router'
@@ -7,6 +8,12 @@ export function createRouteGuard(router: Router) {
   router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore()
     const routeStore = useRouteStore()
+
+    // 获取用户信息
+    if (authStore.isLogin) {
+      const { data: userInfoData } = await fetchUserInfo()
+      authStore.setUserInfo(userInfoData)
+    }
 
     // 初始化路由菜单（用于 Header 菜单展示，实际路由基于文件自动生成）
     if (authStore.isLogin && !routeStore.isInitAuthRoute) {

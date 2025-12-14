@@ -1,6 +1,6 @@
 import { computed, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { fetchLogin, fetchLogout, fetchUserInfo } from '@/service/api/login'
+import { fetchLogin, fetchLogout } from '@/service/api/login'
 import { localStg } from '@/utils/storage'
 import { useRouteStore } from '../route'
 import { useThemeStore } from '../theme'
@@ -101,8 +101,6 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     if (data?.refreshExpiresIn) {
       setRefreshTokenExpiresAt(Date.now() + Number(data.refreshExpiresIn) * 1000)
     }
-    const { data: userInfoData } = await fetchUserInfo()
-    setUserInfo(userInfoData ?? initialState.userInfo)
 
     await redirectFromLogin(redirect)
 
