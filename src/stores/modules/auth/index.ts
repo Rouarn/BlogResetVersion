@@ -4,7 +4,7 @@ import { fetchLogin, fetchLogout } from '@/service/api/login'
 import { localStg } from '@/utils/storage'
 import { useRouteStore } from '../route'
 import { useThemeStore } from '../theme'
-import { clearAuthStorage, getRefreshToken, getToken, getTokenExpiresAt } from './shared'
+import { getRefreshToken, getToken, getTokenExpiresAt } from './shared'
 import { SetupStoreId } from '@/enum'
 import { useRouterPush } from '@/hooks/common/router'
 import { defineStore } from 'pinia'
@@ -120,7 +120,6 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     themeStore.resetStore()
     authStore.$reset()
     routeStore.$reset()
-    clearAuthStorage()
   }
 
   /** 重置认证状态（退出登录并清理本地数据） */

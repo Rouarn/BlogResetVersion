@@ -20,12 +20,3 @@ export function getRefreshTokenExpiresAt() {
 export function getTokenType() {
   return (localStg.get('tokenType') as string) || 'Bearer'
 }
-
-/** 清除认证存储 */
-export function clearAuthStorage() {
-  localStg.remove('token')
-  localStg.remove('refreshToken')
-  localStg.remove('tokenExpiresAt')
-  localStg.remove('refreshTokenExpiresAt')
-  localStg.remove('tokenType')
-}
