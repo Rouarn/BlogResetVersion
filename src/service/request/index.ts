@@ -194,10 +194,11 @@ class RequestHttp {
           const ok = await refreshTokenOnce(this.service)
           if (ok && config) {
             config.__retriedAfterRefresh = true
+            config.cancelToken = undefined
             return this.service.request(config)
           }
           useAuthStore().resetAuthStore()
-          router.replace('/_builtin/login')
+          await router.replace('/_builtin/login')
         }
 
         throw normalizeAxiosError(error)

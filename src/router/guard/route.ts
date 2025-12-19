@@ -9,18 +9,16 @@ export function createRouteGuard(router: Router) {
     const authStore = useAuthStore()
     const routeStore = useRouteStore()
 
-    // 获取用户信息
-    if (authStore.isLogin) {
-      const { data: userInfoData } = await fetchUserInfo()
-      authStore.setUserInfo(userInfoData)
-    }
-
     // 初始化路由菜单（用于 Header 菜单展示，实际路由基于文件自动生成）
     if (authStore.isLogin && !routeStore.isInitAuthRoute) {
       await routeStore.initAuthRoute()
 
       const notFoundRoute: App.Global.RouteKey[] = ['not-found', '404']
       const isNotFoundRoute = notFoundRoute.includes(to.name as App.Global.RouteKey)
+
+      // 获取用户信息
+      const { data: userInfoData } = await fetchUserInfo()
+      authStore.setUserInfo(userInfoData)
 
       // 由于鉴权路由尚未初始化，该路由被“not-found”捕获
       // 鉴权路由初始化后，重定向回原目标路由
