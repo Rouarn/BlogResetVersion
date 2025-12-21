@@ -12,10 +12,6 @@ declare namespace StorageType {
     token: string
     /** 刷新令牌 */
     refreshToken: string
-    /** 令牌过期时间 */
-    tokenExpiresAt: number
-    /** 刷新令牌过期时间 */
-    refreshTokenExpiresAt: number
     /** 认证类型 */
     tokenType: string
     /** 用户信息 */

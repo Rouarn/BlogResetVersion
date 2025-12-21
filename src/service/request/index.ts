@@ -200,7 +200,6 @@ class RequestHttp {
             return this.service.request(config)
           }
 
-          useAuthStore().resetAuthStore()
           useAuthStore().setToken('') // Force clear
           await router.replace('/login')
           return Promise.reject(error)

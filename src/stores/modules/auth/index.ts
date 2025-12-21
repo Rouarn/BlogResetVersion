@@ -4,7 +4,7 @@ import { fetchLogin, fetchLogout } from '@/service/api/login'
 import { localStg } from '@/utils/storage'
 import { useRouteStore } from '../route'
 import { useThemeStore } from '../theme'
-import { getRefreshToken, getToken, getTokenExpiresAt } from './shared'
+import { getRefreshToken, getToken } from './shared'
 import { SetupStoreId } from '@/enum'
 import { useRouterPush } from '@/hooks/common/router'
 import { defineStore } from 'pinia'
@@ -13,8 +13,6 @@ const initialState = {
   token: '',
   tokenType: 'Bearer',
   refreshToken: '',
-  tokenExpiresAt: 0,
-  refreshTokenExpiresAt: 0,
   userInfo: {
     userId: '',
     username: '',
@@ -46,8 +44,6 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   const token = ref(getToken())
   const tokenType = ref(localStg.get('tokenType') || initialState.tokenType)
   const refreshToken = ref(getRefreshToken())
-  const tokenExpiresAt = ref(getTokenExpiresAt())
-  const refreshTokenExpiresAt = ref(Number(localStg.get('refreshTokenExpiresAt') || initialState.refreshTokenExpiresAt))
 
   // 用户信息
   const userInfo: Api.Auth.UserInfo = reactive(localStg.get('userInfo') ?? initialState.userInfo)
@@ -70,16 +66,6 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     localStg.set('refreshToken', value)
   }
 
-  const setRefreshTokenExpiresAt = (value: number) => {
-    refreshTokenExpiresAt.value = value
-    localStg.set('refreshTokenExpiresAt', value)
-  }
-
-  const setTokenExpiresAt = (value: number) => {
-    tokenExpiresAt.value = value
-    localStg.set('tokenExpiresAt', value)
-  }
-
   const setUserInfo = (value: Api.Auth.UserInfo) => {
     Object.assign(userInfo, value)
     localStg.set('userInfo', userInfo)
@@ -97,10 +83,6 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     setToken(data?.accessToken ?? initialState.token)
     setTokenType(data?.tokenType ?? initialState.tokenType)
     setRefreshToken(data?.refreshToken ?? initialState.refreshToken)
-    setTokenExpiresAt(Date.now() + Number(data?.expiresIn ?? initialState.tokenExpiresAt) * 1000)
-    if (data?.refreshExpiresIn) {
-      setRefreshTokenExpiresAt(Date.now() + Number(data.refreshExpiresIn) * 1000)
-    }
 
     await redirectFromLogin(redirect)
 
@@ -114,9 +96,8 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   /** 重置认证状态（清理本地数据） */
   function resetAuthStore() {
     setUserInfo(initialState.userInfo)
-    setToken(initialState.token)
-    setRefreshToken(initialState.refreshToken)
-    setTokenExpiresAt(initialState.tokenExpiresAt)
+    setToken(initialState.token || '')
+    setRefreshToken(initialState.refreshToken || '')
     themeStore.resetStore()
     authStore.$reset()
     routeStore.$reset()
@@ -141,16 +122,12 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     token,
     tokenType,
     refreshToken,
-    tokenExpiresAt,
-    refreshTokenExpiresAt,
     userInfo,
     isLogin,
     login,
     setToken,
     setTokenType,
     setRefreshToken,
-    setTokenExpiresAt,
-    setRefreshTokenExpiresAt,
     setUserInfo,
     resetStore,
     resetAuthStore,
