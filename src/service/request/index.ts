@@ -70,36 +70,38 @@ const closeLoading = () => {
 const ENABLE_TOKEN_REFRESH = String(import.meta.env.VITE_ENABLE_TOKEN_REFRESH || 'N').toUpperCase() === 'Y'
 
 let refreshPromise: Promise<boolean> | null = null
-async function refreshTokenOnce(service: AxiosInstance): Promise<boolean> {
+async function refreshTokenOnce(): Promise<boolean> {
   if (refreshPromise) return refreshPromise
 
   const authStore = useAuthStore()
   if (!authStore.refreshToken) return false
 
   refreshPromise = (async () => {
-    const { data, error } = await service
-      .post<App.Service.Response<Api.Auth.LoginToken>>(`${servicePort.auth}/refresh`, { refreshToken: authStore.refreshToken }, {
-        skipAuthRefresh: true,
-        skipErrorHandler: true,
-        loading: false,
-        cancel: false,
-      } as CustomAxiosRequestConfig)
-      .then((res) => ({
-        data: res.data?.data as Api.Auth.LoginToken | undefined,
-        error: false,
-      }))
-      .catch(() => ({
-        data: undefined,
-        error: true,
-      }))
+    try {
+      // 创建一个干净的axios实例以避免拦截器循环
+      const cleanAxios = axios.create()
+      const response = await cleanAxios.post<App.Service.Response<Api.Auth.LoginToken>>(
+        `${servicePort.auth}/refresh`,
+        { refreshToken: authStore.refreshToken },
+        {
+          baseURL: import.meta.env.VITE_SERVICE_BASE_URL,
+        },
+      )
 
-    if (error || !data?.accessToken) return false
+      const { data } = response.data
 
-    authStore.setToken(data.accessToken)
-    authStore.setTokenType(data.tokenType || 'Bearer')
-    if (data.refreshToken) authStore.setRefreshToken(data.refreshToken)
+      if (response.data.code !== ResultEnum.SUCCESS || !data?.accessToken) {
+        return false
+      }
 
-    return true
+      authStore.setToken(data.accessToken)
+      authStore.setTokenType(data.tokenType || 'Bearer')
+      if (data.refreshToken) authStore.setRefreshToken(data.refreshToken)
+
+      return true
+    } catch (_) {
+      return false
+    }
   })()
 
   try {
@@ -191,14 +193,17 @@ class RequestHttp {
           !config.__retriedAfterRefresh &&
           !config.skipAuthRefresh
         ) {
-          const ok = await refreshTokenOnce(this.service)
+          const ok = await refreshTokenOnce()
           if (ok && config) {
             config.__retriedAfterRefresh = true
             config.cancelToken = undefined
             return this.service.request(config)
           }
+
           useAuthStore().resetAuthStore()
-          await router.replace('/_builtin/login')
+          useAuthStore().setToken('') // Force clear
+          await router.replace('/login')
+          return Promise.reject(error)
         }
 
         throw normalizeAxiosError(error)
