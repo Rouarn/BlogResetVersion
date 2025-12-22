@@ -68,20 +68,21 @@ export class RequestError extends Error {
     }
 
     // 4. HTTP 错误处理
-    const statusMsg = STATUS_TEXT[status] || response?.statusText
+    const data = response?.data as App.Service.Response<unknown>
+    const statusMsg = data?.message || STATUS_TEXT[status] || response?.statusText
 
     if (status === HttpStatusCode.Unauthorized) {
-      return new RequestError('overdue', '登录已过期，请重新登录', status, error)
+      return new RequestError('overdue', data?.message || '登录已过期，请重新登录', status, error)
     }
 
-    if (status >= 500) {
+    if (status >= HttpStatusCode.InternalServerError) {
       return new RequestError('server', statusMsg || '服务器内部错误', status, error)
     }
 
-    if (status >= 400) {
+    if (status >= HttpStatusCode.BadRequest) {
       return new RequestError('client', statusMsg || '客户端请求错误', status, error)
     }
 
-    return new RequestError('unknown', message || '未知请求错误', 'UNKNOWN', error)
+    return new RequestError('unknown', statusMsg || message || '未知请求错误', 'UNKNOWN', error)
   }
 }
