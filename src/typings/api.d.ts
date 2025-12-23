@@ -31,15 +31,15 @@ declare namespace Api {
     interface LoginToken {
       accessToken: string
       refreshToken: string
-      expiresIn: number
-      refreshExpiresIn: number
+      accessTokenTtl: number
+      refreshTokenTtl: number
       tokenType: string
     }
 
     interface Captcha {
       image: string
       token: string
-      expiresIn: number
+      accessTokenTtl: number
       nonce: string
     }
 
@@ -51,7 +51,7 @@ declare namespace Api {
     type UserRole = 'system_admin' | 'org_admin' | 'dept_admin' | 'project_admin' | 'power_user' | 'user' | 'viewer' | 'guest'
 
     interface UserInfo {
-      userId: string
+      id: string
       username: string
       nickname?: string
       avatar?: string
@@ -70,7 +70,7 @@ declare namespace Api {
       status?: Common.EnableStatus // 0: 禁用, 1: 启用
     }
 
-    interface RegisterUser extends Omit<UserInfo, 'userId' | 'status'> {
+    interface RegisterUser extends Omit<UserInfo, 'id' | 'status'> {
       password: string
     }
   }

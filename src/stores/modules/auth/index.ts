@@ -14,7 +14,7 @@ const initialState = {
   tokenType: 'Bearer',
   refreshToken: '',
   userInfo: {
-    userId: '',
+    id: '',
     username: '',
     nickname: '',
     avatar: '',
