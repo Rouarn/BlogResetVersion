@@ -30,6 +30,7 @@ const initialState = {
     lastLoginIp: '',
     loginAttempts: 0,
     status: '1' as Api.Common.EnableStatus,
+    auth: {} as Api.Auth.AuthType,
   },
 }
 
@@ -67,7 +68,8 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   }
 
   const setUserInfo = (value: Api.Auth.UserInfo) => {
-    Object.assign(userInfo, value)
+    const { auth, ...payload } = value
+    Object.assign(userInfo, { ...payload, username: auth.username })
     localStg.set('userInfo', userInfo)
   }
 

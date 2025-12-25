@@ -147,6 +147,7 @@ class RequestHttp {
         // 初始化默认配置
         cfg.cancel ??= true
         cfg.loading ??= true
+        cfg.headers ??= {}
 
         // 全局 Loading
         if (cfg.loading && !cfg.isUpload) loadingManager.open()
@@ -156,15 +157,15 @@ class RequestHttp {
 
         // 配置 Token
         if (authStore.token) {
-          cfg.headers = cfg.headers || {}
           cfg.headers.Authorization = `${authStore.tokenType || 'Bearer'} ${authStore.token}`
         }
 
         // 配置上传请求头
         if (cfg.isUpload) {
-          cfg.headers = cfg.headers || {}
           cfg.headers['Content-Type'] = 'multipart/form-data'
         }
+
+        cfg.headers['X-Api-Version'] = 1
 
         return cfg as InternalAxiosRequestConfig
       },

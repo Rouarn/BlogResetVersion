@@ -50,6 +50,19 @@ declare namespace Api {
 
     type UserRole = 'system_admin' | 'org_admin' | 'dept_admin' | 'project_admin' | 'power_user' | 'user' | 'viewer' | 'guest'
 
+    interface AuthType {
+      createTime: Date
+      updateTime: Date
+      id: string
+      username: string
+      status: number
+      lastLoginAt: Date
+      lastLoginIp: string
+      loginAttempts: number
+      lockedAt: null
+      passwordChangedAt: Date
+    }
+
     interface UserInfo {
       id: string
       username: string
@@ -67,10 +80,11 @@ declare namespace Api {
       lastLoginAt?: string
       lastLoginIp?: string
       loginAttempts?: number
-      status?: Common.EnableStatus // 0: 禁用, 1: 启用
+      status?: Common.EnableStatus // 0: 禁用, 1: 启用:
+      auth: AuthType
     }
 
-    interface RegisterUser extends Omit<UserInfo, 'id' | 'status'> {
+    interface RegisterUser extends Omit<UserInfo, 'id' | 'status' | 'roles' | 'auth'> {
       password: string
     }
   }
