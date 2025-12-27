@@ -208,7 +208,7 @@ function handleSwitchToLogin() {
     @for $i from 1 through 10 {
       &:nth-child(#{$i}) {
         animation-duration: $i * 3s;
-        animation-delay: if($i == 1, 0s, ($i - 1) * 3s);
+        animation-delay: ($i - 1) * 3s;
       }
     }
   }

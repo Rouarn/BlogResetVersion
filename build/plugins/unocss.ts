@@ -6,17 +6,18 @@ import type { PluginOption } from 'vite'
 export function setupUnocssPlugin(iconPrefix: string, localIconPath: string, collectionName: string): PluginOption {
   return UnoCSS({
     presets: [
-      presetIcons({
-        prefix: `${iconPrefix}-`,
-        scale: 1,
-        extraProperties: {
-          display: 'inline-block',
-        },
-        collections: {
-          [collectionName]: FileSystemIconLoader(localIconPath, (svg) => svg.replace(/^<svg\s/, '<svg width="1em" height="1em" ')),
-        },
-        warn: true,
-      }),
+      () =>
+        presetIcons({
+          prefix: `${iconPrefix}-`,
+          scale: 1,
+          extraProperties: {
+            display: 'inline-block',
+          },
+          collections: {
+            [collectionName]: FileSystemIconLoader(localIconPath, (svg) => svg.replace(/^<svg\s/, '<svg width="1em" height="1em" ')),
+          },
+          warn: true,
+        }),
     ],
   })
 }

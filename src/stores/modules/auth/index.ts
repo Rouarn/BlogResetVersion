@@ -67,7 +67,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     localStg.set('refreshToken', value)
   }
 
-  const setUserInfo = (value: Api.Auth.UserInfo) => {
+  const setUserInfo = (value: Api.Auth.UserInfo = initialState.userInfo) => {
     const { auth, ...payload } = value
     Object.assign(userInfo, { ...payload, username: auth.username })
     localStg.set('userInfo', userInfo)

@@ -80,7 +80,7 @@ declare namespace Api {
       lastLoginAt?: string
       lastLoginIp?: string
       loginAttempts?: number
-      status?: Common.EnableStatus // 0: 禁用, 1: 启用:
+      status?: Common.EnableStatus
       auth: AuthType
     }
 
