@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "target": "ESNext",
     "jsx": "preserve",
     "jsxImportSource": "vue",
@@ -18,7 +17,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "~/*": ["./*"],
-      "vue-cropper": ["src/typings/vue-cropper.d.ts"]
+      "vue-cropper": ["./src/typings/vue-cropper.d.ts"]
     },
     "types": ["vite/client", "node", "naive-ui/volar", "vite-plugin-pwa/client"],
     "incremental": true,

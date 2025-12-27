@@ -18,7 +18,7 @@ const handleBackTop = (_isTop: boolean) => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col">
+  <div class="min-h-full">
     <GlobalHeader v-if="!appStore.hideHeader" />
     <GlobalContent />
     <GlobalFooter />

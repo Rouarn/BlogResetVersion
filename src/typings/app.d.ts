@@ -320,13 +320,5 @@ declare namespace App {
       /** 响应数据 */
       data: T
     }
-
-    /** 分页返回数据 */
-    type Pagination<T = unknown> = {
-      /** 总记录数 */
-      total: number
-      /** 数据列表 */
-      list: T[]
-    }
   }
 }

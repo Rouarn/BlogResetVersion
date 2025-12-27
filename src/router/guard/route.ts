@@ -1,3 +1,4 @@
+import { fetchUserInfo } from '@/service/api'
 import { useAuthStore } from '@/stores/modules/auth'
 import { useRouteStore } from '@/stores/modules/route'
 import type { RouteLocationRaw, Router } from 'vue-router'
@@ -14,6 +15,15 @@ export function createRouteGuard(router: Router) {
 
       const notFoundRoute: App.Global.RouteKey[] = ['not-found', '404']
       const isNotFoundRoute = notFoundRoute.includes(to.name as App.Global.RouteKey)
+
+      // 获取用户信息
+      const { data, error } = await fetchUserInfo()
+      if (error) {
+        routeStore.resetStore()
+        authStore.resetAuthStore()
+        return next({ path: '/login', replace: false, query: { redirect: to.fullPath } })
+      }
+      authStore.setUserInfo(data)
 
       // 由于鉴权路由尚未初始化，该路由被“not-found”捕获
       // 鉴权路由初始化后，重定向回原目标路由

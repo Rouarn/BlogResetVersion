@@ -21,9 +21,8 @@ const loading = ref(false)
 
 // 生成验证码
 async function generateCaptcha() {
-  const { data, error, message } = await fetchCaptcha()
+  const { data, error } = await fetchCaptcha()
   if (error) {
-    window.$message?.error(message)
     return
   }
   captchaCode.value = data.image

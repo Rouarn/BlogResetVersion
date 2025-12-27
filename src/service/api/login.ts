@@ -37,16 +37,4 @@ export function fetchLogout() {
   return request.post(`${servicePort.auth}/logout`)
 }
 
-/** 刷新令牌 */
-export function fetchRefreshToken(refreshToken: string) {
-  return request.post<Api.Auth.LoginToken>(
-    `${servicePort.auth}/refresh`,
-    { refreshToken },
-    {
-      skipAuthRefresh: true,
-      loading: false,
-      cancel: false,
-      skipErrorHandler: true,
-    },
-  )
-}
+/** 刷新令牌 集成在请求拦截器中 */

@@ -1,5 +1,310 @@
 {
   "code": 200,
-  "data": [],
+  "data": [
+    {
+      "name": "demos",
+      "path": "/demos",
+      "redirect": "/demos/loading-demo",
+      "meta": {
+        "title": "Demos",
+        "i18nKey": "route.demos.title",
+        "icon": "",
+        "order": 2,
+        "hideInMenu": false,
+        "isKeepAlive": false,
+        "isAuth": false,
+        "menuType": 1
+      },
+      "children": [
+        {
+          "name": "demos-loading-demo",
+          "path": "/demos/loading-demo",
+          "component": "/demos/loading-demo/index",
+          "meta": {
+            "title": "Demos Loading Demo",
+            "i18nKey": "route.demos.loading-demo",
+            "icon": "",
+            "order": 2,
+            "hideInMenu": false,
+            "isKeepAlive": true,
+            "isAuth": false,
+            "menuType": 2
+          }
+        }
+      ]
+    },
+    {
+      "name": "directives",
+      "path": "/directives",
+      "redirect": "/directives/animate-direct",
+      "meta": {
+        "title": "Directives",
+        "i18nKey": "route.directives.title",
+        "icon": "",
+        "order": 1,
+        "hideInMenu": false,
+        "isKeepAlive": false,
+        "isAuth": false,
+        "menuType": 1
+      },
+      "children": [
+        {
+          "name": "directives-animate-direct",
+          "path": "/directives/animate-direct",
+          "component": "/directives/animate-direct/index",
+          "meta": {
+            "title": "Directives Animate Direct",
+            "i18nKey": "route.directives.animate-direct",
+            "icon": "",
+            "order": 2,
+            "hideInMenu": false,
+            "isKeepAlive": true,
+            "isAuth": false,
+            "menuType": 2
+          }
+        },
+        {
+          "name": "directives-clickoutside-direct",
+          "path": "/directives/clickoutside-direct",
+          "component": "/directives/clickoutside-direct/index",
+          "meta": {
+            "title": "Directives Clickoutside Direct",
+            "i18nKey": "route.directives.clickoutside-direct",
+            "icon": "",
+            "order": 2,
+            "hideInMenu": false,
+            "isKeepAlive": true,
+            "isAuth": false,
+            "menuType": 2
+          }
+        },
+        {
+          "name": "directives-copy-direct",
+          "path": "/directives/copy-direct",
+          "component": "/directives/copy-direct/index",
+          "meta": {
+            "title": "Directives Copy Direct",
+            "i18nKey": "route.directives.copy-direct",
+            "icon": "",
+            "order": 2,
+            "hideInMenu": false,
+            "isKeepAlive": true,
+            "isAuth": false,
+            "menuType": 2
+          }
+        },
+        {
+          "name": "directives-debounce-direct",
+          "path": "/directives/debounce-direct",
+          "component": "/directives/debounce-direct/index",
+          "meta": {
+            "title": "Directives Debounce Direct",
+            "i18nKey": "route.directives.debounce-direct",
+            "icon": "",
+            "order": 2,
+            "hideInMenu": false,
+            "isKeepAlive": true,
+            "isAuth": false,
+            "menuType": 2
+          }
+        },
+        {
+          "name": "directives-drag-direct",
+          "path": "/directives/drag-direct",
+          "component": "/directives/drag-direct/index",
+          "meta": {
+            "title": "Directives Drag Direct",
+            "i18nKey": "route.directives.drag-direct",
+            "icon": "",
+            "order": 2,
+            "hideInMenu": false,
+            "isKeepAlive": true,
+            "isAuth": false,
+            "menuType": 2
+          }
+        },
+        {
+          "name": "directives-focus-direct",
+          "path": "/directives/focus-direct",
+          "component": "/directives/focus-direct/index",
+          "meta": {
+            "title": "Directives Focus Direct",
+            "i18nKey": "route.directives.focus-direct",
+            "icon": "",
+            "order": 2,
+            "hideInMenu": false,
+            "isKeepAlive": true,
+            "isAuth": false,
+            "menuType": 2
+          }
+        },
+        {
+          "name": "directives-highlight-direct",
+          "path": "/directives/highlight-direct",
+          "component": "/directives/highlight-direct/index",
+          "meta": {
+            "title": "Directives Highlight Direct",
+            "i18nKey": "route.directives.highlight-direct",
+            "icon": "",
+            "order": 2,
+            "hideInMenu": false,
+            "isKeepAlive": true,
+            "isAuth": false,
+            "menuType": 2
+          }
+        },
+        {
+          "name": "directives-lazy-direct",
+          "path": "/directives/lazy-direct",
+          "component": "/directives/lazy-direct/index",
+          "meta": {
+            "title": "Directives Lazy Direct",
+            "i18nKey": "route.directives.lazy-direct",
+            "icon": "",
+            "order": 2,
+            "hideInMenu": false,
+            "isKeepAlive": true,
+            "isAuth": false,
+            "menuType": 2
+          }
+        },
+        {
+          "name": "directives-loading-direct",
+          "path": "/directives/loading-direct",
+          "component": "/directives/loading-direct/index",
+          "meta": {
+            "title": "Directives Loading Direct",
+            "i18nKey": "route.directives.loading-direct",
+            "icon": "",
+            "order": 2,
+            "hideInMenu": false,
+            "isKeepAlive": true,
+            "isAuth": false,
+            "menuType": 2
+          }
+        },
+        {
+          "name": "directives-longpress-direct",
+          "path": "/directives/longpress-direct",
+          "component": "/directives/longpress-direct/index",
+          "meta": {
+            "title": "Directives Longpress Direct",
+            "i18nKey": "route.directives.longpress-direct",
+            "icon": "",
+            "order": 2,
+            "hideInMenu": false,
+            "isKeepAlive": true,
+            "isAuth": false,
+            "menuType": 2
+          }
+        },
+        {
+          "name": "directives-mask-direct",
+          "path": "/directives/mask-direct",
+          "component": "/directives/mask-direct/index",
+          "meta": {
+            "title": "Directives Mask Direct",
+            "i18nKey": "route.directives.mask-direct",
+            "icon": "",
+            "order": 2,
+            "hideInMenu": false,
+            "isKeepAlive": true,
+            "isAuth": false,
+            "menuType": 2
+          }
+        },
+        {
+          "name": "directives-permission-direct",
+          "path": "/directives/permission-direct",
+          "component": "/directives/permission-direct/index",
+          "meta": {
+            "title": "Directives Permission Direct",
+            "i18nKey": "route.directives.permission-direct",
+            "icon": "",
+            "order": 2,
+            "hideInMenu": false,
+            "isKeepAlive": true,
+            "isAuth": false,
+            "menuType": 2
+          }
+        },
+        {
+          "name": "directives-scroll-direct",
+          "path": "/directives/scroll-direct",
+          "component": "/directives/scroll-direct/index",
+          "meta": {
+            "title": "Directives Scroll Direct",
+            "i18nKey": "route.directives.scroll-direct",
+            "icon": "",
+            "order": 2,
+            "hideInMenu": false,
+            "isKeepAlive": true,
+            "isAuth": false,
+            "menuType": 2
+          }
+        },
+        {
+          "name": "directives-throttle-direct",
+          "path": "/directives/throttle-direct",
+          "component": "/directives/throttle-direct/index",
+          "meta": {
+            "title": "Directives Throttle Direct",
+            "i18nKey": "route.directives.throttle-direct",
+            "icon": "",
+            "order": 2,
+            "hideInMenu": false,
+            "isKeepAlive": true,
+            "isAuth": false,
+            "menuType": 2
+          }
+        },
+        {
+          "name": "directives-tooltip-direct",
+          "path": "/directives/tooltip-direct",
+          "component": "/directives/tooltip-direct/index",
+          "meta": {
+            "title": "Directives Tooltip Direct",
+            "i18nKey": "route.directives.tooltip-direct",
+            "icon": "",
+            "order": 2,
+            "hideInMenu": false,
+            "isKeepAlive": true,
+            "isAuth": false,
+            "menuType": 2
+          }
+        },
+        {
+          "name": "directives-watermark-direct",
+          "path": "/directives/watermark-direct",
+          "component": "/directives/watermark-direct/index",
+          "meta": {
+            "title": "Directives Watermark Direct",
+            "i18nKey": "route.directives.watermark-direct",
+            "icon": "",
+            "order": 2,
+            "hideInMenu": false,
+            "isKeepAlive": true,
+            "isAuth": false,
+            "menuType": 2
+          }
+        },
+        {
+          "name": "directives-ripple-direct",
+          "path": "/directives/ripple-direct",
+          "component": "/directives/ripple-direct/index",
+          "meta": {
+            "title": "Directives Ripple Direct",
+            "i18nKey": "route.directives.ripple-direct",
+            "icon": "",
+            "order": 2,
+            "hideInMenu": false,
+            "isKeepAlive": true,
+            "isAuth": false,
+            "menuType": 2
+          }
+        }
+      ]
+    }
+  ],
   "message": "success"
 }

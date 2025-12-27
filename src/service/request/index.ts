@@ -1,154 +1,134 @@
+/**
+ * 统一请求封装（Axios）
+ * - 加载状态：全局 Loading 控制
+ * - 请求去重：利用 AbortController 取消重复请求
+ * - 鉴权注入：自动附加 Token
+ * - 错误处理：统一 RequestError 类
+ * - 失败重试：支持 5xx/网络错误自动重试
+ * - 令牌刷新：401 无感刷新
+ */
 import router from '@/router'
 import { useAuthStore } from '@/stores/modules/auth'
-import { AxiosCanceler, REQUEST_CANCEL_ERROR } from './axiosCancel'
-import { checkStatus, isServerError } from './checkStatus'
-import { computeRetryDelay } from './utils'
+import { REQUEST_CANCEL_MSG, RequestCanceler } from './axiosCancel'
+import { RequestError, type RequestErrorType } from './requestError'
+import servicePort from './servicePort'
 import { ResultEnum } from '@/enum'
-import type { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
-import axios, { HttpStatusCode } from 'axios'
+import axios, {
+  type AxiosError,
+  type AxiosInstance,
+  type AxiosRequestConfig,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig,
+} from 'axios'
 
-/* ---------------- 类型与结构 ---------------- */
-/**
- * 错误类型标识
- */
-export type ErrorType = 'overdue' | 'business' | 'network' | 'timeout' | 'cancel' | 'server'
+/* ===================== 类型定义 ===================== */
 
-/**
- * 统一返回结构（支持顶层解构 data、error、message）：
- * - 始终包含：error(boolean)、message(string)、data(T)
- * - 当 error=true 时：message 为错误文案，data 为 null（运行时），类型上仍为 T 以便通过 if(error) 收窄后使用
- * - 当 error=false 时：message 为空字符串，data 为后端数据（可能为 null，如更新类接口）
- */
-export type OptimizedResponse<T> = { error: boolean; message: string; data: T; errorType?: ErrorType }
-
-interface ExtendedAxiosResponse<T = unknown> extends AxiosResponse<App.Service.Response<T>> {
-  __isError?: boolean
-  __errorType?: ErrorType
+export interface OptimizedResponse<T> {
+  data: T
+  error: boolean
+  message: string
+  errorType?: RequestErrorType
+  rawError?: RequestError
 }
 
-export interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
+/**
+ * 扩展请求配置
+ */
+export interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+  /** 是否开启全局 Loading (默认 true) */
   loading?: boolean
+  /** 是否开启重复请求取消 (默认 true) */
   cancel?: boolean
-  retry?: {
-    count: number
-    delay: number
-    maxDelay?: number
-    backoff?: 'linear' | 'exponential'
-    jitter?: boolean
-    retryCondition?: (error: AxiosError) => boolean
-  }
-  isUpload?: boolean
-  isDownload?: boolean
-  customErrorMessage?: string
+  /** 是否跳过全局错误提示 (默认 false) */
   skipErrorHandler?: boolean
+  /** 是否跳过 401 刷新 (默认 false) */
   skipAuthRefresh?: boolean
+  /** 是否为上传请求 (自动处理 Content-Type) */
+  isUpload?: boolean
+  /** 是否为下载请求 (返回 Blob/Response) */
+  isDownload?: boolean
+  /** 失败重试次数 (默认 0) */
+  retryCount?: number
+  /** 重试延迟 (ms, 默认 1000) */
+  retryDelay?: number
+  /** 内部字段：当前重试次数 */
   __retryCount?: number
+  /** 内部字段：是否已刷新过 Token */
   __retriedAfterRefresh?: boolean
 }
 
-/* ---------------- Loading 管理（全局请求动效） ---------------- */
-let loadingCount = 0
+/* ===================== Loading 管理 ===================== */
 
-function openLoading() {
-  if (loadingCount === 0) window.$loading?.open()
-  loadingCount++
+class LoadingManager {
+  private count = 0
+
+  open() {
+    if (this.count === 0) window.$loading?.open()
+    this.count++
+  }
+
+  close() {
+    this.count = Math.max(0, this.count - 1)
+    if (this.count === 0) window.$loading?.close()
+  }
 }
 
-function closeLoading() {
-  loadingCount = Math.max(0, loadingCount - 1)
-  if (loadingCount === 0) window.$loading?.close()
-}
+const loadingManager = new LoadingManager()
 
-/* ---------------- 默认配置与重试策略 ---------------- */
-const DEFAULT_RETRY_CONFIG = {
-  count: 2,
-  delay: 1000,
-  maxDelay: 8000,
-  backoff: 'exponential' as const,
-  jitter: true,
-  retryCondition: (error: AxiosError) => {
-    if (!error.response) return true
-    return isServerError(error.response.status)
-  },
-}
+/* ===================== Token 刷新 ===================== */
 
-const axiosConfig: AxiosRequestConfig = {
-  baseURL: import.meta.env.VITE_SERVICE_BASE_URL as string,
-  timeout: ResultEnum.TIMEOUT as number,
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json;charset=UTF-8',
-  },
-}
-
-const axiosCanceler = new AxiosCanceler()
-
-/* ---------------- 工具函数 ---------------- */
-const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms))
-
-/** 提取 AxiosError 的后端 message，若无则使用 fallback */
-function getBackendMessageFromAxiosError(error: AxiosError<App.Service.Response>, fallback: string): string {
-  const backendMessage = error.response?.data?.message
-  return backendMessage || fallback
-}
-
-/** 提取业务响应的后端 message，若无则使用 fallback */
-function getBackendMessageFromResponse<T>(response: ExtendedAxiosResponse<T>, fallback: string): string {
-  const backendMessage = response.data?.message
-  return backendMessage || fallback
-}
-
-/* ---------------- Token 刷新管理 ---------------- */
 const ENABLE_TOKEN_REFRESH = String(import.meta.env.VITE_ENABLE_TOKEN_REFRESH || 'N').toUpperCase() === 'Y'
-const TOKEN_REFRESH_BUFFER_MS = 30_000
-
-let isRefreshing = false
 let refreshPromise: Promise<boolean> | null = null
 
 async function refreshTokenOnce(): Promise<boolean> {
-  if (!ENABLE_TOKEN_REFRESH) return false
-  if (isRefreshing && refreshPromise) return refreshPromise
+  if (refreshPromise) return refreshPromise
 
   const authStore = useAuthStore()
   if (!authStore.refreshToken) return false
-  const rExp = Number(authStore.refreshTokenExpiresAt || 0)
-  if (rExp && Date.now() >= rExp) return false
 
-  isRefreshing = true
-  const doRefresh = async () => {
-    // 动态引入以避免循环依赖
-    const { fetchRefreshToken } = await import('@/service/api/login')
-    const { data, error } = await fetchRefreshToken(authStore.refreshToken)
-    if (error) return false
-    authStore.setToken(data?.accessToken || '')
-    authStore.setTokenType(data?.tokenType || 'Bearer')
-    if (data?.refreshToken) authStore.setRefreshToken(data.refreshToken)
-    const expiresIn = Number(data?.expiresIn || 0)
-    if (expiresIn > 0) authStore.setTokenExpiresAt(Date.now() + expiresIn * 1000)
-    const refreshExpiresIn = Number(data?.refreshExpiresIn || 0)
-    if (refreshExpiresIn > 0) authStore.setRefreshTokenExpiresAt(Date.now() + refreshExpiresIn * 1000)
-    return Boolean(data?.accessToken)
-  }
+  refreshPromise = (async () => {
+    try {
+      const cleanAxios = axios.create()
+      const response = await cleanAxios.post<App.Service.Response<Api.Auth.LoginToken>>(
+        `${servicePort.auth}/refresh`,
+        { refreshToken: authStore.refreshToken },
+        { baseURL: import.meta.env.VITE_SERVICE_BASE_URL },
+      )
 
-  refreshPromise = doRefresh()
+      const { data } = response.data
+      if (response.data.code !== ResultEnum.SUCCESS || !data?.accessToken) {
+        return false
+      }
+
+      authStore.setToken(data.accessToken)
+      authStore.setTokenType(data.tokenType || 'Bearer')
+      if (data.refreshToken) authStore.setRefreshToken(data.refreshToken)
+      return true
+    } catch {
+      return false
+    }
+  })()
+
   try {
-    const ok = await refreshPromise
-    return ok
+    return await refreshPromise
   } finally {
-    isRefreshing = false
     refreshPromise = null
   }
 }
 
-function willTokenExpireSoon(): boolean {
-  if (!ENABLE_TOKEN_REFRESH) return false
-  const authStore = useAuthStore()
-  const exp = Number(authStore.tokenExpiresAt || 0)
-  if (!exp) return false
-  return Date.now() >= exp - TOKEN_REFRESH_BUFFER_MS
+/* ===================== RequestHttp 类 ===================== */
+
+const defaultAxiosConfig: AxiosRequestConfig = {
+  // 接口根地址
+  baseURL: import.meta.env.VITE_SERVICE_BASE_URL,
+  // 请求超时时间（默认 10s）
+  timeout: Number(ResultEnum.TIMEOUT) || 10000,
+  // 跨域携带凭证
+  withCredentials: true,
 }
 
-/* ---------------- 请求类（统一封装发送、重试、错误提示） ---------------- */
+const requestCanceler = new RequestCanceler()
+
 class RequestHttp {
   private service: AxiosInstance
 
@@ -160,305 +140,204 @@ class RequestHttp {
   private setupInterceptors() {
     // 请求拦截器
     this.service.interceptors.request.use(
-      async (config: CustomAxiosRequestConfig) => {
-        const userStore = useAuthStore()
+      (config: InternalAxiosRequestConfig) => {
+        const cfg = config as unknown as CustomAxiosRequestConfig
+        const authStore = useAuthStore()
 
-        // 请求取消
-        config.cancel ??= true
-        if (config.cancel) axiosCanceler.addPending(config)
+        // 初始化默认配置
+        cfg.cancel ??= true
+        cfg.loading ??= true
+        cfg.headers ??= {}
 
-        // Loading
-        config.loading ??= true
-        if (config.loading && !config.isUpload) openLoading()
+        // 全局 Loading
+        if (cfg.loading && !cfg.isUpload) loadingManager.open()
 
-        // 预刷新（可选）：在过期窗口内先刷新
-        if (!config.skipAuthRefresh && ENABLE_TOKEN_REFRESH && willTokenExpireSoon()) {
-          await refreshTokenOnce()
+        // 重复请求自动取消
+        if (cfg.cancel) requestCanceler.addPending(cfg)
+
+        // 配置 Token
+        if (authStore.token) {
+          cfg.headers.Authorization = `${authStore.tokenType || 'Bearer'} ${authStore.token}`
         }
 
-        // 请求头
-        if (config.headers) {
-          // axios 的 headers 可能是普通对象或 Headers 结构，安全判断
-          try {
-            // 设置 header
-            if (userStore.token) config.headers['Authorization'] = `${userStore.tokenType || 'Bearer'} ${userStore.token}`
-            if (config.isUpload) config.headers['Content-Type'] = 'multipart/form-data'
-          } catch {
-            // ignore
-          }
+        // 配置上传请求头
+        if (cfg.isUpload) {
+          cfg.headers['Content-Type'] = 'multipart/form-data'
         }
 
-        return config
+        cfg.headers['X-Api-Version'] = 1
+
+        return cfg as InternalAxiosRequestConfig
       },
       (error) => Promise.reject(error),
     )
 
-    // 响应拦截器（错误分支使用类型守卫）
+    // 响应拦截器
     this.service.interceptors.response.use(
-      async (response: ExtendedAxiosResponse & { config: CustomAxiosRequestConfig }) => {
+      (response: AxiosResponse) => {
         const { config, data } = response
+        const cfg = config as CustomAxiosRequestConfig
 
-        // 移除 pending
-        try {
-          axiosCanceler.removePending(config)
-        } catch {
-          // ignore
+        // 清理操作（移除 pending，关闭 loading）
+        requestCanceler.removeRecord(cfg)
+        if (cfg.loading) loadingManager.close()
+
+        // 处理下载请求
+        if (cfg.isDownload) return response
+
+        // 处理业务错误
+        if (data.code !== ResultEnum.SUCCESS) {
+          // 构造业务错误
+          const err = new RequestError('business', data.message || '请求失败', data.code, data)
+          return Promise.reject(err)
         }
 
-        if (config.loading) closeLoading()
-
-        // 文件下载直接返回原始 response
-        if (config.isDownload) return response
-
-        // 登录过期：尝试刷新后重试原请求
-        if (data?.code === ResultEnum.OVERDUE) {
-          const authStore = useAuthStore()
-          let refreshed = false
-          if (ENABLE_TOKEN_REFRESH && authStore.refreshToken && !config.__retriedAfterRefresh) {
-            refreshed = await refreshTokenOnce()
-            if (refreshed) {
-              const newConfig: CustomAxiosRequestConfig = { ...config, __retriedAfterRefresh: true }
-              return this.service.request(newConfig)
-            }
-          }
-
-          authStore.resetAuthStore()
-          router.replace('/_builtin/login')
-
-          if (!config.skipErrorHandler) {
-            window.$message?.error(data?.message || '登录已过期，请重新登录')
-          }
-
-          response.__isError = true
-          response.__errorType = 'overdue'
-          return response
-        }
-
-        // 业务错误判断（后端约定）
-        if (typeof data?.code === 'number' && data.code !== ResultEnum.SUCCESS) {
-          const msg = config.customErrorMessage || data.message || '请求失败'
-          if (!config.skipErrorHandler) window.$message?.error(msg)
-
-          response.__isError = true
-          response.__errorType = 'business'
-          return response
-        }
-
-        response.__isError = false
         return response
       },
-      // 错误分支：使用 unknown + 类型守卫进行安全访问
-      async (err: unknown) => {
-        // 若是 axios cancel（优先判断）
-        if (axios.isCancel(err)) {
-          return Promise.reject(err)
-        }
+      async (error: AxiosError) => {
+        const config = error.config as CustomAxiosRequestConfig | undefined
 
-        // 只有当 err 是 AxiosError 时我们做进一步处理
-        if (!axios.isAxiosError(err)) {
-          // 非 axios 错误，按网络错误处理并返回
-          // 关闭 loading（如果能找到 config）
-          try {
-            const maybeConfig = (err as { config?: CustomAxiosRequestConfig })?.config
-            if (maybeConfig?.loading) closeLoading()
-          } catch {
-            // ignore
-          }
-          window.$message?.error('网络异常，请稍后重试')
-          return Promise.reject(err)
-        }
-
-        // 到这里，err 已经被类型守卫为 AxiosError
-        const error = err as AxiosError<App.Service.Response> & { config?: CustomAxiosRequestConfig }
-
-        const config = error.config
-        // 关闭 loading（有 config 且开启 loading）
-        if (config?.loading) closeLoading()
-
-        // 如果是我们自定义的取消标识，也直接 reject
-        const rawMessage = typeof error.message === 'string' ? error.message : String(error.message ?? '')
-        if (rawMessage.includes(REQUEST_CANCEL_ERROR)) {
-          return Promise.reject(error)
-        }
-
-        if (!config?.skipErrorHandler) {
-          if (!error.response) {
-            // 无 response，可能是超时或网络错误
-            if (rawMessage.includes('timeout')) {
-              window.$message?.error('请求超时，请稍后重试')
-            } else if (rawMessage.includes('Network Error')) {
-              window.$message?.error('网络错误，请检查连接')
-            } else {
-              window.$message?.error('网络异常，请稍后重试')
-            }
-          } else {
-            // 有响应；优先使用后端返回的message，如果没有则使用状态码对应的message
-            const backendMessage = error.response.data?.message
-            const status = error.response && typeof error.response.status === 'number' ? error.response.status : undefined
-
-            if (backendMessage) {
-              // 如果后端返回了message，直接使用
-              window.$message?.error(backendMessage)
-            } else if (typeof status === 'number') {
-              // 如果没有后端message，使用状态码对应的message
-              checkStatus(status, config?.customErrorMessage)
-            }
-          }
-        }
-
-        // 移除 pending（如果有 config）
+        // 清理操作
         if (config) {
-          try {
-            axiosCanceler.removePending(config)
-          } catch {
-            // ignore
+          requestCanceler.removeRecord(config)
+          if (config.loading) loadingManager.close()
+        }
+
+        // 转换为标准 RequestError
+        let reqError: RequestError
+        if (error instanceof RequestError) {
+          reqError = error
+        } else if (axios.isCancel(error) || error.message === REQUEST_CANCEL_MSG) {
+          reqError = new RequestError('cancel', '请求已取消', 'CANCEL', error)
+        } else {
+          reqError = RequestError.fromAxiosError(error as AxiosError)
+        }
+
+        // 如果是取消请求，静默处理（不报错）
+        if (reqError.type === 'cancel') {
+          return Promise.reject(reqError)
+        }
+
+        // 401 Token 过期处理
+        if (ENABLE_TOKEN_REFRESH && reqError.type === 'overdue' && config && !config.skipAuthRefresh && !config.__retriedAfterRefresh) {
+          const success = await refreshTokenOnce()
+          if (success) {
+            config.__retriedAfterRefresh = true
+            // 刷新成功，重试原请求
+            return this.service.request(config)
+          }
+          // 刷新失败，强制退出
+          useAuthStore().setToken('')
+          await router.replace('/login')
+          return Promise.reject(reqError)
+        }
+
+        // 自动重试机制（仅针对网络/超时/服务端错误）
+        if (config && (config.retryCount || 0) > 0 && ['network', 'timeout', 'server'].includes(reqError.type)) {
+          config.__retryCount = config.__retryCount || 0
+          if (config.__retryCount < (config.retryCount || 0)) {
+            config.__retryCount++
+            const delay = config.retryDelay || 1000
+            await new Promise((resolve) => setTimeout(resolve, delay))
+            return this.service.request(config)
           }
         }
 
-        // 401 未授权：尝试刷新后重试原请求（避免死循环）
-        if (ENABLE_TOKEN_REFRESH && error.response?.status === HttpStatusCode.Unauthorized && config && !config.__retriedAfterRefresh) {
-          const ok = await refreshTokenOnce()
-          if (ok) {
-            const newConfig: CustomAxiosRequestConfig = { ...config, __retriedAfterRefresh: true }
-            return this.service.request(newConfig)
-          }
+        // 全局错误提示
+        if (config && !config.skipErrorHandler) {
+          window.$message?.error(reqError.message)
         }
 
-        // 自动重试：只有在配置存在并满足 shouldRetry 时才触发
-        if (config && this.shouldRetry(error)) {
-          return this.retryRequest(config, error)
-        }
-
-        return Promise.reject(error)
+        return Promise.reject(reqError)
       },
     )
   }
 
-  private transformResponse<T>(response: ExtendedAxiosResponse<T> | AxiosError<App.Service.Response>): OptimizedResponse<T> {
-    if ('isAxiosError' in response) {
-      // axios 层错误（超时、断网等），优先使用后端返回message
-      const fallbackMessage = response.message || '网络错误'
-      const message = getBackendMessageFromAxiosError(response, fallbackMessage)
-      let type: ErrorType = 'network'
-      const rawMsg = typeof response.message === 'string' ? response.message : String(response.message ?? '')
-      if (rawMsg.includes('timeout')) type = 'timeout'
-      else if (response.response?.status === HttpStatusCode.Unauthorized) type = 'overdue'
-      else if (typeof response.response?.status === 'number' && isServerError(response.response.status)) type = 'server'
-      return { data: null as unknown as T, error: true, message, errorType: type }
-    }
-
-    if (response.__isError) {
-      // 业务错误（比如后端返回 code != 200），优先使用后端返回message
-      const message = getBackendMessageFromResponse(response, '请求失败')
-      return { data: null as unknown as T, error: true, message, errorType: response.__errorType }
-    }
-
-    if ((response.config as CustomAxiosRequestConfig)?.isDownload) {
-      // 下载类请求，直接返回原始 response
-      return { data: response as unknown as T, error: false, message: '' }
-    }
-
-    const responseData = (response.data?.data ?? null) as unknown as T
-
-    return { data: responseData, error: false, message: '' }
-  }
-
-  private shouldRetry(error: AxiosError): boolean {
-    const config = error.config as CustomAxiosRequestConfig | undefined
-    if (!config?.retry) return false
-
-    const currentRetryCount = config.__retryCount || 0
-    if (currentRetryCount >= config.retry.count) return false
-
-    const retryCondition = config.retry.retryCondition || DEFAULT_RETRY_CONFIG.retryCondition
-    return retryCondition(error)
-  }
-
-  private async retryRequest(config: CustomAxiosRequestConfig, _error: AxiosError): Promise<OptimizedResponse<unknown>> {
-    const retryCfg = { ...DEFAULT_RETRY_CONFIG, ...config.retry }
-    const attempt = (config.__retryCount || 0) + 1
-    config.__retryCount = attempt
-
-    const delay = computeRetryDelay(attempt, retryCfg.delay, {
-      backoff: retryCfg.backoff,
-      jitter: retryCfg.jitter,
-      maxDelay: retryCfg.maxDelay,
-    })
-
-    await sleep(delay)
-
-    try {
-      const response = await this.service.request(config)
-      return this.transformResponse(response)
-    } catch (retryError) {
-      return this.transformResponse(retryError as AxiosError<App.Service.Response>)
-    }
-  }
-
-  /** 通用发送方法（统一 GET/POST/PUT/PATCH/DELETE） */
+  /**
+   * 通用请求入口
+   */
   private async send<T>(
-    method: CustomAxiosRequestConfig['method'],
+    method: string,
     url: string,
-    dataOrParams?: unknown,
+    data?: unknown,
     config: Partial<CustomAxiosRequestConfig> = {},
   ): Promise<OptimizedResponse<T>> {
     try {
-      const isParams = method === 'GET' || method === 'DELETE'
-      const response = await this.service.request<App.Service.Response<T>>({
+      const isGet = method === 'GET'
+      const requestConfig: CustomAxiosRequestConfig = {
         url,
         method,
-        ...(isParams ? { params: dataOrParams } : { data: dataOrParams }),
+        params: isGet ? data : undefined,
+        data: isGet ? undefined : data,
         ...config,
-      })
+      }
 
-      return this.transformResponse<T>(response)
-    } catch (error) {
-      return this.transformResponse<T>(error as AxiosError<App.Service.Response>)
+      const res = await this.service.request<App.Service.Response<T>>(requestConfig)
+
+      // 直接返回下载结果
+      if (config.isDownload) {
+        return {
+          data: res as unknown as T,
+          error: false,
+          message: 'success',
+        }
+      }
+
+      return {
+        data: res.data?.data as T,
+        error: false,
+        message: res.data?.message || 'success',
+      }
+    } catch (err) {
+      const reqError = err as RequestError
+      return {
+        data: null as T,
+        error: true,
+        message: reqError.message,
+        errorType: reqError.type,
+        rawError: reqError,
+      }
     }
   }
 
-  get<T = unknown>(url: string, params?: object, config?: Partial<CustomAxiosRequestConfig>) {
+  /* ===================== 对外暴露接口 ===================== */
+
+  get<T>(url: string, params?: object, config?: Partial<CustomAxiosRequestConfig>) {
     return this.send<T>('GET', url, params, config)
   }
-  post<T = unknown>(url: string, data?: unknown, config?: Partial<CustomAxiosRequestConfig>) {
+
+  post<T>(url: string, data?: unknown, config?: Partial<CustomAxiosRequestConfig>) {
     return this.send<T>('POST', url, data, config)
   }
-  put<T = unknown>(url: string, data?: unknown, config?: Partial<CustomAxiosRequestConfig>) {
+
+  put<T>(url: string, data?: unknown, config?: Partial<CustomAxiosRequestConfig>) {
     return this.send<T>('PUT', url, data, config)
   }
-  patch<T = unknown>(url: string, data?: unknown, config?: Partial<CustomAxiosRequestConfig>) {
-    return this.send<T>('PATCH', url, data, config)
-  }
-  delete<T = unknown>(url: string, params?: unknown, config?: Partial<CustomAxiosRequestConfig>) {
+
+  delete<T>(url: string, params?: object, config?: Partial<CustomAxiosRequestConfig>) {
     return this.send<T>('DELETE', url, params, config)
   }
 
-  upload<T = unknown>(url: string, formData: FormData, config?: Partial<CustomAxiosRequestConfig>) {
-    return this.send<T>('POST', url, formData, { ...config, isUpload: true })
+  patch<T>(url: string, data?: unknown, config?: Partial<CustomAxiosRequestConfig>) {
+    return this.send<T>('PATCH', url, data, config)
+  }
+
+  upload<T>(url: string, form: FormData, config?: Partial<CustomAxiosRequestConfig>) {
+    return this.send<T>('POST', url, form, { ...config, isUpload: true })
   }
 
   download(url: string, params?: object, config?: Partial<CustomAxiosRequestConfig>) {
-    return this.send<AxiosResponse<Blob>>('POST', url, params, {
+    return this.send<Blob>('POST', url, params, {
       ...config,
       isDownload: true,
       responseType: 'blob',
     })
   }
 
-  cancelAllRequests(reason?: string) {
-    axiosCanceler.removeAllPending(reason)
-  }
-
-  getPendingRequestCount() {
-    return axiosCanceler.getPendingCount()
-  }
-
-  isPending(config: CustomAxiosRequestConfig): boolean {
-    return axiosCanceler.isPending(config)
+  cancelAll() {
+    requestCanceler.removeAllPending()
   }
 }
 
-/* ---------------- 导出实例 ---------------- */
-const httpRequest = new RequestHttp(axiosConfig)
-export const request = httpRequest
-export default httpRequest
+export const request = new RequestHttp(defaultAxiosConfig)
+export default request

@@ -28,7 +28,7 @@ const routeStore = useRouteStore()
           v-if="appStore.reloadFlag"
           :key="route.fullPath"
           :class="{ 'p-16px': showPadding }"
-          class="flex-grow bg-layout transition-300 max-w-screen-lg mx-auto"
+          class="flex-grow bg-layout transition-300"
         />
       </KeepAlive>
     </Transition>

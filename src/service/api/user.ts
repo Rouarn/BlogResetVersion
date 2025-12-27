@@ -97,7 +97,7 @@ export function uploadAvatar(file: File) {
   const formData = new FormData()
   formData.append('file', file)
   formData.append('description', '用户头像')
-  formData.append('isPublic', 'true')
+  formData.append('isPublic', '1')
   return http.upload<{
     fileId: string
     filename: string

@@ -1,64 +1,75 @@
+/**
+ * 请求取消管理 (使用 AbortController)
+ * - 自动取消重复请求
+ * - 支持手动取消
+ */
 import type { CustomAxiosRequestConfig } from './index'
 import { stableStringify } from './utils'
-import type { Canceler } from 'axios'
-import axios from 'axios'
 
-export const REQUEST_CANCEL_ERROR = '__REQUEST_CANCEL__'
+export const REQUEST_CANCEL_MSG = 'RequestCanceled'
 
-/**
- * 管理和取消重复请求：
- * - 根据 method/url/params/data 生成唯一 key
- * - 在发起前移除同 key 的 pending 请求，避免重复
- * - 支持取消全部 pending 请求
- */
-export class AxiosCanceler {
-  private pendingMap: Map<string, Canceler> = new Map()
+export class RequestCanceler {
+  // Map<key, AbortController>
+  private pendingMap: Map<string, AbortController> = new Map()
 
-  /** 生成唯一 key */
+  /**
+   * 生成唯一 key
+   * @param config 请求配置
+   */
   private getKey(config: CustomAxiosRequestConfig): string {
     const { url, method, params, data } = config
-    return [String(method || '').toUpperCase(), String(url || ''), stableStringify(params ?? {}), stableStringify(data ?? {})].join('&')
+    return [String(method || 'GET').toUpperCase(), String(url || ''), stableStringify(params ?? {}), stableStringify(data ?? {})].join('&')
   }
 
-  /** 添加请求 */
+  /**
+   * 添加请求到 pending Map
+   * - 如果存在重复请求，先取消旧的
+   * - 创建新的 AbortController 并绑定到 config.signal
+   * @param config 请求配置
+   */
   public addPending(config: CustomAxiosRequestConfig): void {
-    this.removePending(config)
+    this.removePending(config) // 移除(并取消)同 key 的旧请求
 
     const key = this.getKey(config)
-    config.cancelToken =
-      config.cancelToken ||
-      new axios.CancelToken((cancel) => {
-        if (!this.pendingMap.has(key)) {
-          this.pendingMap.set(key, cancel)
-        }
-      })
+    const controller = new AbortController()
+
+    config.signal = controller.signal
+    this.pendingMap.set(key, controller)
   }
 
-  /** 移除请求 */
+  /**
+   * 移除 pending 状态
+   * - 默认会执行 abort()，确保重复请求被取消
+   * - 如果请求已完成，abort() 无副作用
+   * @param config 请求配置
+   */
   public removePending(config: CustomAxiosRequestConfig): void {
     const key = this.getKey(config)
 
     if (this.pendingMap.has(key)) {
-      const cancel = this.pendingMap.get(key)
-      cancel?.(`${REQUEST_CANCEL_ERROR}: ${key}`)
+      const controller = this.pendingMap.get(key)
+      // 注意：abort() 可以传递 reason，但在 Axios/Fetch 中通常只是 signal 变为 aborted
+      controller?.abort(REQUEST_CANCEL_MSG)
       this.pendingMap.delete(key)
     }
   }
 
-  /** 取消所有请求 */
-  public removeAllPending(reason?: string): void {
-    this.pendingMap.forEach((cancel) => cancel?.(reason || REQUEST_CANCEL_ERROR))
+  /**
+   * 取消全部请求
+   */
+  public removeAllPending(): void {
+    this.pendingMap.forEach((controller) => {
+      controller.abort(REQUEST_CANCEL_MSG)
+    })
     this.pendingMap.clear()
   }
 
-  /** 是否存在某个请求 */
-  public isPending(config: CustomAxiosRequestConfig): boolean {
+  /**
+   * 仅仅从 Map 中移除，不执行 abort
+   * (用于请求成功后的清理，虽然 abort 完成的请求没副作用，但这样更语义化)
+   */
+  public removeRecord(config: CustomAxiosRequestConfig): void {
     const key = this.getKey(config)
-    return this.pendingMap.has(key)
-  }
-
-  /** 获取 pending 请求数量 */
-  public getPendingCount(): number {
-    return this.pendingMap.size
+    this.pendingMap.delete(key)
   }
 }

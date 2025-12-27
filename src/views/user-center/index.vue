@@ -133,7 +133,7 @@ async function handleSave() {
 
     // 调用更新用户信息的 API
     saving.value = true
-    const { error } = await updateUserInfo(authStore.userInfo.userId, saveData)
+    const { error } = await updateUserInfo(authStore.userInfo.id, saveData)
     if (error) return
 
     // 更新本地状态
@@ -188,7 +188,7 @@ function onAvatarFileChange({ fileList }: { fileList: Array<UploadFileInfo> }) {
 async function onCropDone(payload: { blob?: Blob; fileName?: string }) {
   if (!payload.blob) return
   const type = payload.blob.type || 'image/jpeg'
-  const name = `avatar_${authStore.userInfo.userId}_${userForm.nickname || 'user'}_${Date.now()}.${type.split('/')[1] || 'jpeg'}`
+  const name = `avatar_${authStore.userInfo.id}_${userForm.nickname || 'user'}_${Date.now()}.${type.split('/')[1] || 'jpeg'}`
   const file = new File([payload.blob], name, { type })
 
   userForm.avatar = URL.createObjectURL(payload.blob)
@@ -273,8 +273,8 @@ function formatDate(dateStr?: string) {
               <div class="flex justify-between items-center">
                 <span class="text-sm text-gray-600 whitespace-nowrap mr-3">用户ID</span>
                 <!-- 悬浮提示 -->
-                <span class="text-xs text-gray-500 font-mono ellipsis-text" :title="authStore.userInfo.userId">
-                  {{ authStore.userInfo.userId }}
+                <span class="text-xs text-gray-500 font-mono ellipsis-text" :title="authStore.userInfo.id">
+                  {{ authStore.userInfo.id }}
                 </span>
               </div>
             </div>
