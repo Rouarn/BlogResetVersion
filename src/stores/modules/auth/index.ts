@@ -68,8 +68,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   }
 
   const setUserInfo = (value: Api.Auth.UserInfo = initialState.userInfo) => {
-    const { auth, ...payload } = value
-    Object.assign(userInfo, { ...payload, username: auth.username })
+    Object.assign(userInfo, value)
     localStg.set('userInfo', userInfo)
   }
 
