@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import MarkdownViewer from '@/components/common/markdown-viewer.vue'
 import SvgIcon from '@/components/custom/svg-icon.vue'
 import { blogArticles } from '../home/modules/blog-data'
 import { useRouterPush } from '@/hooks/common/router'
@@ -38,32 +39,11 @@ const goBack = () => {
           </div>
           <h1 class="text-3xl md:text-5xl font-bold leading-tight mb-8">{{ article.title }}</h1>
           <div class="aspect-video rounded-3xl overflow-hidden bg-slate-100">
-            <img
-              src="https://modao.cc/agent-py/media/generated_images/2025-12-27/4dd42b34daba44ae8137baef8853f28b.jpg"
-              alt="featured image"
-              class="w-full h-full object-cover"
-            />
+            <img :src="article.cover" alt="featured image" class="w-full h-full object-cover" />
           </div>
         </header>
-        <section class="prose prose-slate prose-lg max-w-none text-slate-700 space-y-6">
-          <p>
-            2025年，我们不再仅仅是“使用”AI工具，而是与AI共同创造。这种转变体现在工作流的每一个毛细血管中。从代码补全到自动化的复杂决策支持，AI
-            正在从一个外部组件变成基础设施的一部分。
-          </p>
-          <div class="p-8 bg-slate-50 border-l-4 border-indigo-500 italic text-slate-600">
-            “界面的本质不是展示功能，而是建立信任感。在 AI 时代，这种信任来自于透明的过程与即时的反馈。”
-          </div>
-          <h3 class="text-2xl font-bold text-slate-900 mt-12 mb-4">深度协作的三个阶段</h3>
-          <p>首先是感知阶段。系统通过上下文理解你的意图，而不是等待明确的指令。其次是联想阶段，它能根据当前任务推荐最相关的资源和策略。</p>
-          <ul class="space-y-4 list-disc pl-6">
-            <li>场景智能感知：环境信息的全自动录入与分类</li>
-            <li>协作知识库：组织内部智慧的实时流控</li>
-            <li>多模态交互：自然语言、手势与眼神的无缝对接</li>
-          </ul>
-          <p>
-            当我们回看 2024 年时，那时的大模型似乎还显得有些笨拙。现在的系统已经能够通过 RAG
-            技术与实时传感器数据，在确保安全的前提下执行更高优先级的自主任务。
-          </p>
+        <section class="max-w-none text-slate-700 space-y-6">
+          <MarkdownViewer :content="article.content" />
         </section>
         <footer class="mt-20 pt-12 border-t border-slate-100 flex items-center justify-between">
           <div class="flex items-center space-x-4">

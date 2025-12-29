@@ -36,6 +36,8 @@ declare namespace Api {
       date: string
       title: string
       summary: string
+      content: string
+      cover: string
       author: string
       avatar: string
     }
