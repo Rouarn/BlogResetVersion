@@ -1,3 +1,15 @@
+import { BLOG_SOCIAL_LINKS } from '@/constants/blog'
+
+export const blogProfile: Api.Blog.Profile = {
+  nickname: 'Liam Wang',
+  title: '产品设计师 & 开发者',
+  avatar: 'https://modao.cc/agent-py/media/generated_images/2025-12-27/cb3b6cf9265c4fe883e7270bda82011c.jpg',
+  cover: 'https://modao.cc/agent-py/media/generated_images/2025-12-27/edcd2a4451b646b395eee4f661e37eb3.jpg',
+  bio: '你好，我是一名常驻上海的独立创作者。专注于极简主义设计与高效的前端开发。我相信好的产品应该像空气一样自然存在。<br /><br />业余时间，我会在这里记录折腾各类开源工具的过程，分享关于技术、设计与生活哲学的思考。',
+  currentStatus: '正在筹备 2026 年度视觉复盘项目',
+  socialLinks: BLOG_SOCIAL_LINKS,
+}
+
 export const blogArticles: Api.Blog.Article[] = [
   {
     id: 1,
@@ -24,6 +36,7 @@ export const blogArticles: Api.Blog.Article[] = [
     author: 'Chen Studio',
     avatar: 'https://modao.cc/agent-py/media/generated_images/2025-12-27/e5f8acfe69f34c18b9df395e272ee807.jpg',
     cover: 'https://picsum.photos/1200/600',
+    views: 0,
   },
   {
     id: 2,
@@ -54,6 +67,7 @@ export const blogArticles: Api.Blog.Article[] = [
     author: 'Chen Studio',
     avatar: 'https://modao.cc/agent-py/media/generated_images/2025-12-27/10e54c5a0a964c76be5e6fe8418328a4.jpg',
     cover: 'https://picsum.photos/1200/600',
+    views: 890,
   },
   {
     id: 3,
@@ -82,5 +96,6 @@ export const blogArticles: Api.Blog.Article[] = [
     `,
     author: 'Chen Studio',
     avatar: 'https://modao.cc/agent-py/media/generated_images/2025-12-27/380dbf5153824018b5c82022130f55b0.jpg',
+    views: 0,
   },
 ]

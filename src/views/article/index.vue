@@ -11,10 +11,18 @@ defineOptions({
 })
 
 const route = useRoute()
-const { routerBack } = useRouterPush()
+const { routerBack, routerPushByKey } = useRouterPush()
 
-const articleId = Number((route.params as { id: string }).id)
-const article = computed(() => blogArticles.find((a) => a.id === articleId))
+const articleId = computed(() => Number((route.params as { id: string }).id))
+const article = computed(() => blogArticles.find((a) => a.id === articleId.value))
+
+const currentIndex = computed(() => blogArticles.findIndex((a) => a.id === articleId.value))
+const prevArticle = computed(() => (currentIndex.value < blogArticles.length - 1 ? blogArticles[currentIndex.value + 1] : null))
+const nextArticle = computed(() => (currentIndex.value > 0 ? blogArticles[currentIndex.value - 1] : null))
+
+const navigateTo = (id: number) => {
+  routerPushByKey('article', { params: { id: String(id) } })
+}
 
 const goBack = () => {
   routerBack()
@@ -36,6 +44,8 @@ const goBack = () => {
           <div class="flex items-center space-x-4 mb-6">
             <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-full">{{ article.category }}</span>
             <span class="text-slate-400 text-sm">发表于 {{ article.date }}</span>
+            <span class="text-slate-300 mx-2">·</span>
+            <span class="text-slate-400 text-sm flex items-center"> <SvgIcon icon="ph:eye" class="mr-1" /> {{ article.views }} 阅读 </span>
           </div>
           <h1 class="text-3xl md:text-5xl font-bold leading-tight mb-8">{{ article.title }}</h1>
           <div class="aspect-video rounded-3xl overflow-hidden bg-slate-100">
@@ -45,16 +55,35 @@ const goBack = () => {
         <section class="max-w-none text-slate-700 space-y-6">
           <MarkdownViewer :content="article.content" />
         </section>
-        <footer class="mt-20 pt-12 border-t border-slate-100 flex items-center justify-between">
-          <div class="flex items-center space-x-4">
-            <button class="flex items-center space-x-2 px-6 py-2 bg-slate-900 text-white rounded-full hover:bg-slate-800 transition-all">
-              <SvgIcon icon="ph:heart-bold" />
-              <span>赞 (128)</span>
-            </button>
-            <button class="p-2 border border-slate-200 rounded-full text-slate-400 hover:text-slate-900 transition-colors">
-              <SvgIcon icon="ph:share-network-bold" class="text-xl" />
-            </button>
+        <footer class="mt-20 pt-12 border-t border-slate-100">
+          <div class="flex items-center justify-between mb-12">
+            <div class="flex items-center space-x-4">
+              <button class="flex items-center space-x-2 px-6 py-2 bg-slate-900 text-white rounded-full hover:bg-slate-800 transition-all">
+                <SvgIcon icon="ph:heart-bold" />
+                <span>赞 (128)</span>
+              </button>
+              <button class="p-2 border border-slate-200 rounded-full text-slate-400 hover:text-slate-900 transition-colors">
+                <SvgIcon icon="ph:share-network-bold" class="text-xl" />
+              </button>
+            </div>
           </div>
+
+          <nav class="grid grid-cols-2 gap-4 pt-8 border-t border-slate-100">
+            <div v-if="prevArticle" class="group cursor-pointer text-left" @click="navigateTo(prevArticle.id)">
+              <div class="text-xs text-slate-400 mb-1 group-hover:text-indigo-600 transition-colors">上一篇</div>
+              <div class="text-sm font-bold text-slate-800 truncate group-hover:text-indigo-600 transition-colors">
+                {{ prevArticle.title }}
+              </div>
+            </div>
+            <div v-else></div>
+
+            <div v-if="nextArticle" class="group cursor-pointer text-right" @click="navigateTo(nextArticle.id)">
+              <div class="text-xs text-slate-400 mb-1 group-hover:text-indigo-600 transition-colors">下一篇</div>
+              <div class="text-sm font-bold text-slate-800 truncate group-hover:text-indigo-600 transition-colors">
+                {{ nextArticle.title }}
+              </div>
+            </div>
+          </nav>
         </footer>
       </article>
     </div>

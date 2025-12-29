@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import SvgIcon from '@/components/custom/svg-icon.vue'
-import { BLOG_SOCIAL_LINKS } from '@/constants/blog'
+import { blogProfile } from './blog-data'
 import { useRouterPush } from '@/hooks/common/router'
 
 defineOptions({
@@ -21,10 +21,10 @@ const { routerPushByKey } = useRouterPush()
         <SvgIcon icon="ph:user-circle-duotone" class="text-4xl text-indigo-600" />
       </div>
       <h3 class="text-lg font-bold mb-2">关于博主</h3>
-      <p class="text-sm text-slate-500 mb-6 leading-relaxed">全栈开发者 / 设计爱好者。热衷于在复杂的逻辑中寻找简洁的美感。</p>
+      <p class="text-sm text-slate-500 mb-6 leading-relaxed">{{ blogProfile.title }}</p>
       <div class="flex space-x-2">
         <ButtonIcon
-          v-for="item in BLOG_SOCIAL_LINKS"
+          v-for="item in blogProfile.socialLinks"
           :key="item.key"
           :icon="item.icon"
           :tooltip-content="item.label"

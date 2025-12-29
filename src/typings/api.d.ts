@@ -40,6 +40,27 @@ declare namespace Api {
       cover: string
       author: string
       avatar: string
+      views: number
+      prevId?: number | null
+      nextId?: number | null
+    }
+
+    interface SocialLink {
+      key: string
+      label: string
+      icon: string
+      link: string
+      class?: string
+    }
+
+    interface Profile {
+      nickname: string
+      title: string
+      avatar: string
+      cover: string
+      bio: string
+      currentStatus: string
+      socialLinks: SocialLink[]
     }
   }
 

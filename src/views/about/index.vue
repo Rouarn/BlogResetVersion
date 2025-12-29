@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BLOG_SOCIAL_LINKS } from '@/constants/blog'
+import { blogProfile } from '@/views/home/modules/blog-data'
 
 defineOptions({
   name: 'BlogAbout',
@@ -11,43 +11,31 @@ defineOptions({
     <main class="animate-fade-in">
       <!-- Profile Header -->
       <div class="h-64 md:h-80 bg-slate-900 relative">
-        <img
-          src="https://modao.cc/agent-py/media/generated_images/2025-12-27/edcd2a4451b646b395eee4f661e37eb3.jpg"
-          alt="Cover"
-          class="w-full h-full object-cover opacity-40"
-        />
+        <img :src="blogProfile.cover" alt="Cover" class="w-full h-full object-cover opacity-40" />
         <div class="absolute -bottom-12 left-6 md:left-1/2 md:-translate-x-1/2 md:flex md:flex-col md:items-center">
           <div class="w-24 h-24 md:w-32 md:h-32 rounded-3xl border-4 border-white overflow-hidden bg-white shadow-xl">
-            <img
-              src="https://modao.cc/agent-py/media/generated_images/2025-12-27/cb3b6cf9265c4fe883e7270bda82011c.jpg"
-              alt="Avatar"
-              class="w-full h-full object-cover"
-            />
+            <img :src="blogProfile.avatar" alt="Avatar" class="w-full h-full object-cover" />
           </div>
         </div>
       </div>
 
       <div class="max-w-2xl mx-auto px-6 pt-16 md:pt-24 pb-12">
         <div class="text-center mb-10">
-          <h1 class="text-3xl font-black mb-2">Liam Wang</h1>
-          <p class="text-indigo-600 font-medium">产品设计师 & 开发者</p>
+          <h1 class="text-3xl font-black mb-2">{{ blogProfile.nickname }}</h1>
+          <p class="text-indigo-600 font-medium">{{ blogProfile.title }}</p>
         </div>
 
         <div class="space-y-10">
           <section class="space-y-4">
             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-200 pb-2">简介</h3>
-            <p class="text-slate-600 leading-relaxed">
-              你好，我是一名常驻上海的独立创作者。专注于极简主义设计与高效的前端开发。我相信好的产品应该像空气一样自然存在。
-              <br /><br />
-              业余时间，我会在这里记录折腾各类开源工具的过程，分享关于技术、设计与生活哲学的思考。
-            </p>
+            <p class="text-slate-600 leading-relaxed">{{ blogProfile.bio }}</p>
           </section>
 
           <section class="space-y-4">
             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-200 pb-2">社交链接</h3>
             <div class="flex gap-4">
               <ButtonIcon
-                v-for="item in BLOG_SOCIAL_LINKS"
+                v-for="item in blogProfile.socialLinks"
                 :key="item.key"
                 :icon="item.icon"
                 :tooltip-content="item.label"
@@ -68,7 +56,7 @@ defineOptions({
               </div>
               <div>
                 <p class="text-xs text-orange-800 font-bold uppercase tracking-wide mb-1">Current Status</p>
-                <p class="text-sm text-orange-900 font-medium">正在筹备 2026 年度视觉复盘项目</p>
+                <p class="text-sm text-orange-900 font-medium">{{ blogProfile.currentStatus }}</p>
               </div>
             </div>
           </section>
