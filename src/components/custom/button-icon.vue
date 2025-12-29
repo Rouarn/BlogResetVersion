@@ -30,7 +30,7 @@ const props = withDefaults(defineProps<Props>(), {
 <template>
   <NTooltip :placement="tooltipPlacement" :z-index="zIndex" :disabled="!tooltipContent">
     <template #trigger>
-      <NButton quaternary :class="`h-[36px] text-icon, ${props.class}`" v-bind="$attrs">
+      <NButton quaternary :class="`h-[36px] text-icon ${props.class}`" v-bind="$attrs">
         <div class="flex-center gap-8px">
           <slot>
             <SvgIcon :icon="icon" />
