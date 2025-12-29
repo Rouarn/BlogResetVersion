@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import BlogBottomNav from '../home/modules/BlogBottomNav.vue'
-import BlogFooter from '../home/modules/BlogFooter.vue'
-import BlogNavbar from '../home/modules/BlogNavbar.vue'
 import SvgIcon from '@/components/custom/svg-icon.vue'
 import { blogArticles } from '../home/modules/blog-data'
 import { useRouterPush } from '@/hooks/common/router'
@@ -24,9 +21,7 @@ const goBack = () => {
 </script>
 
 <template>
-  <div class="bg-white min-h-screen pb-20 md:pb-0 relative">
-    <BlogNavbar />
-
+  <div class="bg-white min-h-screen relative">
     <button
       class="fixed top-24 left-4 md:left-8 p-3 bg-white shadow-xl border border-slate-100 rounded-full hover:scale-110 transition-transform z-40 md:top-24"
       @click="goBack"
@@ -90,8 +85,6 @@ const goBack = () => {
         返回首页
       </button>
     </div>
-    <BlogFooter />
-    <BlogBottomNav />
   </div>
 </template>
 

@@ -310,6 +310,14 @@ declare namespace App {
       path: string
       icon: string
     }
+
+    interface SocialLink {
+      key: string
+      label: string
+      icon: string
+      link: string
+      class?: string
+    }
   }
 
   /** 服务命名空间 */

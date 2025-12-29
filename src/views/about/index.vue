@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import SvgIcon from '@/components/custom/svg-icon.vue'
-import BlogBottomNav from '@/views/home/modules/BlogBottomNav.vue'
-import BlogFooter from '@/views/home/modules/BlogFooter.vue'
-import BlogNavbar from '@/views/home/modules/BlogNavbar.vue'
+import { BLOG_SOCIAL_LINKS } from '@/constants/blog'
 
 defineOptions({
   name: 'BlogAbout',
@@ -10,9 +7,7 @@ defineOptions({
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50 font-sans text-slate-800 pb-20 md:pb-0">
-    <BlogNavbar />
-
+  <div class="min-h-screen bg-slate-50 font-sans text-slate-800">
     <main class="animate-fade-in">
       <!-- Profile Header -->
       <div class="h-64 md:h-80 bg-slate-900 relative">
@@ -51,30 +46,17 @@ defineOptions({
           <section class="space-y-4">
             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-200 pb-2">社交链接</h3>
             <div class="flex gap-4">
-              <a
-                href="#"
-                class="w-12 h-12 rounded-full bg-white border border-slate-100 flex items-center justify-center hover:bg-slate-800 hover:text-white transition-all shadow-sm"
-              >
-                <SvgIcon icon="simple-icons:github" class="text-xl" />
-              </a>
-              <a
-                href="#"
-                class="w-12 h-12 rounded-full bg-white border border-slate-100 flex items-center justify-center hover:bg-sky-500 hover:text-white transition-all shadow-sm"
-              >
-                <SvgIcon icon="simple-icons:twitter" class="text-xl" />
-              </a>
-              <a
-                href="#"
-                class="w-12 h-12 rounded-full bg-white border border-slate-100 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all shadow-sm"
-              >
-                <SvgIcon icon="simple-icons:wechat" class="text-xl" />
-              </a>
-              <a
-                href="#"
-                class="w-12 h-12 rounded-full bg-white border border-slate-100 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm"
-              >
-                <SvgIcon icon="heroicons:envelope" class="text-xl" />
-              </a>
+              <ButtonIcon
+                v-for="item in BLOG_SOCIAL_LINKS"
+                :key="item.key"
+                :icon="item.icon"
+                :tooltip-content="item.label"
+                tag="a"
+                :href="item.link"
+                target="_blank"
+                class="!w-12 !h-12 rounded-full bg-white border border-slate-100 flex items-center justify-center transition-all shadow-sm"
+                :class="item.class"
+              />
             </div>
           </section>
 
@@ -93,9 +75,6 @@ defineOptions({
         </div>
       </div>
     </main>
-
-    <BlogFooter />
-    <BlogBottomNav />
   </div>
 </template>
 

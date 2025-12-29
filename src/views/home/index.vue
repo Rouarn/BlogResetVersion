@@ -1,22 +1,16 @@
 <script setup lang="ts">
 import BlogArticleList from './modules/BlogArticleList.vue'
-import BlogBottomNav from './modules/BlogBottomNav.vue'
-import BlogFooter from './modules/BlogFooter.vue'
-import BlogNavbar from './modules/BlogNavbar.vue'
 import BlogSidebar from './modules/BlogSidebar.vue'
 
 defineOptions({ name: 'BlogHome' })
 </script>
 
 <template>
-  <div class="bg-slate-50 text-slate-900 leading-relaxed font-inter min-h-screen pb-20 md:pb-0">
-    <BlogNavbar />
+  <div class="bg-slate-50 text-slate-900 leading-relaxed font-inter min-h-screen">
     <main class="max-w-5xl mx-auto px-6 py-12 md:pt-20 lg:flex lg:gap-16">
       <BlogArticleList />
       <BlogSidebar />
     </main>
-    <BlogFooter />
-    <BlogBottomNav />
   </div>
 </template>
 

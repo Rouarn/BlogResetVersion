@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import SvgIcon from '@/components/custom/svg-icon.vue'
+import { BLOG_SOCIAL_LINKS } from '@/constants/blog'
 import { useRouterPush } from '@/hooks/common/router'
 
 defineOptions({
@@ -21,16 +22,18 @@ const { routerPushByKey } = useRouterPush()
       </div>
       <h3 class="text-lg font-bold mb-2">关于博主</h3>
       <p class="text-sm text-slate-500 mb-6 leading-relaxed">全栈开发者 / 设计爱好者。热衷于在复杂的逻辑中寻找简洁的美感。</p>
-      <div class="flex space-x-4">
-        <a href="javascript:;" class="text-slate-400 hover:text-slate-900 transition-colors" @click.stop>
-          <SvgIcon icon="ph:github-logo" class="text-2xl" />
-        </a>
-        <a href="javascript:;" class="text-slate-400 hover:text-slate-900 transition-colors" @click.stop>
-          <SvgIcon icon="ph:twitter-logo" class="text-2xl" />
-        </a>
-        <a href="javascript:;" class="text-slate-400 hover:text-slate-900 transition-colors" @click.stop>
-          <SvgIcon icon="ph:envelope" class="text-2xl" />
-        </a>
+      <div class="flex space-x-2">
+        <ButtonIcon
+          v-for="item in BLOG_SOCIAL_LINKS"
+          :key="item.key"
+          :icon="item.icon"
+          :tooltip-content="item.label"
+          tag="a"
+          :href="item.link"
+          target="_blank"
+          class="text-slate-400 transition-colors"
+          :class="item.class"
+        />
       </div>
     </div>
     <!-- 热点标签 -->

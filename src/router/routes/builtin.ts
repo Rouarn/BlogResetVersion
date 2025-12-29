@@ -4,7 +4,7 @@ import type { RouteRecordRaw } from 'vue-router'
 export const BLOG_ROUTE: RouteRecordRaw = {
   name: 'BlogRoot',
   path: '/',
-  component: () => import('@/layouts/blank-layout/index.vue'),
+  component: () => import('@/layouts/blog-layout/index.vue'),
   redirect: '/home',
   meta: {
     title: 'BlogRoot',

@@ -40,9 +40,7 @@ const isActive = (path: string) => {
         </div>
       </div>
       <div class="flex items-center space-x-4">
-        <button class="p-2 hover:bg-slate-100 rounded-full transition-colors">
-          <SvgIcon icon="ph:magnifying-glass-bold" class="text-xl" />
-        </button>
+        <ButtonIcon icon="ph:magnifying-glass-bold" class="text-xl" tooltip-content="搜索" />
       </div>
     </div>
   </nav>
