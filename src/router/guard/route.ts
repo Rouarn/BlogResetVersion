@@ -19,9 +19,9 @@ export function createRouteGuard(router: Router) {
       // 获取用户信息
       const { data, error } = await fetchUserInfo()
       if (error) {
-        routeStore.resetStore()
+        await routeStore.resetStore()
         authStore.resetAuthStore()
-        return next({ path: '/login', replace: false, query: { redirect: to.fullPath } })
+        return next({ path: '/login', replace: true, query: { redirect: to.fullPath } })
       }
       authStore.setUserInfo(data)
 

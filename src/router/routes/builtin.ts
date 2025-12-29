@@ -1,18 +1,18 @@
 import type { RouteRecordRaw } from 'vue-router'
 
-/** Root路由 */
-export const ROOT_ROUTE: RouteRecordRaw = {
-  name: 'Root',
+/** Blog路由 */
+export const BLOG_ROUTE: RouteRecordRaw = {
+  name: 'BlogRoot',
   path: '/',
+  component: () => import('@/layouts/blank-layout/index.vue'),
   redirect: '/home',
-  component: () => import('@/layouts/base-layout/index.vue'),
   meta: {
-    title: 'root',
+    title: 'BlogRoot',
   },
   children: [
     {
       name: 'home',
-      path: '/home',
+      path: 'home',
       component: () => import('@/views/home/index.vue'),
       meta: {
         title: 'Home',
@@ -25,20 +25,70 @@ export const ROOT_ROUTE: RouteRecordRaw = {
       },
     },
     {
-      name: 'about',
-      path: '/about',
-      component: () => import('@/views/about/index.vue'),
+      name: 'article',
+      path: 'article/:id',
+      component: () => import('@/views/article/index.vue'),
       meta: {
-        title: 'About',
-        i18nKey: 'route.about',
+        title: 'Article',
         icon: '',
-        order: 999,
+        order: 0,
+        hideInMenu: true,
+        isKeepAlive: false,
+        isAuth: false,
+      },
+    },
+    {
+      name: 'archive',
+      path: 'archive',
+      component: () => import('@/views/archive/index.vue'),
+      meta: {
+        title: 'Archive',
+        icon: '',
+        order: 0,
         hideInMenu: false,
         isKeepAlive: true,
         isAuth: false,
-        menuType: 2,
       },
     },
+    {
+      name: 'tags',
+      path: 'tags',
+      component: () => import('@/views/tags/index.vue'),
+      meta: {
+        title: 'Tags',
+        icon: '',
+        order: 0,
+        hideInMenu: false,
+        isKeepAlive: true,
+        isAuth: false,
+      },
+    },
+    {
+      name: 'about',
+      path: 'about',
+      component: () => import('@/views/about/index.vue'),
+      meta: {
+        title: 'About',
+        icon: '',
+        order: 0,
+        hideInMenu: false,
+        isKeepAlive: true,
+        isAuth: false,
+      },
+    },
+  ],
+}
+
+/** System路由 */
+export const SYSTEM_ROUTE: RouteRecordRaw = {
+  name: 'SystemRoot',
+  path: '/system',
+  redirect: '/user-center',
+  component: () => import('@/layouts/base-layout/index.vue'),
+  meta: {
+    title: 'SystemRoot',
+  },
+  children: [
     {
       name: 'user-center',
       path: '/user-center',

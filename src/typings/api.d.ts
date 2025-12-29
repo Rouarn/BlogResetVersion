@@ -22,6 +22,25 @@ declare namespace Api {
      */
     type Gender = 0 | 1 | 2
   }
+
+  /**
+   * namespace Blog
+   *
+   * backend api module: "blog"
+   */
+  namespace Blog {
+    interface Article {
+      id: number
+      category: string
+      categoryClass: string
+      date: string
+      title: string
+      summary: string
+      author: string
+      avatar: string
+    }
+  }
+
   /**
    * namespace Auth
    *

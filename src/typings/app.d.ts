@@ -302,6 +302,16 @@ declare namespace App {
     }
   }
 
+  /** Blog命名空间 */
+  namespace Blog {
+    interface NavItem {
+      key: string
+      label: string
+      path: string
+      icon: string
+    }
+  }
+
   /** 服务命名空间 */
   namespace Service {
     interface ServiceConfigItem {

@@ -1,0 +1,32 @@
+export const blogArticles: Api.Blog.Article[] = [
+  {
+    id: 1,
+    category: '技术探讨',
+    categoryClass: 'text-indigo-600',
+    date: '2025-12-25',
+    title: '人工智能在 2025 年的演进：从辅助到深度协作的跨越',
+    summary: '随着大模型能力的进一步下沉，我们正在经历一场从“对话助手”向“原生协作”的生产力革命。本文将深入探讨这一趋势如何改变个人工作流。',
+    author: 'Chen Studio',
+    avatar: 'https://modao.cc/agent-py/media/generated_images/2025-12-27/e5f8acfe69f34c18b9df395e272ee807.jpg',
+  },
+  {
+    id: 2,
+    category: '极简主义',
+    categoryClass: 'text-emerald-600',
+    date: '2025-12-20',
+    title: '数字极简：如何在噪音时代重建专注力',
+    summary: '我们每天处理的信息超过了过去人类一年的总和。专注力成为了最稀缺的资源。通过一些简单的数字环境清理，我们可以取回生活的主动权。',
+    author: 'Chen Studio',
+    avatar: 'https://modao.cc/agent-py/media/generated_images/2025-12-27/10e54c5a0a964c76be5e6fe8418328a4.jpg',
+  },
+  {
+    id: 3,
+    category: '设计美学',
+    categoryClass: 'text-orange-600',
+    date: '2025-12-15',
+    title: 'UI 设计的下一个十年：空间交互与情感化反馈',
+    summary: '平面设计正在消失，取而代之的是具有深度的空间界面。我们讨论如何利用微妙的物理阴影与自适应动效增强界面的亲和力。',
+    author: 'Chen Studio',
+    avatar: 'https://modao.cc/agent-py/media/generated_images/2025-12-27/380dbf5153824018b5c82022130f55b0.jpg',
+  },
+]
