@@ -106,8 +106,8 @@ onMounted(() => {
             </div>
           </div>
 
-          <nav class="grid grid-cols-2 gap-4 pt-8 border-t border-slate-100">
-            <div v-if="article.prev" class="group cursor-pointer text-left" @click="navigateTo(article.prev.id)">
+          <nav class="grid grid-cols-2 pt-8 border-t border-slate-100">
+            <div v-if="article.prev?.id" class="group cursor-pointer text-left" @click="navigateTo(article.prev.id)">
               <div class="text-xs text-slate-400 mb-1 group-hover:text-indigo-600 transition-colors">上一篇</div>
               <div class="text-sm font-bold text-slate-800 truncate group-hover:text-indigo-600 transition-colors">
                 {{ article.prev.title }}
@@ -115,7 +115,7 @@ onMounted(() => {
             </div>
             <div v-else></div>
 
-            <div v-if="article.next" class="group cursor-pointer text-right" @click="navigateTo(article.next.id)">
+            <div v-if="article.next?.id" class="group cursor-pointer text-right" @click="navigateTo(article.next.id)">
               <div class="text-xs text-slate-400 mb-1 group-hover:text-indigo-600 transition-colors">下一篇</div>
               <div class="text-sm font-bold text-slate-800 truncate group-hover:text-indigo-600 transition-colors">
                 {{ article.next.title }}
