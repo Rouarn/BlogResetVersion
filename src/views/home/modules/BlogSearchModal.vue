@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import SearchFooter from '@/layouts/modules/global-search/components/search-footer.vue'
+import { fetchArticleList } from '@/service/api/article'
 import { useAppStore } from '@/stores/modules/app'
 import { useThemeStore } from '@/stores/modules/theme'
-import { blogArticles } from './blog-data'
 import { useRouterPush } from '@/hooks/common/router'
 import { onKeyStroke, useDebounceFn } from '@vueuse/core'
 
@@ -18,32 +18,52 @@ const theme = useThemeStore()
 const isMobile = computed(() => appStore.isMobile)
 const keyword = ref('')
 const activeIndex = ref(0)
-
-// Filter articles
-const results = computed(() => {
-  if (!keyword.value.trim()) return []
-  const lowerKeyword = keyword.value.toLowerCase().trim()
-  return blogArticles.filter(
-    (article) => article.title.toLowerCase().includes(lowerKeyword) || article.summary.toLowerCase().includes(lowerKeyword),
-  )
-})
+const results = ref<Api.Article.Article[]>([])
+const loading = ref(false)
 
 const handleClose = () => {
   visible.value = false
   // Delay clearing to avoid flickering during transition
   setTimeout(() => {
     keyword.value = ''
+    results.value = []
     activeIndex.value = 0
   }, 200)
 }
 
-const handleSearch = useDebounceFn(() => {
+const searchArticles = async () => {
+  if (!keyword.value.trim()) {
+    results.value = []
+    return
+  }
+
+  loading.value = true
   activeIndex.value = 0
-}, 300)
+
+  try {
+    const { data } = await fetchArticleList({
+      current: 1,
+      size: 20,
+      keyword: keyword.value.trim(),
+    })
+    if (data?.records) {
+      results.value = data.records
+    } else {
+      results.value = []
+    }
+  } catch (error) {
+    console.error('Failed to search articles:', error)
+    results.value = []
+  } finally {
+    loading.value = false
+  }
+}
+
+const handleSearch = useDebounceFn(searchArticles, 300)
 
 const navigateToArticle = (articleId: number) => {
-  routerPushByKey('article', { params: { id: String(articleId) } })
   handleClose()
+  routerPushByKey('article', { params: { id: String(articleId) } })
 }
 
 // Keyboard navigation

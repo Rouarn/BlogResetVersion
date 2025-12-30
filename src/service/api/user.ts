@@ -134,3 +134,10 @@ export function fetchLoginHistory(userId: string, params?: { current?: number; s
     total: number
   }>(`${servicePort.auth}/${userId}/login-history`, { params })
 }
+
+/**
+ * 获取站点/博主信息
+ */
+export function fetchSiteProfile() {
+  return http.get<Api.Blog.Profile>('/api/site/profile')
+}

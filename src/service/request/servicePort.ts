@@ -12,6 +12,8 @@ const servicePort = {
   auth: '/api/auth',
   route: '/api/route',
   files: '/api/files',
+  article: '/api/articles',
+  category: '/api/categories',
   product: '/api/product',
 } as const
 

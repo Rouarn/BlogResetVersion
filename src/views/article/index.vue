@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import MarkdownViewer from '@/components/common/markdown-viewer.vue'
 import SvgIcon from '@/components/custom/svg-icon.vue'
-import { blogArticles } from '../home/modules/blog-data'
+import { fetchArticleDetail } from '@/service/api/article'
 import { useRouterPush } from '@/hooks/common/router'
+import dayjs from 'dayjs'
 
 defineOptions({
   name: 'ArticleDetail',
@@ -13,12 +14,27 @@ defineOptions({
 const route = useRoute()
 const { routerBack, routerPushByKey } = useRouterPush()
 
-const articleId = computed(() => Number((route.params as { id: string }).id))
-const article = computed(() => blogArticles.find((a) => a.id === articleId.value))
+const articleId = computed(() => (route.params as { id: string }).id)
+const article = ref<Api.Article.Article | null>(null)
+const loading = ref(false)
 
-const currentIndex = computed(() => blogArticles.findIndex((a) => a.id === articleId.value))
-const prevArticle = computed(() => (currentIndex.value < blogArticles.length - 1 ? blogArticles[currentIndex.value + 1] : null))
-const nextArticle = computed(() => (currentIndex.value > 0 ? blogArticles[currentIndex.value - 1] : null))
+const getArticle = async () => {
+  if (!articleId.value) return
+  loading.value = true
+  try {
+    const { data } = await fetchArticleDetail(articleId.value)
+    if (data) {
+      article.value = data
+    } else {
+      article.value = null
+    }
+  } catch (error) {
+    console.error('Failed to fetch article:', error)
+    article.value = null
+  } finally {
+    loading.value = false
+  }
+}
 
 const navigateTo = (id: number) => {
   routerPushByKey('article', { params: { id: String(id) } })
@@ -27,6 +43,22 @@ const navigateTo = (id: number) => {
 const goBack = () => {
   routerBack()
 }
+
+const formatDate = (date: string) => {
+  if (!date) return ''
+  return dayjs(date).format('YYYY-MM-DD')
+}
+
+watch(
+  () => articleId.value,
+  () => {
+    getArticle()
+  },
+)
+
+onMounted(() => {
+  getArticle()
+})
 </script>
 
 <template>
@@ -38,17 +70,23 @@ const goBack = () => {
       <SvgIcon icon="ph:arrow-left" class="text-2xl" />
     </button>
 
-    <div v-if="article" class="max-w-3xl mx-auto px-6 py-12 animate-fade-in">
+    <div v-if="loading" class="flex flex-col items-center justify-center min-h-[50vh]">
+      <p class="text-slate-500">加载中...</p>
+    </div>
+
+    <div v-else-if="article" class="max-w-3xl mx-auto px-6 py-12 animate-fade-in">
       <article>
         <header class="mb-12">
           <div class="flex items-center space-x-4 mb-6">
-            <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-full">{{ article.category }}</span>
-            <span class="text-slate-400 text-sm">发表于 {{ article.date }}</span>
+            <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-full">{{
+              article.category?.name || '未分类'
+            }}</span>
+            <span class="text-slate-400 text-sm">发表于 {{ formatDate(article.createTime) }}</span>
             <span class="text-slate-300 mx-2">·</span>
             <span class="text-slate-400 text-sm flex items-center"> <SvgIcon icon="ph:eye" class="mr-1" /> {{ article.views }} 阅读 </span>
           </div>
           <h1 class="text-3xl md:text-5xl font-bold leading-tight mb-8">{{ article.title }}</h1>
-          <div class="aspect-video rounded-3xl overflow-hidden bg-slate-100">
+          <div v-if="article.cover" class="aspect-video rounded-3xl overflow-hidden bg-slate-100">
             <img :src="article.cover" alt="featured image" class="w-full h-full object-cover" />
           </div>
         </header>
@@ -60,7 +98,7 @@ const goBack = () => {
             <div class="flex items-center space-x-4">
               <button class="flex items-center space-x-2 px-6 py-2 bg-slate-900 text-white rounded-full hover:bg-slate-800 transition-all">
                 <SvgIcon icon="ph:heart-bold" />
-                <span>赞 (128)</span>
+                <span>赞 ({{ article.likes || 0 }})</span>
               </button>
               <button class="p-2 border border-slate-200 rounded-full text-slate-400 hover:text-slate-900 transition-colors">
                 <SvgIcon icon="ph:share-network-bold" class="text-xl" />
@@ -69,18 +107,18 @@ const goBack = () => {
           </div>
 
           <nav class="grid grid-cols-2 gap-4 pt-8 border-t border-slate-100">
-            <div v-if="prevArticle" class="group cursor-pointer text-left" @click="navigateTo(prevArticle.id)">
+            <div v-if="article.prev" class="group cursor-pointer text-left" @click="navigateTo(article.prev.id)">
               <div class="text-xs text-slate-400 mb-1 group-hover:text-indigo-600 transition-colors">上一篇</div>
               <div class="text-sm font-bold text-slate-800 truncate group-hover:text-indigo-600 transition-colors">
-                {{ prevArticle.title }}
+                {{ article.prev.title }}
               </div>
             </div>
             <div v-else></div>
 
-            <div v-if="nextArticle" class="group cursor-pointer text-right" @click="navigateTo(nextArticle.id)">
+            <div v-if="article.next" class="group cursor-pointer text-right" @click="navigateTo(article.next.id)">
               <div class="text-xs text-slate-400 mb-1 group-hover:text-indigo-600 transition-colors">下一篇</div>
               <div class="text-sm font-bold text-slate-800 truncate group-hover:text-indigo-600 transition-colors">
-                {{ nextArticle.title }}
+                {{ article.next.title }}
               </div>
             </div>
           </nav>
