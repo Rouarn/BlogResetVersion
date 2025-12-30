@@ -4,11 +4,6 @@
   "private": true,
   "type": "module",
   "description": "一个基于Vue3、Vite7、TypeScript、NaiveUI and UnoCSS的清新优雅前台模版。",
-  "author": {
-    "name": "Rouarn",
-    "email": "woyuxiaji@foxmail.com",
-    "url": "https://github.com/Rouarn"
-  },
   "license": "UNLICENSED",
   "homepage": "https://github.com/Rouarn/frontend-template",
   "scripts": {
@@ -111,6 +106,20 @@
   "config": {
     "commitizen": {
       "path": "node_modules/cz-git"
+    }
+  },
+  "author": {
+    "name": "Rouarn",
+    "title": "分享技术与生活",
+    "email": "woyuxiaji@foxmail.com",
+    "bio": "一个前端开发人员，喜欢分享知识。",
+    "avatar": "http://www.shixian.xyz/img/Logo_Main_2108.svg",
+    "cover": "https://picsum.photos/1200/600",
+    "currentStatus": "Coding...",
+    "socialLinks": {
+      "github": "https://github.com/Rouarn",
+      "twitter": "https://twitter.com/Rouarn",
+      "linkedin": "https://www.linkedin.com/in/rouarn/"
     }
   },
   "website": "http://www.shixian.xyz"

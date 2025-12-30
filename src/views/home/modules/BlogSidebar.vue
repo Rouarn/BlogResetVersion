@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import SvgIcon from '@/components/custom/svg-icon.vue'
 import { fetchCategoryList } from '@/service/api/category'
-import { fetchSiteProfile } from '@/service/api/user'
+import pkg from '@/../package.json'
 import { useRouterPush } from '@/hooks/common/router'
 
 defineOptions({
@@ -10,19 +9,25 @@ defineOptions({
 })
 
 const { routerPushByKey } = useRouterPush()
-const profile = ref<Api.Blog.Profile | null>(null)
-const categories = ref<Api.Category.Category[]>([])
+const { author } = pkg
 
-const getProfile = async () => {
-  try {
-    const { data } = await fetchSiteProfile()
-    if (data) {
-      profile.value = data
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
+const profile = ref<Api.Blog.Profile>({
+  nickname: author.name,
+  title: author.title,
+  avatar: author.avatar,
+  cover: author.cover,
+  bio: author.bio,
+  currentStatus: author.currentStatus,
+  socialLinks: Object.entries(author.socialLinks).map(([key, link]) => ({
+    key,
+    label: key.charAt(0).toUpperCase() + key.slice(1),
+    icon: `simple-icons:${key}`,
+    link,
+    class: 'hover:text-indigo-600',
+  })),
+})
+
+const categories = ref<Api.Category.Category[]>([])
 
 const getCategories = async () => {
   try {
@@ -41,7 +46,6 @@ const handleCategoryClick = (id: number) => {
 }
 
 onMounted(() => {
-  getProfile()
   getCategories()
 })
 </script>

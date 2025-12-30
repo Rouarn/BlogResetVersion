@@ -5,7 +5,7 @@ import servicePort from '@/service/request/servicePort'
  * 获取文章列表
  */
 export function fetchArticleList(params?: Api.Article.ArticleSearchParams) {
-  return http.get<Api.Article.ArticleList>(servicePort.article, params)
+  return http.get<Api.Article.ArticleList>(servicePort.article, params, { loading: false })
 }
 
 /**

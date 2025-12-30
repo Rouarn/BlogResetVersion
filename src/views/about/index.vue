@@ -1,51 +1,30 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import ButtonIcon from '@/components/custom/button-icon.vue'
-import { fetchSiteProfile } from '@/service/api/user'
+import { ref } from 'vue'
+import pkg from '@/../package.json'
 
 defineOptions({
   name: 'BlogAbout',
 })
 
+const { author } = pkg
+
 const defaultProfile: Api.Blog.Profile = {
-  nickname: '博主',
-  title: '分享技术与生活',
-  avatar: '',
-  cover: '',
-  bio: '暂无个人简介...',
-  currentStatus: 'Coding...',
-  socialLinks: [],
+  nickname: author.name,
+  title: author.title,
+  avatar: author.avatar,
+  cover: author.cover,
+  bio: author.bio,
+  currentStatus: author.currentStatus,
+  socialLinks: Object.entries(author.socialLinks).map(([key, link]) => ({
+    key,
+    label: key.charAt(0).toUpperCase() + key.slice(1),
+    icon: `simple-icons:${key}`,
+    link,
+    class: 'hover:text-indigo-600',
+  })),
 }
 
 const profile = ref<Api.Blog.Profile>({ ...defaultProfile })
-
-const loading = ref(true)
-
-const getProfile = async () => {
-  loading.value = true
-  try {
-    const { data } = await fetchSiteProfile()
-    if (data) {
-      profile.value = {
-        nickname: data.nickname || defaultProfile.nickname,
-        title: data.title || defaultProfile.title,
-        avatar: data.avatar || defaultProfile.avatar,
-        cover: data.cover || defaultProfile.cover,
-        bio: data.bio || defaultProfile.bio,
-        currentStatus: data.currentStatus || defaultProfile.currentStatus,
-        socialLinks: data.socialLinks || defaultProfile.socialLinks,
-      }
-    }
-  } catch (error) {
-    console.error('Failed to fetch profile:', error)
-  } finally {
-    loading.value = false
-  }
-}
-
-onMounted(() => {
-  getProfile()
-})
 </script>
 
 <template>

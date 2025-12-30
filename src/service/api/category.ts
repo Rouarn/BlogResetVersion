@@ -5,7 +5,7 @@ import servicePort from '@/service/request/servicePort'
  * 获取分类列表
  */
 export function fetchCategoryList() {
-  return http.get<Api.Category.Category[]>(servicePort.category)
+  return http.get<Api.Category.Category[]>(servicePort.category, {}, { loading: false })
 }
 
 /**
