@@ -15,23 +15,33 @@ const initialState = {
   refreshToken: '',
   userInfo: {
     id: '',
-    username: '',
     nickname: '',
     avatar: '',
-    gender: 2 as Api.Common.Gender,
+    gender: 2,
     mobile: '',
     email: '',
     bio: '',
     birthday: '',
     city: '',
     profession: '',
-    roles: 'user' as Api.Auth.UserRole,
+    roles: undefined,
     lastLoginAt: '',
     lastLoginIp: '',
     loginAttempts: 0,
-    status: '1' as Api.Common.EnableStatus,
-    auth: {} as Api.Auth.AuthType,
-  },
+    status: '1',
+    auth: {
+      createTime: new Date(),
+      updateTime: new Date(),
+      id: '',
+      username: '',
+      status: 1,
+      lastLoginAt: new Date(),
+      lastLoginIp: '',
+      loginAttempts: 0,
+      lockedAt: null,
+      passwordChangedAt: new Date(),
+    },
+  } as Api.Auth.UserInfo,
 }
 
 export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
@@ -89,7 +99,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
 
     window.$notification?.success({
       title: '登录成功',
-      content: `欢迎回来：${userInfo.nickname || userInfo.username || userInfo.mobile || userInfo.email}`,
+      content: `欢迎回来：${userInfo.nickname || userInfo.auth.username || userInfo.mobile || userInfo.email}`,
       duration: 4500,
     })
   }

@@ -76,19 +76,6 @@ export const BLOG_ROUTE: RouteRecordRaw = {
         isAuth: false,
       },
     },
-  ],
-}
-
-/** System路由 */
-export const SYSTEM_ROUTE: RouteRecordRaw = {
-  name: 'SystemRoot',
-  path: '/system',
-  redirect: '/user-center',
-  component: () => import('@/layouts/base-layout/index.vue'),
-  meta: {
-    title: 'SystemRoot',
-  },
-  children: [
     {
       name: 'user-center',
       path: '/user-center',
@@ -104,6 +91,18 @@ export const SYSTEM_ROUTE: RouteRecordRaw = {
       },
     },
   ],
+}
+
+/** System路由 */
+export const SYSTEM_ROUTE: RouteRecordRaw = {
+  name: 'SystemRoot',
+  path: '/system',
+  redirect: '/user-center',
+  component: () => import('@/layouts/base-layout/index.vue'),
+  meta: {
+    title: 'SystemRoot',
+  },
+  children: [],
 }
 
 /** 静态路由 */

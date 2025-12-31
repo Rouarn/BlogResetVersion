@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import UserAvatar from '@/layouts/modules/global-header/components/user-avatar.vue'
 import pkg from '@/../package.json'
 
 defineOptions({
@@ -31,7 +32,14 @@ const profile = ref<Api.Blog.Profile>({ ...defaultProfile })
   <div class="min-h-screen bg-slate-50 font-sans text-slate-800">
     <main class="animate-fade-in">
       <!-- Profile Header -->
-      <div class="h-64 md:h-80 bg-slate-900 relative">
+      <div class="h-64 md:h-80 bg-slate-900 relative group">
+        <div
+          class="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/20 backdrop-blur-sm rounded-full"
+        >
+          <!-- 用户头像 -->
+          <UserAvatar custom-class="text-#ffffff hover:text-indigo-600!" />
+        </div>
+
         <img v-if="profile.cover" :src="profile.cover" alt="Cover" class="w-full h-full object-cover opacity-40" />
         <div v-else class="w-full h-full bg-slate-800 opacity-40"></div>
 

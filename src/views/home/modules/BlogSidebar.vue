@@ -56,9 +56,9 @@ onMounted(() => {
     <div
       v-if="profile"
       class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
-      @click="routerPushByKey('about')"
+      @click.self="routerPushByKey('about')"
     >
-      <div class="w-20 h-20 rounded-2xl bg-indigo-50 flex items-center justify-center mb-6 overflow-hidden">
+      <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 overflow-hidden">
         <NImage
           v-if="profile.avatar"
           :src="profile.avatar"

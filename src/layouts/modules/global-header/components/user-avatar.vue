@@ -10,6 +10,15 @@ defineOptions({
   name: 'UserAvatar',
 })
 
+interface Props {
+  // 自定义样式
+  customClass?: string
+}
+
+withDefaults(defineProps<Props>(), {
+  customClass: '',
+})
+
 const authStore = useAuthStore()
 const { routerPushByKey, toLogin } = useRouterPush()
 const { SvgIconVNode } = useSvgIcon()
@@ -79,13 +88,13 @@ function handleError() {
 </script>
 
 <template>
-  <NButton v-if="!authStore.isLogin" quaternary @click="loginOrRegister">
+  <NButton v-if="!authStore.isLogin" quaternary @click="loginOrRegister" :class="customClass">
     {{ $t('page.login.common.loginOrRegister') }}
   </NButton>
   <NDropdown v-else placement="bottom" trigger="click" :options="options" @select="handleDropdown">
     <div>
       <ButtonIcon>
-        <SvgIcon icon="ph:user-circle" class="text-lg" v-if="!authStore.userInfo.avatar" />
+        <SvgIcon icon="ph:user-circle" :class="['text-lg', customClass]" v-if="!authStore.userInfo.avatar" />
         <NImage
           :src="authStore.userInfo.avatar"
           class="w-20px h-20px rounded-full"
@@ -94,7 +103,7 @@ function handleError() {
           @error="handleError"
           preview-disabled
         />
-        <span class="text-16px font-medium">{{ authStore.userInfo.nickname }}</span>
+        <span :class="['text-16px font-medium', customClass]">{{ authStore.userInfo.nickname }}</span>
       </ButtonIcon>
     </div>
   </NDropdown>

@@ -100,11 +100,11 @@ const userRoleName = computed(() => {
 })
 
 const statusText = computed(() => {
-  return authStore.userInfo.status === '1' ? '正常' : '禁用'
+  return authStore.userInfo.auth.status === 1 ? '正常' : '禁用'
 })
 
 const statusType = computed(() => {
-  return authStore.userInfo.status === '1' ? 'success' : 'error'
+  return authStore.userInfo.auth.status === 1 ? 'success' : 'error'
 })
 
 // 方法
@@ -256,7 +256,7 @@ function formatDate(dateStr?: string) {
             <!-- 基本信息 -->
             <div class="space-y-2">
               <h3 class="text-xl font-semibold text-gray-800">{{ userForm.nickname }}</h3>
-              <p class="text-gray-600">@{{ authStore.userInfo.username }}</p>
+              <p class="text-gray-600">@{{ authStore.userInfo.auth.username }}</p>
               <NTag :type="statusType" size="small">
                 {{ statusText }}
               </NTag>

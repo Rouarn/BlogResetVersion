@@ -66,7 +66,6 @@ declare namespace Api {
 
     interface UserInfo {
       id: string
-      username: string
       nickname?: string
       avatar?: string
       gender?: Common.Gender
@@ -86,7 +85,10 @@ declare namespace Api {
     }
 
     interface RegisterUser extends Omit<UserInfo, 'id' | 'status' | 'roles' | 'auth'> {
+      username: string
       password: string
+      code?: string
+      token?: string
     }
   }
 
