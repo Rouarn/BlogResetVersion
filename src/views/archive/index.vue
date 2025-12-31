@@ -79,6 +79,11 @@ onMounted(() => {
             </div>
           </section>
         </div>
+
+        <!-- 列表为空 -->
+        <div v-if="archives.length === 0" class="text-center py-10">
+          <p>暂无文章</p>
+        </div>
       </div>
     </main>
   </div>

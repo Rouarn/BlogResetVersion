@@ -1,8 +1,21 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { type FormRules, NButton, NForm, NFormItem, NInput, NModal, NSelect, NSpace, NSpin, useMessage } from 'naive-ui'
-import { createArticle, createCategory, fetchArticleDetail, fetchCategoryList, updateArticle } from '@/service/api'
+import {
+  type FormRules,
+  NButton,
+  NForm,
+  NFormItem,
+  NInput,
+  NModal,
+  NSelect,
+  NSpace,
+  NSpin,
+  NUpload,
+  type UploadCustomRequestOptions,
+  useMessage,
+} from 'naive-ui'
+import { createArticle, createCategory, fetchArticleDetail, fetchCategoryList, updateArticle, uploadFile } from '@/service/api'
 import { useAuthStore } from '@/stores/modules/auth'
 import { useThemeStore } from '@/stores/modules/theme'
 import 'md-editor-v3/lib/style.css'
@@ -90,6 +103,25 @@ async function handleConfirmCreateCategory() {
     message.error('分类创建异常')
   } finally {
     createCategoryLoading.value = false
+  }
+}
+
+async function handleUpload({ file, onFinish, onError }: UploadCustomRequestOptions) {
+  if (!file.file) return
+
+  try {
+    const { data, error } = await uploadFile(file.file, 'Article Cover', 1)
+    if (!error && data) {
+      model.cover = data.downloadUrl
+      onFinish()
+      message.success('上传成功')
+    } else {
+      onError()
+      message.error('上传失败')
+    }
+  } catch {
+    onError()
+    message.error('上传异常')
   }
 }
 
@@ -242,7 +274,17 @@ onMounted(() => {
                 </NFormItem>
 
                 <NFormItem label="封面图" path="cover">
-                  <NInput v-model:value="model.cover" placeholder="输入图片 URL" />
+                  <div class="w-full flex flex-col gap-2">
+                    <NInput v-model:value="model.cover" placeholder="输入图片 URL" />
+                    <NUpload action="#" :custom-request="handleUpload" :show-file-list="false" accept="image/*">
+                      <NButton block secondary>
+                        <template #icon>
+                          <div class="i-carbon-upload" />
+                        </template>
+                        上传图片
+                      </NButton>
+                    </NUpload>
+                  </div>
                 </NFormItem>
 
                 <div

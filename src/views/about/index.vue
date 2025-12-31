@@ -37,7 +37,7 @@ const profile = ref<Api.Blog.Profile>({ ...defaultProfile })
           class="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/20 backdrop-blur-sm rounded-full"
         >
           <!-- 用户头像 -->
-          <UserAvatar custom-class="text-#ffffff hover:text-indigo-600!" />
+          <UserAvatar custom-class="text-#ffffff hover:#ffffff!" />
         </div>
 
         <img v-if="profile.cover" :src="profile.cover" alt="Cover" class="w-full h-full object-cover opacity-40" />

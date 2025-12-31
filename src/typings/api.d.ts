@@ -226,4 +226,17 @@ declare namespace Api {
       routes: MenuRoute[]
     }
   }
+
+  namespace File {
+    interface UploadFileResultDto {
+      fileId: string
+      filename: string
+      originalName: string
+      size: number
+      mimeType: string
+      path: string
+      hash: string
+      downloadUrl: string
+    }
+  }
 }

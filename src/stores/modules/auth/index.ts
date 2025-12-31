@@ -107,11 +107,15 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   /** 重置认证状态（清理本地数据） */
   function resetAuthStore() {
     setUserInfo(initialState.userInfo)
-    setToken(initialState.token || '')
-    setRefreshToken(initialState.refreshToken || '')
+    setToken(initialState.token)
+    setRefreshToken(initialState.refreshToken)
+
     themeStore.resetStore()
-    authStore.$reset()
-    routeStore.$reset()
+
+    nextTick(() => {
+      authStore.$reset()
+      routeStore.$reset()
+    })
   }
 
   /** 重置认证状态（退出登录并清理本地数据） */
