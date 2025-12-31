@@ -100,7 +100,7 @@ onMounted(() => {
           @click="handleCategoryClick(cat.id)"
         >
           <span class="text-slate-600 group-hover:text-indigo-600 transition-colors">{{ cat.name }}</span>
-          <span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-400">{{ cat.articleCount || 0 }}</span>
+          <span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-400">{{ cat.count || 0 }}</span>
         </li>
       </ul>
     </div>

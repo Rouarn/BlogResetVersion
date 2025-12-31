@@ -84,7 +84,7 @@ onMounted(() => {
         <!-- Categories Cloud -->
         <div class="flex flex-wrap gap-4 mb-16">
           <div
-            class="px-6 py-3 rounded-2xl text-lg font-bold shadow-lg shadow-slate-200 cursor-pointer transition-colors"
+            class="px-6 py-2 rounded-2xl text-lg font-bold shadow-lg shadow-slate-200 cursor-pointer transition-colors"
             :class="
               selectedCategoryId === 'All' ? 'bg-slate-800 text-white hover:bg-slate-700' : 'bg-white text-slate-600 hover:text-indigo-600'
             "
@@ -95,7 +95,7 @@ onMounted(() => {
           <div
             v-for="cat in categories"
             :key="cat.id"
-            class="px-4 py-2 border rounded-xl text-sm font-medium cursor-pointer transition-all flex items-center"
+            class="px-4 border rounded-xl text-sm font-medium cursor-pointer transition-all flex items-center"
             :class="
               selectedCategoryId === cat.id
                 ? 'bg-indigo-600 text-white border-indigo-600 shadow-md'
@@ -104,8 +104,8 @@ onMounted(() => {
             @click="setCategory(cat.id)"
           >
             {{ cat.name }}
-            <span v-if="cat.articleCount" class="ml-1" :class="selectedCategoryId === cat.id ? 'text-white/80' : 'text-slate-400'">{{
-              cat.articleCount
+            <span v-if="cat.count" class="ml-1" :class="selectedCategoryId === cat.id ? 'text-white/80' : 'text-slate-400'">{{
+              cat.count
             }}</span>
           </div>
         </div>
@@ -130,7 +130,7 @@ onMounted(() => {
               <span class="text-xs font-bold uppercase tracking-tight text-indigo-600">{{
                 article.category?.name || 'Uncategorized'
               }}</span>
-              <span class="text-xs text-slate-400">{{ dayjs(article.createTime).format('YYYY-MM-DD') }}</span>
+              <span class="text-xs text-slate-400">{{ dayjs(article.createdAt).format('YYYY-MM-DD') }}</span>
             </div>
             <h4 class="text-lg font-bold text-slate-800 leading-snug group-hover:text-indigo-600 mb-2">
               {{ article.title }}

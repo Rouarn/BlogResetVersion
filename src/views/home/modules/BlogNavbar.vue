@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import BlogSearchModal from './BlogSearchModal.vue'
 import SvgIcon from '@/components/custom/svg-icon.vue'
+import { useAuthStore } from '@/stores/modules/auth'
 import { BLOG_NAV_ITEMS } from '@/constants/blog'
 import { useRouterPush } from '@/hooks/common/router'
 
@@ -12,6 +13,8 @@ defineOptions({
 
 const { routerPushByKey } = useRouterPush()
 const route = useRoute()
+const authStore = useAuthStore()
+
 const showSearch = ref(false)
 
 const navItems = BLOG_NAV_ITEMS
@@ -43,6 +46,13 @@ const isActive = (path: string) => {
         </div>
       </div>
       <div class="flex items-center space-x-4">
+        <ButtonIcon
+          v-if="authStore.isLogin"
+          icon="ph:pencil-simple-line-bold"
+          class="text-xl"
+          tooltip-content="写文章"
+          @click="routerPushByKey('article-edit')"
+        />
         <ButtonIcon icon="ph:magnifying-glass-bold" class="text-xl" tooltip-content="搜索" @click="showSearch = true" />
       </div>
     </div>

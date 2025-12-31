@@ -81,7 +81,7 @@ onMounted(() => {
             <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-full">{{
               article.category?.name || '未分类'
             }}</span>
-            <span class="text-slate-400 text-sm">发表于 {{ formatDate(article.createTime) }}</span>
+            <span class="text-slate-400 text-sm">发表于 {{ formatDate(article.createdAt) }}</span>
             <span class="text-slate-300 mx-2">·</span>
             <span class="text-slate-400 text-sm flex items-center"> <SvgIcon icon="ph:eye" class="mr-1" /> {{ article.views }} 阅读 </span>
           </div>

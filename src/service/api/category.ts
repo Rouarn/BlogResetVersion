@@ -19,7 +19,7 @@ export function fetchCategoryDetail(id: string | number) {
  * 创建分类
  */
 export function createCategory(data: Api.Category.CreateCategoryDto) {
-  return http.post(servicePort.category, data)
+  return http.post<Api.Category.Category>(servicePort.category, data)
 }
 
 /**

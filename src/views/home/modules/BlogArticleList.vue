@@ -80,7 +80,7 @@ onMounted(() => {
         >
           <span>{{ article.category?.name }}</span>
           <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
-          <span class="text-slate-400">{{ formatDate(article.createTime) }}</span>
+          <span class="text-slate-400">{{ formatDate(article.createdAt) }}</span>
         </div>
         <h2
           class="text-2xl font-bold mb-4 group-hover:text-indigo-600 transition-colors cursor-pointer leading-tight"

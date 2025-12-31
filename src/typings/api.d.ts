@@ -87,8 +87,8 @@ declare namespace Api {
     interface RegisterUser extends Omit<UserInfo, 'id' | 'status' | 'roles' | 'auth'> {
       username: string
       password: string
-      code?: string
-      token?: string
+      captchaCode: string
+      captchaToken: string
     }
   }
 
@@ -102,20 +102,16 @@ declare namespace Api {
       id: number
       name: string
       code: string
-      description?: string
-      sort: number
-      status: number
-      articleCount?: number
-      createTime: string
-      updateTime: string
+      colorClass?: string
+      sortOrder: number
+      count: number
     }
 
     interface CreateCategoryDto {
       name: string
       code: string
-      description?: string
-      sort?: number
-      status?: number
+      colorClass?: string
+      sortOrder: number
     }
 
     type UpdateCategoryDto = Partial<CreateCategoryDto>
@@ -127,25 +123,26 @@ declare namespace Api {
    * backend api module: "article"
    */
   namespace Article {
+    type ArticleStatus = 'draft' | 'published'
+
+    type Status = 0 | 1
+
     interface Article {
       id: number
       title: string
       summary: string
       content: string
       cover: string
-      status: number
+      status: ArticleStatus
       views: number
       likes: number
-      isRecommend: number
-      isTop: number
-      password?: string
+      isRecommend: Status
       categoryId: number
       category: Category.Category
-      tags: string[]
       authorId: string
       author: Auth.UserInfo
-      createTime: string
-      updateTime: string
+      createdAt: string
+      updatedAt: string
       prev?: { id: number; title: string }
       next?: { id: number; title: string }
     }
@@ -155,11 +152,9 @@ declare namespace Api {
       content: string
       summary?: string
       cover?: string
-      categoryId: number
-      tags?: string[]
-      status?: number
-      isRecommend?: number
-      isTop?: number
+      categoryId: number | null
+      status?: ArticleStatus
+      isFeatured?: Status
       password?: string
     }
 
@@ -196,23 +191,6 @@ declare namespace Api {
    * backend api module: "blog"
    */
   namespace Blog {
-    // Deprecated: use Api.Article.Article instead
-    interface Article {
-      id: number
-      category: string
-      categoryClass: string
-      date: string
-      title: string
-      summary: string
-      content: string
-      cover: string
-      author: string
-      avatar: string
-      views: number
-      prevId?: number | null
-      nextId?: number | null
-    }
-
     interface SocialLink {
       key: string
       label: string

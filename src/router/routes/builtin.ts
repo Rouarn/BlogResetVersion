@@ -2,7 +2,7 @@ import type { RouteRecordRaw } from 'vue-router'
 
 /** Blog路由 */
 export const BLOG_ROUTE: RouteRecordRaw = {
-  name: 'BlogRoot',
+  name: 'Root',
   path: '/',
   component: () => import('@/layouts/blog-layout/index.vue'),
   redirect: '/home',
@@ -22,6 +22,19 @@ export const BLOG_ROUTE: RouteRecordRaw = {
         hideInMenu: false,
         isKeepAlive: true,
         isAuth: false,
+      },
+    },
+    {
+      name: 'article-edit',
+      path: 'article/edit',
+      component: () => import('@/views/article/edit/index.vue'),
+      meta: {
+        title: 'Create Article',
+        icon: '',
+        order: 0,
+        hideInMenu: true,
+        isKeepAlive: false,
+        isAuth: true,
       },
     },
     {

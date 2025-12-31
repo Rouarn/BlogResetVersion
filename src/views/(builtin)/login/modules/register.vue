@@ -100,8 +100,8 @@ async function handleRegister() {
       email: model.email,
       mobile: model.mobile,
       gender: model.gender,
-      code: model.captcha,
-      token: captchaToken.value,
+      captchaCode: model.captcha,
+      captchaToken: captchaToken.value,
     })
 
     if (error) {
