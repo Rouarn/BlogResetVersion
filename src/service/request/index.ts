@@ -12,7 +12,7 @@ import { useAuthStore } from '@/stores/modules/auth'
 import { REQUEST_CANCEL_MSG, RequestCanceler } from './axiosCancel'
 import { RequestError, type RequestErrorType } from './requestError'
 import servicePort from './servicePort'
-import { ResultEnum } from '@/enum'
+import { ResultEnum, RouteNameEnum } from '@/enum'
 import axios, {
   type AxiosError,
   type AxiosInstance,
@@ -228,18 +228,20 @@ class RequestHttp {
           }
           // 刷新失败，强制退出
           useAuthStore().setToken('')
-          await router.replace('/login')
+          await router.replace(`/${RouteNameEnum.LOGIN}`)
           return Promise.reject(reqError)
         }
 
         // 自动重试机制（仅针对网络/超时/服务端错误）
-        if (config && (config.retryCount || 0) > 0 && ['network', 'timeout', 'server'].includes(reqError.type)) {
+        const retryCount = Number(config?.retryCount) || 0
+        if (config && retryCount > 0 && ['network', 'timeout', 'server'].includes(reqError.type)) {
           config.__retryCount = config.__retryCount || 0
-          if (config.__retryCount < (config.retryCount || 0)) {
+          if (config.__retryCount < retryCount) {
             config.__retryCount++
             const delay = config.retryDelay || 1000
             await new Promise((resolve) => setTimeout(resolve, delay))
-            return this.service.request(config)
+            // 显式传递 __retryCount 确保计数状态不丢失
+            return this.service.request({ ...config, __retryCount: config.__retryCount } as CustomAxiosRequestConfig)
           }
         }
 

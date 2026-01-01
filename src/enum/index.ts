@@ -19,3 +19,13 @@ export enum ResultEnum {
   TIMEOUT = 30000,
   TYPE = 'success',
 }
+
+/**
+ * @description：路由名称
+ */
+export enum RouteNameEnum {
+  ROOT = 'Root',
+  LOGIN = 'login',
+  HOME = 'home',
+  USER_CENTER = 'user-center',
+}

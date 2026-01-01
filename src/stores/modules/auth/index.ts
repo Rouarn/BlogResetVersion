@@ -1,6 +1,6 @@
 import { computed, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { fetchLogin, fetchLogout } from '@/service/api/login'
+import { fetchLogin, fetchLogout, fetchUserInfo } from '@/service/api/login'
 import { localStg } from '@/utils/storage'
 import { useRouteStore } from '../route'
 import { useThemeStore } from '../theme'
@@ -15,23 +15,33 @@ const initialState = {
   refreshToken: '',
   userInfo: {
     id: '',
-    username: '',
     nickname: '',
     avatar: '',
-    gender: 2 as Api.Common.Gender,
+    gender: 2,
     mobile: '',
     email: '',
     bio: '',
     birthday: '',
     city: '',
     profession: '',
-    roles: 'user' as Api.Auth.UserRole,
+    roles: undefined,
     lastLoginAt: '',
     lastLoginIp: '',
     loginAttempts: 0,
-    status: '1' as Api.Common.EnableStatus,
-    auth: {} as Api.Auth.AuthType,
-  },
+    status: '1',
+    auth: {
+      createTime: new Date(),
+      updateTime: new Date(),
+      id: '',
+      username: '',
+      status: 1,
+      lastLoginAt: new Date(),
+      lastLoginIp: '',
+      loginAttempts: 0,
+      lockedAt: null,
+      passwordChangedAt: new Date(),
+    },
+  } as Api.Auth.UserInfo,
 }
 
 export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
@@ -72,28 +82,6 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     localStg.set('userInfo', userInfo)
   }
 
-  /**
-   * 登录
-   * @param username 用户名
-   * @param password 密码
-   * @param [redirect=true] 登录后是否重定向，默认 true
-   */
-  async function login(username: string, password: string, redirect = true) {
-    const { data, error } = await fetchLogin(username.trim(), password.trim())
-    if (error) return
-    setToken(data?.accessToken ?? initialState.token)
-    setTokenType(data?.tokenType ?? initialState.tokenType)
-    setRefreshToken(data?.refreshToken ?? initialState.refreshToken)
-
-    await redirectFromLogin(redirect)
-
-    window.$notification?.success({
-      title: '登录成功',
-      content: `欢迎回来：${userInfo.nickname || userInfo.username || userInfo.mobile || userInfo.email}`,
-      duration: 4500,
-    })
-  }
-
   /** 重置认证状态（清理本地数据） */
   function resetAuthStore() {
     setUserInfo(initialState.userInfo)
@@ -119,6 +107,45 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
       await toLogin()
     }
   }
+
+  /**
+   * 获取用户信息
+   */
+  // 获取用户信息
+  async function getUserInfo() {
+    const { data, error } = await fetchUserInfo()
+    if (error) {
+      routeStore.resetStore()
+      resetAuthStore()
+      return false
+    }
+    setUserInfo(data)
+    return true
+  }
+
+  /**
+   * 登录
+   * @param username 用户名
+   * @param password 密码
+   * @param [redirect=true] 登录后是否重定向，默认 true
+   */
+  async function login(username: string, password: string, redirect = true) {
+    const { data, error } = await fetchLogin(username.trim(), password.trim())
+    if (error) return
+    setToken(data?.accessToken ?? initialState.token)
+    await getUserInfo()
+    setTokenType(data?.tokenType ?? initialState.tokenType)
+    setRefreshToken(data?.refreshToken ?? initialState.refreshToken)
+
+    await redirectFromLogin(redirect)
+
+    window.$notification?.success({
+      title: '登录成功',
+      content: `欢迎回来：${userInfo.nickname || userInfo.username || userInfo.mobile || userInfo.email}`,
+      duration: 4500,
+    })
+  }
+
   return {
     token,
     tokenType,
@@ -129,6 +156,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     setToken,
     setTokenType,
     setRefreshToken,
+    getUserInfo,
     setUserInfo,
     resetStore,
     resetAuthStore,

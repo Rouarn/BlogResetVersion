@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAuthStore } from '@/stores/modules/auth'
+import { RouteNameEnum } from '@/enum'
 import { useSvgIcon } from '@/hooks/common/icon'
 import { useRouterPush } from '@/hooks/common/router'
 import { $t } from '@/locales'
@@ -18,7 +19,7 @@ function loginOrRegister() {
   toLogin()
 }
 
-type DropdownKey = 'user-center' | 'logout'
+type DropdownKey = RouteNameEnum.USER_CENTER | 'logout'
 
 type DropdownOption =
   | {
@@ -35,7 +36,7 @@ const options = computed(() => {
   const opts: DropdownOption[] = [
     {
       label: $t('common.userCenter'),
-      key: 'user-center',
+      key: RouteNameEnum.USER_CENTER,
       icon: SvgIconVNode({ icon: 'ph:user-circle', fontSize: 18 }),
     },
     {

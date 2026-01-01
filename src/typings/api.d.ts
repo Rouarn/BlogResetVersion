@@ -86,6 +86,8 @@ declare namespace Api {
 
     interface RegisterUser extends Omit<UserInfo, 'id' | 'status' | 'roles' | 'auth'> {
       password: string
+      captchaCode: string
+      captchaToken: string
     }
   }
 
