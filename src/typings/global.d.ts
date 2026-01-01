@@ -6,7 +6,7 @@ declare global {
     NProgress?: import('nprogress').NProgress
     /** 加载进度条实例 */
     $loadingBar?: import('naive-ui').LoadingBarProviderInst
-    /** 加载动画实例 */
+    /** 对话框 */
     $dialog?: import('naive-ui').DialogProviderInst
     /** 消息实例 */
     $message?: import('naive-ui').MessageProviderInst

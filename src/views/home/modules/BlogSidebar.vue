@@ -41,8 +41,7 @@ const getCategories = async () => {
 }
 
 const handleCategoryClick = (id: number) => {
-  // Assuming we want to filter home by category, but for now just navigate to tags or home
-  routerPushByKey('home', { query: { categoryId: String(id) } })
+  routerPushByKey('tags', { query: { categoryId: String(id) } })
 }
 
 onMounted(() => {

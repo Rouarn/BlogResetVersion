@@ -1,11 +1,16 @@
 <script setup lang="ts">
+import GlobalFooter from '@/layouts/modules/global-footer/index.vue'
 import BlogBottomNav from '@/views/home/modules/BlogBottomNav.vue'
-import BlogFooter from '@/views/home/modules/BlogFooter.vue'
 import BlogNavbar from '@/views/home/modules/BlogNavbar.vue'
 
 defineOptions({
   name: 'BlogLayout',
 })
+
+const isTop = ref(true)
+const handleBackTop = (_isTop: boolean) => {
+  isTop.value = _isTop
+}
 </script>
 
 <template>
@@ -16,7 +21,8 @@ defineOptions({
         <component :is="Component" :key="route.fullPath" />
       </Transition>
     </RouterView>
-    <BlogFooter />
+    <GlobalFooter />
+    <NBackTop :right="100" class="z-3" @update:show="handleBackTop" />
     <BlogBottomNav />
   </div>
 </template>

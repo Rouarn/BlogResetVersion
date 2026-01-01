@@ -1,5 +1,6 @@
 import { useRouter } from 'vue-router'
 import globalRouter from '@/router'
+import { RouteNameEnum } from '@/enum'
 import type { RouteLocationRaw } from 'vue-router'
 
 /**
@@ -57,7 +58,7 @@ export function useRouterPush(inSetup = true) {
   }
 
   async function toHome() {
-    return routerPushByKey('Root')
+    return routerPushByKey(RouteNameEnum.ROOT)
   }
 
   /**
@@ -75,7 +76,7 @@ export function useRouterPush(inSetup = true) {
       redirect,
     }
 
-    return routerPushByKey('login', options)
+    return routerPushByKey(RouteNameEnum.LOGIN, options)
   }
 
   /**

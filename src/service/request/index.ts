@@ -12,7 +12,7 @@ import { useAuthStore } from '@/stores/modules/auth'
 import { REQUEST_CANCEL_MSG, RequestCanceler } from './axiosCancel'
 import { RequestError, type RequestErrorType } from './requestError'
 import servicePort from './servicePort'
-import { ResultEnum } from '@/enum'
+import { ResultEnum, RouteNameEnum } from '@/enum'
 import axios, {
   type AxiosError,
   type AxiosInstance,
@@ -228,7 +228,7 @@ class RequestHttp {
           }
           // 刷新失败，强制退出
           useAuthStore().setToken('')
-          await router.replace('/login')
+          await router.replace(`/${RouteNameEnum.LOGIN}`)
           return Promise.reject(reqError)
         }
 

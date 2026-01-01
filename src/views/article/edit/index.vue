@@ -215,8 +215,19 @@ onMounted(() => {
           <div class="i-line-md-loading-twotone-loop text-lg mr-1"></div>
           保存中...
         </div>
-        <NButton :loading="submitting" @click="handleSubmit('draft')">保存草稿</NButton>
-        <NButton type="primary" :loading="submitting" @click="handleSubmit('published')">发布</NButton>
+        <NPopconfirm @positive-click="handleSubmit('draft')">
+          <template #trigger>
+            <NButton :loading="submitting">保存草稿</NButton>
+          </template>
+          是否确认保存草稿？
+        </NPopconfirm>
+
+        <NPopconfirm @positive-click="handleSubmit('published')">
+          <template #trigger>
+            <NButton type="primary" :loading="submitting">发布</NButton>
+          </template>
+          是否确认发布文章？
+        </NPopconfirm>
       </NSpace>
     </div>
 
