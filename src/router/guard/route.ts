@@ -1,4 +1,3 @@
-import { fetchUserInfo } from '@/service/api'
 import { useAuthStore } from '@/stores/modules/auth'
 import { useRouteStore } from '@/stores/modules/route'
 import { RouteNameEnum } from '@/enum'
@@ -11,20 +10,20 @@ export function createRouteGuard(router: Router) {
     const routeStore = useRouteStore()
 
     // 初始化路由菜单（用于 Header 菜单展示，实际路由基于文件自动生成）
-    if (router.currentRoute.value.path !== `/${RouteNameEnum.LOGIN}` && authStore.isLogin && !routeStore.isInitAuthRoute) {
+    if (to.path.toLocaleLowerCase() !== `/${RouteNameEnum.LOGIN}` && authStore.isLogin && !routeStore.isInitAuthRoute) {
       await routeStore.initAuthRoute()
 
       const notFoundRoute: App.Global.RouteKey[] = ['not-found', '404']
       const isNotFoundRoute = notFoundRoute.includes(to.name as App.Global.RouteKey)
 
       // 获取用户信息
-      const { data, error } = await fetchUserInfo()
-      if (error) {
-        await routeStore.resetStore()
+      const success = await authStore.getUserInfo()
+      if (!success) {
+        await // 显式清除 Token，防止 resetAuthStore 异常导致状态未清除
+        authStore.setToken('')
         authStore.resetAuthStore()
-        return next({ path: '/login', replace: true, query: { redirect: to.fullPath } })
+        return next({ path: `/${RouteNameEnum.LOGIN}`, replace: true, query: { redirect: to.fullPath } })
       }
-      authStore.setUserInfo(data)
 
       // 由于鉴权路由尚未初始化，该路由被“not-found”捕获
       // 鉴权路由初始化后，重定向回原目标路由
