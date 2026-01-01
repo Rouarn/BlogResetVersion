@@ -47,7 +47,6 @@ const initialState = {
 export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   const themeStore = useThemeStore()
   const routeStore = useRouteStore()
-  const authStore = useAuthStore()
 
   const route = useRoute()
   const { toLogin, redirectFromLogin } = useRouterPush(false)
@@ -88,7 +87,6 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     setToken(initialState.token || '')
     setRefreshToken(initialState.refreshToken || '')
     themeStore.resetStore()
-    authStore.$reset()
     routeStore.$reset()
   }
 

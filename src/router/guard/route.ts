@@ -23,7 +23,11 @@ export function createRouteGuard(router: Router) {
       // 获取用户信息
       const success = await authStore.getUserInfo()
       if (!success) {
-        return next({ path: RouteNameEnum.LOGIN, replace: false, query: { redirect: to.fullPath } })
+        // 显式清除 Token，防止 resetAuthStore 异常导致状态未清除
+        authStore.setToken('')
+        authStore.resetAuthStore()
+
+        return next({ path: `/${RouteNameEnum.LOGIN}`, replace: false, query: { redirect: to.fullPath } })
       }
 
       // 由于鉴权路由尚未初始化，该路由被“not-found”捕获
