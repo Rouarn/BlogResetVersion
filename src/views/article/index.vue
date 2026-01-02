@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import ArticleShare from './modules/ArticleShare.vue'
 import MarkdownViewer from '@/components/common/markdown-viewer.vue'
 import SvgIcon from '@/components/custom/svg-icon.vue'
 import { fetchArticleDetail } from '@/service/api/article'
@@ -34,6 +35,13 @@ const getArticle = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 分享弹窗
+const showShareModal = ref(false)
+
+const handleShare = () => {
+  showShareModal.value = true
 }
 
 const navigateTo = (id: number) => {
@@ -100,7 +108,10 @@ onMounted(() => {
                 <SvgIcon icon="ph:heart-bold" />
                 <span>赞 ({{ article.likes || 0 }})</span>
               </button>
-              <button class="p-2 border border-slate-200 rounded-full text-slate-400 hover:text-slate-900 transition-colors">
+              <button
+                class="p-2 border border-slate-200 rounded-full text-slate-400 hover:text-slate-900 transition-colors"
+                @click="handleShare"
+              >
                 <SvgIcon icon="ph:share-network-bold" class="text-xl" />
               </button>
             </div>
@@ -132,6 +143,8 @@ onMounted(() => {
         返回首页
       </button>
     </div>
+
+    <ArticleShare v-if="article" v-model:show="showShareModal" :article="article" />
   </div>
 </template>
 
