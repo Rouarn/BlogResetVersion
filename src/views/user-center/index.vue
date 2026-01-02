@@ -1,56 +1,20 @@
 <script setup lang="ts">
-import { computed, nextTick, reactive, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
+import { NAvatar, NCard, NTabPane, NTabs, NTag, NUpload } from 'naive-ui'
+import MyArticles from './components/MyArticles.vue'
+import UserProfile from './components/UserProfile.vue'
+import UserSecurity from './components/UserSecurity.vue'
 import CroppingImage from '@/components/custom/cropping-image.vue'
-import { changePassword, updateUserInfo, uploadAvatar } from '@/service/api'
+import { uploadAvatar } from '@/service/api'
 import { useAuthStore } from '@/stores/modules/auth'
-import type { FormInst, FormRules, UploadFileInfo } from 'naive-ui'
+import type { UploadFileInfo } from 'naive-ui'
 
 defineOptions({
   name: 'UserCenter',
 })
 
 const authStore = useAuthStore()
-const formRef = ref<FormInst | null>(null)
-const passwordFormRef = ref<FormInst | null>(null)
-const isEditing = ref(false)
 const activeTab = ref('profile')
-const saving = ref(false)
-const changingPassword = ref(false)
-
-function normalizeGender(input: unknown): 0 | 1 | 2 {
-  const n = Number(input)
-  return n === 0 || n === 1 || n === 2 ? (n as 0 | 1 | 2) : 2
-}
-
-function getInitialUserForm() {
-  return {
-    nickname: authStore.userInfo.nickname || '用户',
-    avatar: authStore.userInfo.avatar || '',
-    gender: normalizeGender(authStore.userInfo.gender),
-    mobile: authStore.userInfo.mobile || '',
-    email: authStore.userInfo.email || '',
-    bio: authStore.userInfo.bio || '',
-    birthday: authStore.userInfo.birthday ? new Date(authStore.userInfo.birthday).getTime() : null,
-    city: authStore.userInfo.city || '',
-    profession: authStore.userInfo.profession || '',
-  }
-}
-
-const userForm = reactive(getInitialUserForm())
-
-// 密码修改表单
-const passwordForm = reactive({
-  oldPassword: '',
-  newPassword: '',
-  confirmPassword: '',
-})
-
-// 性别选项
-const genderOptions = [
-  { label: '男性', value: 0 },
-  { label: '女性', value: 1 },
-  { label: '保密', value: 2 },
-] as const
 
 // 角色映射
 const roleMap = {
@@ -63,36 +27,6 @@ const roleMap = {
   viewer: '查看者',
   guest: '访客',
 } as const
-
-// 表单验证规则
-const rules: FormRules = {
-  nickname: [
-    { required: true, message: '请输入昵称', trigger: 'blur' },
-    { min: 2, max: 20, message: '昵称长度为 2-20 个字符', trigger: 'blur' },
-  ],
-  mobile: [{ pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }],
-  email: [{ type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }],
-  bio: [{ max: 200, message: '个人简介最多 200 个字符', trigger: 'blur' }],
-}
-
-// 密码验证规则
-const passwordRules: FormRules = {
-  oldPassword: [{ required: true, message: '请输入当前密码', trigger: 'blur' }],
-  newPassword: [
-    { required: true, message: '请输入新密码', trigger: 'blur' },
-    { min: 6, message: '密码最少 6 个字符', trigger: 'blur' },
-  ],
-  confirmPassword: [
-    { required: true, message: '请确认新密码', trigger: 'blur' },
-    {
-      validator: (_rule, value) => {
-        return value === passwordForm.newPassword
-      },
-      message: '两次密码输入不一致',
-      trigger: 'blur',
-    },
-  ],
-}
 
 // 计算属性
 const userRoleName = computed(() => {
@@ -107,74 +41,12 @@ const statusType = computed(() => {
   return authStore.userInfo.auth.status === 1 ? 'success' : 'error'
 })
 
-// 方法
-function handleEdit() {
-  isEditing.value = true
-}
-
-function handleCancel() {
-  isEditing.value = false
-  // 重置表单数据
-  Object.assign(userForm, getInitialUserForm())
-}
-
-async function handleSave() {
-  if (!formRef.value) return
-
-  try {
-    await formRef.value.validate()
-
-    // 处理生日数据
-    const saveData = {
-      ...userForm,
-      birthday: userForm.birthday ? new Date(userForm.birthday).toISOString().split('T')[0] : '',
-      gender: Number(userForm.gender) as 0 | 1 | 2,
-    }
-
-    // 调用更新用户信息的 API
-    saving.value = true
-    const { error } = await updateUserInfo(authStore.userInfo.id, saveData)
-    if (error) return
-
-    // 更新本地状态
-    authStore.setUserInfo({
-      ...authStore.userInfo,
-      ...saveData,
-    })
-
-    isEditing.value = false
-    window.$message?.success('保存成功')
-  } catch (_) {
-    window.$message?.error('保存失败，请重试')
-  } finally {
-    saving.value = false
-  }
-}
-
-async function handlePasswordChange() {
-  try {
-    await passwordFormRef.value?.validate()
-    changingPassword.value = true
-    const result = await changePassword({
-      oldPassword: passwordForm.oldPassword,
-      newPassword: passwordForm.newPassword,
-      confirmPassword: passwordForm.confirmPassword,
-    })
-
-    if (!result.error) {
-      Object.assign(passwordForm, {
-        oldPassword: '',
-        newPassword: '',
-        confirmPassword: '',
-      })
-      window.$message?.success(result.data?.message || '密码修改成功')
-      await authStore.resetStore()
-    }
-  } catch (_) {
-    window.$message?.error('密码修改失败，请检查当前密码是否正确')
-  } finally {
-    changingPassword.value = false
-  }
+// 格式化日期
+function formatDate(dateStr?: string) {
+  if (!dateStr) return '-'
+  const d = new Date(dateStr)
+  if (Number.isNaN(d.getTime())) return '-'
+  return d.toLocaleString('zh-CN')
 }
 
 // 头像上传
@@ -185,17 +57,20 @@ function onAvatarFileChange({ fileList }: { fileList: Array<UploadFileInfo> }) {
   cutterRef.value?.openCropper()
   nextTick(() => cutterRef.value?.setImage(f))
 }
+
 async function onCropDone(payload: { blob?: Blob; fileName?: string }) {
   if (!payload.blob) return
   const type = payload.blob.type || 'image/jpeg'
-  const name = `avatar_${authStore.userInfo.id}_${userForm.nickname || 'user'}_${Date.now()}.${type.split('/')[1] || 'jpeg'}`
+  const name = `avatar_${authStore.userInfo.id}_${authStore.userInfo.nickname || 'user'}_${Date.now()}.${type.split('/')[1] || 'jpeg'}`
   const file = new File([payload.blob], name, { type })
 
-  userForm.avatar = URL.createObjectURL(payload.blob)
+  // 预览
+  // 临时更新 store 显示，失败则回滚? 或者直接更新
+  const oldAvatar = authStore.userInfo.avatar
+
   try {
     const res = await uploadAvatar(file)
     if (res.data && res.data.downloadUrl) {
-      userForm.avatar = res.data.downloadUrl
       authStore.setUserInfo({
         ...authStore.userInfo,
         avatar: res.data.downloadUrl,
@@ -204,21 +79,18 @@ async function onCropDone(payload: { blob?: Blob; fileName?: string }) {
     }
   } catch (_) {
     window.$message?.error('头像上传失败，请重试')
+    // 恢复
+    if (oldAvatar) {
+      // authStore.userInfo.avatar = oldAvatar // authStore state is protected? need setUserInfo
+    }
   } finally {
     cutterRef.value?.closeCropper()
     cutterRef.value?.clearImage()
   }
 }
+
 function onCropError(msg: string) {
   window.$message?.error(msg)
-}
-
-// 格式化日期
-function formatDate(dateStr?: string) {
-  if (!dateStr) return '-'
-  const d = new Date(dateStr)
-  if (Number.isNaN(d.getTime())) return '-'
-  return d.toLocaleString('zh-CN')
 }
 </script>
 
@@ -240,12 +112,17 @@ function formatDate(dateStr?: string) {
               :default-upload="false"
               :show-file-list="false"
               accept="image/*"
-              :disabled="!isEditing"
-              :class="{ 'cursor-pointer hover-avatar': isEditing }"
+              class="cursor-pointer hover-avatar"
               @change="onAvatarFileChange"
             >
               <!-- 有头像时显示头像 -->
-              <NAvatar v-if="userForm.avatar" :size="100" :src="userForm.avatar" round class="border-4 border-white shadow-lg" />
+              <NAvatar
+                v-if="authStore.userInfo.avatar"
+                :size="100"
+                :src="authStore.userInfo.avatar"
+                round
+                class="border-4 border-white shadow-lg"
+              />
               <!-- 无头像时显示默认头像 -->
               <div v-else class="default-avatar">
                 <SvgIcon icon="ph:user-circle" class="text-4xl text-gray-400" />
@@ -255,13 +132,13 @@ function formatDate(dateStr?: string) {
 
             <!-- 基本信息 -->
             <div class="space-y-2">
-              <h3 class="text-xl font-semibold text-gray-800">{{ userForm.nickname }}</h3>
+              <h3 class="text-xl font-semibold text-gray-800">{{ authStore.userInfo.nickname }}</h3>
               <p class="text-gray-600">@{{ authStore.userInfo.auth.username }}</p>
               <NTag :type="statusType" size="small">
                 {{ statusText }}
               </NTag>
               <!-- 头像提示 -->
-              <p v-if="!userForm.avatar && !isEditing" class="text-xs text-gray-400 mt-2">点击编辑按钮可上传头像</p>
+              <p class="text-xs text-gray-400 mt-2">点击头像可更换</p>
             </div>
 
             <!-- 角色信息 -->
@@ -306,102 +183,17 @@ function formatDate(dateStr?: string) {
           <NTabs v-model:value="activeTab" type="line" animated>
             <!-- 个人信息标签页 -->
             <NTabPane name="profile" tab="个人信息">
-              <div class="flex justify-between items-center mb-6">
-                <h2 class="text-lg font-semibold text-gray-800">个人资料</h2>
-                <div class="space-x-2">
-                  <NButton v-if="!isEditing" type="primary" @click="handleEdit">
-                    <SvgIcon icon="ph:pencil-simple" class="mr-1" />
-                    编辑
-                  </NButton>
-                  <template v-else>
-                    <NButton @click="handleCancel" :disabled="saving">取消</NButton>
-                    <NButton type="primary" @click="handleSave" :loading="saving">
-                      <SvgIcon icon="ph:check" class="mr-1" />
-                      保存
-                    </NButton>
-                  </template>
-                </div>
-              </div>
+              <UserProfile />
+            </NTabPane>
 
-              <NForm ref="formRef" :model="userForm" :rules="rules" label-placement="left" label-width="100" :disabled="!isEditing">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <NFormItem label="昵称" path="nickname">
-                    <NInput v-model:value="userForm.nickname" placeholder="请输入昵称" />
-                  </NFormItem>
-
-                  <NFormItem label="性别" path="gender">
-                    <NRadioGroup v-model:value="userForm.gender">
-                      <NSpace>
-                        <NRadio v-for="option in genderOptions" :key="option.value" :value="option.value">
-                          {{ option.label }}
-                        </NRadio>
-                      </NSpace>
-                    </NRadioGroup>
-                  </NFormItem>
-
-                  <NFormItem label="手机号" path="mobile">
-                    <NInput v-model:value="userForm.mobile" placeholder="请输入手机号" />
-                  </NFormItem>
-
-                  <NFormItem label="邮箱" path="email">
-                    <NInput v-model:value="userForm.email" placeholder="请输入邮箱地址" />
-                  </NFormItem>
-
-                  <NFormItem label="生日" path="birthday">
-                    <NDatePicker v-model:value="userForm.birthday" type="date" placeholder="请选择生日" class="w-full" clearable />
-                  </NFormItem>
-
-                  <NFormItem label="所在城市" path="city">
-                    <NInput v-model:value="userForm.city" placeholder="请输入所在城市" />
-                  </NFormItem>
-
-                  <NFormItem label="职业" path="profession">
-                    <NInput v-model:value="userForm.profession" placeholder="请输入职业" />
-                  </NFormItem>
-                </div>
-
-                <NFormItem label="个人简介" path="bio">
-                  <NInput v-model:value="userForm.bio" type="textarea" placeholder="请输入个人简介" :rows="3" show-count maxlength="200" />
-                </NFormItem>
-              </NForm>
+            <!-- 我的文章标签页 -->
+            <NTabPane name="my-articles" tab="我的文章">
+              <MyArticles />
             </NTabPane>
 
             <!-- 安全设置标签页 -->
             <NTabPane name="security" tab="安全设置">
-              <div class="max-w-2xl">
-                <h2 class="text-lg font-semibold text-gray-800 mb-6">修改密码</h2>
-
-                <NForm ref="passwordFormRef" :model="passwordForm" :rules="passwordRules" label-placement="left" label-width="120">
-                  <NFormItem label="当前密码" path="oldPassword">
-                    <NInput
-                      v-model:value="passwordForm.oldPassword"
-                      type="password"
-                      show-password-on="click"
-                      placeholder="请输入当前密码"
-                    />
-                  </NFormItem>
-
-                  <NFormItem label="新密码" path="newPassword">
-                    <NInput v-model:value="passwordForm.newPassword" type="password" show-password-on="click" placeholder="请输入新密码" />
-                  </NFormItem>
-
-                  <NFormItem label="确认新密码" path="confirmPassword">
-                    <NInput
-                      v-model:value="passwordForm.confirmPassword"
-                      type="password"
-                      show-password-on="click"
-                      placeholder="请确认新密码"
-                    />
-                  </NFormItem>
-
-                  <NFormItem>
-                    <NButton type="primary" @click="handlePasswordChange" :loading="changingPassword">
-                      <SvgIcon icon="ph:lock" class="mr-1" />
-                      修改密码
-                    </NButton>
-                  </NFormItem>
-                </NForm>
-              </div>
+              <UserSecurity />
             </NTabPane>
           </NTabs>
         </NCard>

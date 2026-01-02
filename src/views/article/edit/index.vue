@@ -146,7 +146,7 @@ async function initData() {
         model.categoryId = articleData.categoryId
         model.status = articleData.status
         model.cover = articleData.cover
-        model.isFeatured = articleData.isRecommend
+        model.isFeatured = articleData.isFeatured
       }
     }
   } finally {

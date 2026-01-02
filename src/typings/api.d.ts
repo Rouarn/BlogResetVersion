@@ -136,7 +136,7 @@ declare namespace Api {
       status: ArticleStatus
       views: number
       likes: number
-      isRecommend: Status
+      isFeatured: Status
       categoryId: number
       category: Category.Category
       authorId: string
@@ -166,6 +166,7 @@ declare namespace Api {
       keyword?: string
       categoryId?: number
       status?: number
+      authorId?: string
     }
 
     interface ArticleList {

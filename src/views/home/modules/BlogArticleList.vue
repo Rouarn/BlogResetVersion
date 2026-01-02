@@ -75,6 +75,7 @@ onMounted(() => {
     <div v-else class="space-y-16">
       <article v-for="article in articles" :key="article.id" class="group">
         <div class="flex items-center space-x-3 text-xs font-medium tracking-widest mb-3">
+          <span v-if="article.isFeatured === 1" class="px-1.5 py-0.5 rounded bg-red-50 text-red-600 border border-red-200"> 置顶 </span>
           <span :style="{ color: article.category?.color || '#6366f1' }">
             {{ article.category?.name }}
           </span>
