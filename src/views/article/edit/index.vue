@@ -67,6 +67,7 @@ const rules: FormRules = {
 // 分类创建逻辑
 const showCreateCategory = ref(false)
 const newCategoryName = ref('')
+const newCategoryColor = ref('#6366f1')
 const createCategoryLoading = ref(false)
 
 function openCreateCategory() {
@@ -86,7 +87,7 @@ async function handleConfirmCreateCategory() {
     const { data, error } = await createCategory({
       name: newCategoryName.value,
       code: categoryCode,
-      color: '#6366f1',
+      color: newCategoryColor.value,
       sortOrder: categories.value.length + 1,
     })
 
@@ -291,6 +292,8 @@ onMounted(() => {
     >
       <div class="py-2">
         <NInput v-model:value="newCategoryName" placeholder="请输入分类名称" @keyup.enter="handleConfirmCreateCategory" autofocus />
+        <!-- 分类颜色选择器 -->
+        <NColorPicker v-model:value="newCategoryColor" class="mt-2" />
       </div>
     </NModal>
   </div>
