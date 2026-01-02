@@ -9,6 +9,10 @@ import { onKeyStroke, useDebounceFn } from '@vueuse/core'
 
 defineOptions({ name: 'BlogSearchModal' })
 
+const emit = defineEmits<{
+  (e: 'update:show', value: boolean): void
+}>()
+
 const visible = defineModel<boolean>('show', { required: true })
 
 const { routerPushByKey } = useRouterPush()
@@ -28,6 +32,7 @@ const handleClose = () => {
     keyword.value = ''
     results.value = []
     activeIndex.value = 0
+    emit('update:show', false)
   }, 200)
 }
 
