@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import {
   type FormRules,
@@ -17,7 +17,9 @@ import {
 import ArticleSetting from './components/ArticleSetting.vue'
 import { createArticle, createCategory, fetchArticleDetail, fetchCategoryList, updateArticle, uploadFile } from '@/service/api'
 import { useAppStore } from '@/stores/modules/app'
+import { useAuthStore } from '@/stores/modules/auth'
 import { useThemeStore } from '@/stores/modules/theme'
+import { localStg } from '@/utils/storage'
 import 'md-editor-v3/lib/style.css'
 import { useRouterPush } from '@/hooks/common/router'
 import { MdEditor } from 'md-editor-v3'
@@ -31,6 +33,7 @@ const message = useMessage()
 const { routerPushByKey } = useRouterPush()
 const themeStore = useThemeStore()
 const appStore = useAppStore()
+const authStore = useAuthStore()
 
 const loading = ref(false)
 const submitting = ref(false)
@@ -39,6 +42,9 @@ const showSettings = ref(false)
 const isEdit = computed(() => !!route.query.id)
 const articleId = computed(() => route.query.id as string)
 const editorTheme = computed(() => (themeStore.darkMode ? 'dark' : 'light'))
+
+// 缓存 Key: article_draft_{userId}
+const cacheKey = computed(() => (authStore.userInfo.id ? `article_draft_${authStore.userInfo.id}` : null))
 
 const model = reactive<Api.Article.CreateArticleDto>({
   title: '',
@@ -148,9 +154,38 @@ async function initData() {
         model.cover = articleData.cover
         model.isFeatured = articleData.isFeatured
       }
+    } else if (cacheKey.value) {
+      // 只有在新增模式下，才尝试恢复本地缓存
+      const cached = localStg.get(cacheKey.value as keyof StorageType.Local) as Api.Article.CreateArticleDto
+      if (cached) {
+        model.title = cached.title || ''
+        model.content = cached.content || ''
+        model.summary = cached.summary || ''
+        model.categoryId = cached.categoryId || null
+        model.status = cached.status || 'draft'
+        model.cover = cached.cover || ''
+        model.isFeatured = cached.isFeatured || 0
+        message.info('已恢复上次未保存的草稿')
+      }
     }
   } finally {
     loading.value = false
+  }
+}
+
+// 重置（清空）编辑器和缓存
+function handleReset() {
+  model.title = ''
+  model.content = ''
+  model.summary = ''
+  model.categoryId = null
+  model.status = 'draft'
+  model.cover = ''
+  model.isFeatured = 0
+
+  if (cacheKey.value) {
+    localStg.remove(cacheKey.value as keyof StorageType.Local)
+    message.success('已清空内容和缓存')
   }
 }
 
@@ -184,6 +219,10 @@ async function handleSubmit(status: Api.Article.ArticleStatus) {
       const { error } = await createArticle(model)
       if (!error) {
         message.success(status === 'published' ? '发布成功' : '草稿保存成功')
+        // 发布成功后，清除本地缓存
+        if (cacheKey.value) {
+          localStg.remove(cacheKey.value as keyof StorageType.Local)
+        }
         routerPushByKey('home')
       }
     }
@@ -192,8 +231,23 @@ async function handleSubmit(status: Api.Article.ArticleStatus) {
   }
 }
 
+// 自动保存草稿到本地缓存（仅限新增文章）
+const watchModel = watch(
+  model,
+  (newVal) => {
+    if (!isEdit.value && cacheKey.value) {
+      localStg.set(cacheKey.value as keyof StorageType.Local, newVal)
+    }
+  },
+  { deep: true },
+)
+
 onMounted(() => {
   initData()
+})
+
+onUnmounted(() => {
+  watchModel()
 })
 </script>
 
@@ -201,9 +255,10 @@ onMounted(() => {
   <div class="h-full flex flex-col bg-white dark:bg-[#18181c] overflow-hidden">
     <!-- 顶部栏 -->
     <div
-      class="h-16 px-6 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between shrink-0 z-10 bg-white dark:bg-[#18181c]"
+      class="px-6 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between shrink-0 z-10 bg-white dark:bg-[#18181c]"
+      :class="[appStore.isMobile ? 'flex-col' : 'h-16']"
     >
-      <div class="flex-1 mr-8">
+      <div class="flex-1 mr-8" :class="appStore.isMobile ? 'py-2' : ''">
         <input
           v-model="model.title"
           type="text"
@@ -211,11 +266,19 @@ onMounted(() => {
           class="w-full text-2xl font-bold bg-transparent border-none outline-none placeholder-gray-400 dark:text-white"
         />
       </div>
-      <NSpace align="center">
+      <NSpace align="center" :class="appStore.isMobile ? 'w-full justify-end! pb-2' : ''">
         <div class="text-gray-400 text-sm flex items-center mr-2" v-if="submitting">
           <div class="i-line-md-loading-twotone-loop text-lg mr-1"></div>
           保存中...
         </div>
+        <!-- 重置按钮（仅在新增模式显示） -->
+        <NPopconfirm v-if="!isEdit" @positive-click="handleReset">
+          <template #trigger>
+            <NButton secondary type="error">重置</NButton>
+          </template>
+          确定要清空当前内容和本地缓存吗？此操作无法撤销。
+        </NPopconfirm>
+
         <NPopconfirm @positive-click="handleSubmit('draft')">
           <template #trigger>
             <NButton :loading="submitting">保存草稿</NButton>
@@ -244,7 +307,6 @@ onMounted(() => {
             <MdEditor
               v-model="model.content"
               :theme="editorTheme"
-              class="h-full w-full !border-none"
               placeholder="开始创作..."
               :toolbars-exclude="['github', 'save']"
               no-upload-img
@@ -303,6 +365,8 @@ onMounted(() => {
 /* 编辑器自定义 */
 :deep(.md-editor) {
   --md-bk-color: transparent;
+  min-height: 650px;
+  height: 100%;
 }
 
 :deep(.md-editor-toolbar-wrapper) {

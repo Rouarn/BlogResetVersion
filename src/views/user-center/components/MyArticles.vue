@@ -96,7 +96,7 @@ const articleColumns: DataTableColumns<Api.Article.Article> = [
   {
     title: '发布时间',
     key: 'createdAt',
-    width: 160,
+    width: 180,
     render(row) {
       return formatDate(row.createdAt)
     },

@@ -155,7 +155,6 @@ declare namespace Api {
       categoryId: number | null
       status?: ArticleStatus
       isFeatured?: Status
-      password?: string
     }
 
     type UpdateArticleDto = Partial<CreateArticleDto>

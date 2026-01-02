@@ -28,5 +28,7 @@ declare namespace StorageType {
      * 值为项目的构建时间
      */
     overrideThemeFlag: string
+    /** 文章草稿缓存（动态键，使用 Record<string, any> 覆盖） */
+    [key: `article_draft_${string}`]: Api.Article.CreateArticleDto
   }
 }
