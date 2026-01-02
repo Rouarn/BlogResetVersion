@@ -1,10 +1,10 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ArticleShare from './modules/ArticleShare.vue'
 import MarkdownViewer from '@/components/common/markdown-viewer.vue'
 import SvgIcon from '@/components/custom/svg-icon.vue'
-import { fetchArticleDetail } from '@/service/api/article'
+import { fetchArticleDetail, likeArticle } from '@/service/api/article'
 import { useRouterPush } from '@/hooks/common/router'
 import dayjs from 'dayjs'
 
@@ -42,6 +42,18 @@ const showShareModal = ref(false)
 
 const handleShare = () => {
   showShareModal.value = true
+}
+
+const handleLike = async () => {
+  if (!article.value) return
+  try {
+    const { data } = await likeArticle(article.value.id)
+    if (typeof data === 'number') {
+      article.value.likes = data
+    }
+  } catch (error) {
+    console.error('Failed to like article:', error)
+  }
 }
 
 const navigateTo = (id: number) => {
@@ -90,7 +102,7 @@ onMounted(() => {
               {{ article.category?.name || '未分类' }}
             </span>
             <span class="text-slate-400 text-sm">发表于 {{ formatDate(article.createdAt) }}</span>
-            <span class="text-slate-300 mx-2">·</span>
+            <span class="text-slate-300 mx-2"></span>
             <span class="text-slate-400 text-sm flex items-center"> <SvgIcon icon="ph:eye" class="mr-1" /> {{ article.views }} 阅读 </span>
           </div>
           <h1 class="text-3xl md:text-5xl font-bold leading-tight mb-8">{{ article.title }}</h1>
@@ -104,7 +116,10 @@ onMounted(() => {
         <footer class="mt-20 pt-12 border-t border-slate-100">
           <div class="flex items-center justify-between mb-12">
             <div class="flex items-center space-x-4">
-              <button class="flex items-center space-x-2 px-6 py-2 bg-slate-900 text-white rounded-full hover:bg-slate-800 transition-all">
+              <button
+                class="flex items-center space-x-2 px-6 py-2 bg-slate-900 text-white rounded-full hover:bg-slate-800 transition-all active:scale-95"
+                @click="handleLike"
+              >
                 <SvgIcon icon="ph:heart-bold" />
                 <span>赞 ({{ article.likes || 0 }})</span>
               </button>

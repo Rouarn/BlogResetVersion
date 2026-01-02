@@ -1,4 +1,4 @@
-import http from '@/service/request'
+﻿import http from '@/service/request'
 import servicePort from '@/service/request/servicePort'
 
 /**
@@ -41,4 +41,11 @@ export function deleteArticle(ids: number[]) {
  */
 export function fetchArticleArchive() {
   return http.get<Api.Article.Archive[]>(`${servicePort.article}/archive`)
+}
+
+/**
+ * 点赞文章
+ */
+export function likeArticle(id: string | number) {
+  return http.patch<number>(`${servicePort.article}/${id}/like`)
 }
