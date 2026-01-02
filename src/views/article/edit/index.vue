@@ -86,7 +86,7 @@ async function handleConfirmCreateCategory() {
     const { data, error } = await createCategory({
       name: newCategoryName.value,
       code: categoryCode,
-      colorClass: 'bg-blue-500 text-white',
+      color: '#6366f1',
       sortOrder: categories.value.length + 1,
     })
 

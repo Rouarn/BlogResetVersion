@@ -28,7 +28,6 @@ const getArticles = async () => {
     }
 
     const { data } = await fetchArticleList(params)
-    console.log('data: ', data)
     if (data?.records) {
       articles.value = data.records
     } else {
@@ -76,7 +75,7 @@ onMounted(() => {
     <div v-else class="space-y-16">
       <article v-for="article in articles" :key="article.id" class="group">
         <div class="flex items-center space-x-3 text-xs font-medium tracking-widest mb-3">
-          <span :class="article.category?.colorClass || 'text-indigo-500'">
+          <span :style="{ color: article.category?.color || '#6366f1' }">
             {{ article.category?.name }}
           </span>
           <span class="w-1 h-1 bg-slate-300 rounded-full"></span>

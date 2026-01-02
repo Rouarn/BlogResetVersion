@@ -102,7 +102,7 @@ declare namespace Api {
       id: number
       name: string
       code: string
-      colorClass?: string
+      color?: string
       sortOrder: number
       count: number
     }
@@ -110,7 +110,7 @@ declare namespace Api {
     interface CreateCategoryDto {
       name: string
       code: string
-      colorClass?: string
+      color?: string
       sortOrder: number
     }
 
