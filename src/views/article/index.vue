@@ -78,16 +78,16 @@ onMounted(() => {
       <article>
         <header class="mb-12">
           <div class="flex items-center space-x-4 mb-6">
-            <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-full">{{
-              article.category?.name || '未分类'
-            }}</span>
+            <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-full">
+              {{ article.category?.name || '未分类' }}
+            </span>
             <span class="text-slate-400 text-sm">发表于 {{ formatDate(article.createdAt) }}</span>
             <span class="text-slate-300 mx-2">·</span>
             <span class="text-slate-400 text-sm flex items-center"> <SvgIcon icon="ph:eye" class="mr-1" /> {{ article.views }} 阅读 </span>
           </div>
           <h1 class="text-3xl md:text-5xl font-bold leading-tight mb-8">{{ article.title }}</h1>
           <div v-if="article.cover" class="aspect-video rounded-3xl overflow-hidden bg-slate-100">
-            <img :src="article.cover" alt="featured image" class="w-full h-full object-cover" />
+            <img :src="article.cover" :alt="article.title" class="w-full h-full object-cover" />
           </div>
         </header>
         <section class="max-w-none text-slate-700 space-y-6">
@@ -135,7 +135,7 @@ onMounted(() => {
   </div>
 </template>
 
-<style>
+<style scoped>
 @keyframes fadeIn {
   from {
     opacity: 0;

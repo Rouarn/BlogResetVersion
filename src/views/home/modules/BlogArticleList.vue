@@ -28,6 +28,7 @@ const getArticles = async () => {
     }
 
     const { data } = await fetchArticleList(params)
+    console.log('data: ', data)
     if (data?.records) {
       articles.value = data.records
     } else {
@@ -74,11 +75,8 @@ onMounted(() => {
     </div>
     <div v-else class="space-y-16">
       <article v-for="article in articles" :key="article.id" class="group">
-        <div
-          class="flex items-center space-x-3 text-xs font-medium uppercase tracking-widest mb-3"
-          :class="article.category?.code || 'text-indigo-500'"
-        >
-          <span>{{ article.category?.name }}</span>
+        <div class="flex items-center space-x-3 text-xs font-medium uppercase tracking-widest mb-3">
+          <span :class="[article.category?.colorClass || 'text-indigo-500']">{{ article.category?.name }}</span>
           <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
           <span class="text-slate-400">{{ formatDate(article.createdAt) }}</span>
         </div>
@@ -94,22 +92,17 @@ onMounted(() => {
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-3">
             <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
-              <NImage
-                :src="article.author?.avatar"
-                :alt="article.author?.nickname || 'Unknown'"
-                object-fit="cover"
-                :fallback-src="'https://picsum.photos/200/200'"
-              />
+              <NAvatar :src="article.author?.avatar ?? 'https://picsum.photos/200/200'" :lazy="true" object-fit="cover" round />
             </div>
             <span class="text-sm font-medium text-slate-700">{{ article.author?.nickname || 'Unknown' }}</span>
           </div>
-          <a
+          <NA
             href="javascript:;"
             class="flex items-center text-sm font-semibold text-indigo-600 hover:translate-x-1 transition-transform"
             @click="openArticle(article.id)"
           >
             阅读全文 <SvgIcon icon="ph:arrow-right-bold" class="ml-1" />
-          </a>
+          </NA>
         </div>
       </article>
       <div v-if="articles.length === 0" class="text-center py-10 text-slate-400">暂无文章</div>

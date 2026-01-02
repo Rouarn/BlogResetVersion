@@ -132,7 +132,6 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     const { data, error } = await fetchLogin(username.trim(), password.trim())
     if (error) return
     setToken(data?.accessToken ?? initialState.token)
-    await getUserInfo()
     setTokenType(data?.tokenType ?? initialState.tokenType)
     setRefreshToken(data?.refreshToken ?? initialState.refreshToken)
 
