@@ -1,34 +1,44 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import SvgIcon from '@/components/custom/svg-icon.vue'
-import { BLOG_NAV_ITEMS } from '@/constants/blog'
+import { useRouteStore } from '@/stores/modules/route'
+import { useThemeStore } from '@/stores/modules/theme'
 import { useRouterPush } from '@/hooks/common/router'
 
 defineOptions({
   name: 'BlogBottomNav',
 })
 
-const { routerPushByKey } = useRouterPush()
 const route = useRoute()
+const routeStore = useRouteStore()
+const themeStore = useThemeStore()
+const { routerPushByKeyWithMetaQuery } = useRouterPush()
 
-const navItems = BLOG_NAV_ITEMS
+const activeKey = computed(() => {
+  const { hideInMenu, activeMenu } = route.meta
+  const name = route.name as string
+  return (hideInMenu ? activeMenu : name) || name
+})
 
-const isActive = (path: string) => route.path.startsWith(path)
+function handleSelect(key: string) {
+  routerPushByKeyWithMetaQuery(key)
+}
 </script>
 
 <template>
   <nav
-    class="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-white border-t border-slate-100 flex justify-around items-center z-50 pb-safe"
+    class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white dark:bg-[#18181c] border-t border-slate-100 dark:border-slate-800 flex justify-around items-center z-50 pb-safe"
   >
     <div
-      v-for="item in navItems"
+      v-for="item in routeStore.menus"
       :key="item.key"
-      class="flex flex-col items-center cursor-pointer transition-colors"
-      :class="isActive(item.path) ? 'text-indigo-600' : 'text-slate-400'"
-      @click="routerPushByKey(item.key as any)"
+      class="flex flex-col items-center justify-center flex-1 h-full cursor-pointer transition-colors duration-200"
+      :class="[activeKey === item.key ? '' : 'text-slate-500 dark:text-slate-400']"
+      :style="{ color: activeKey === item.key ? themeStore.themeColor : '' }"
+      @click="handleSelect(item.key)"
     >
-      <SvgIcon :icon="item.icon" class="text-2xl mb-1" />
-      <span class="text-[10px] font-medium">{{ item.label }}</span>
+      <component :is="item.icon" class="text-xl mb-1" />
+      <span class="text-[10px] leading-none">{{ item.label }}</span>
     </div>
   </nav>
 </template>

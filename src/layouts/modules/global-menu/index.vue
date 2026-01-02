@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { useRoute } from 'vue-router'
-import GlobalLogo from '@/layouts/modules/global-logo/index.vue'
 import { useAppStore } from '@/stores/modules/app'
 import { useRouteStore } from '@/stores/modules/route'
 import { useThemeStore } from '@/stores/modules/theme'
@@ -19,7 +18,6 @@ const selectedKey = computed(() => {
   return (hideInMenu ? activeMenu : name) || name
 })
 
-const isVisible = ref(false)
 const inverted = computed(() => themeStore.themeScheme === 'dark')
 </script>
 
@@ -35,23 +33,4 @@ const inverted = computed(() => themeStore.themeScheme === 'dark')
     @update:value="routerPushByKeyWithMetaQuery"
     class="flex-1 mx-6"
   />
-
-  <NIcon v-if="isMobile" size="20" @click="isVisible = !isVisible">
-    <icon-line-md-menu-fold-right v-if="!isVisible" />
-    <icon-line-md-menu-fold-left v-else />
-  </NIcon>
-  <NDrawer v-model:show="isVisible" width="80%" placement="left" v-if="isMobile">
-    <NDrawerContent body-content-class="pa-0!">
-      <template #header>
-        <GlobalLogo />
-      </template>
-      <NMenu
-        v-model:value="selectedKey"
-        mode="vertical"
-        :options="routeStore.menus"
-        :inverted="inverted"
-        @update:value="routerPushByKeyWithMetaQuery"
-      />
-    </NDrawerContent>
-  </NDrawer>
 </template>

@@ -4,19 +4,19 @@ import { useRoute } from 'vue-router'
 import {
   type FormRules,
   NButton,
-  NForm,
-  NFormItem,
+  NDrawer,
+  NDrawerContent,
   NInput,
   NModal,
-  NSelect,
+  NPopconfirm,
   NSpace,
   NSpin,
-  NUpload,
   type UploadCustomRequestOptions,
   useMessage,
 } from 'naive-ui'
+import ArticleSetting from './components/ArticleSetting.vue'
 import { createArticle, createCategory, fetchArticleDetail, fetchCategoryList, updateArticle, uploadFile } from '@/service/api'
-import { useAuthStore } from '@/stores/modules/auth'
+import { useAppStore } from '@/stores/modules/app'
 import { useThemeStore } from '@/stores/modules/theme'
 import 'md-editor-v3/lib/style.css'
 import { useRouterPush } from '@/hooks/common/router'
@@ -29,17 +29,17 @@ defineOptions({
 const route = useRoute()
 const message = useMessage()
 const { routerPushByKey } = useRouterPush()
-const authStore = useAuthStore()
 const themeStore = useThemeStore()
+const appStore = useAppStore()
 
 const loading = ref(false)
 const submitting = ref(false)
+const showSettings = ref(false)
 
 const isEdit = computed(() => !!route.query.id)
 const articleId = computed(() => route.query.id as string)
 const editorTheme = computed(() => (themeStore.darkMode ? 'dark' : 'light'))
 
-const formRef = ref()
 const model = reactive<Api.Article.CreateArticleDto>({
   title: '',
   content: '',
@@ -210,7 +210,7 @@ onMounted(() => {
           class="w-full text-2xl font-bold bg-transparent border-none outline-none placeholder-gray-400 dark:text-white"
         />
       </div>
-      <NSpace>
+      <NSpace align="center">
         <div class="text-gray-400 text-sm flex items-center mr-2" v-if="submitting">
           <div class="i-line-md-loading-twotone-loop text-lg mr-1"></div>
           保存中...
@@ -228,6 +228,9 @@ onMounted(() => {
           </template>
           是否确认发布文章？
         </NPopconfirm>
+
+        <!-- 移动端设置按钮 -->
+        <ButtonIcon v-if="appStore.isMobile" @click="showSettings = true" secondary circle icon="ph:gear-six-bold" />
       </NSpace>
     </div>
 
@@ -247,83 +250,33 @@ onMounted(() => {
             />
           </div>
 
-          <!-- 右侧设置栏 -->
-          <div
-            class="w-80 h-full border-l border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-[#1c1c20] overflow-y-auto shrink-0 flex flex-col"
-          >
-            <div class="p-4 font-medium text-base border-b border-gray-100 dark:border-gray-800">文章设置</div>
-
-            <div class="p-4 flex-1">
-              <NForm ref="formRef" :model="model" :rules="rules" label-placement="top" size="medium">
-                <NFormItem label="分类" path="categoryId">
-                  <div class="flex gap-2 w-full">
-                    <NSelect
-                      v-model:value="model.categoryId"
-                      :options="categories"
-                      placeholder="选择分类"
-                      filterable
-                      clearable
-                      class="flex-1"
-                    />
-                    <NButton secondary @click="openCreateCategory" title="新建分类">
-                      <template #icon>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                          <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z" />
-                        </svg>
-                      </template>
-                    </NButton>
-                  </div>
-                </NFormItem>
-
-                <NFormItem label="摘要" path="summary">
-                  <NInput
-                    v-model:value="model.summary"
-                    type="textarea"
-                    placeholder="文章摘要（可选）"
-                    :autosize="{ minRows: 3, maxRows: 6 }"
-                  />
-                </NFormItem>
-
-                <NFormItem label="封面图" path="cover">
-                  <div class="w-full flex flex-col gap-2">
-                    <NInput v-model:value="model.cover" placeholder="输入图片 URL" />
-                    <NUpload action="#" :custom-request="handleUpload" :show-file-list="false" accept="image/*">
-                      <NButton block secondary>
-                        <template #icon>
-                          <div class="i-carbon-upload" />
-                        </template>
-                        上传图片
-                      </NButton>
-                    </NUpload>
-                  </div>
-                </NFormItem>
-
-                <div
-                  v-if="model.cover"
-                  class="mb-6 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 aspect-video bg-gray-100 dark:bg-gray-800 flex items-center justify-center"
-                >
-                  <img :src="model.cover" class="w-full h-full object-cover" @error="model.cover = ''" />
-                </div>
-
-                <NFormItem label="置顶" path="isFeatured">
-                  <NSelect
-                    v-model:value="model.isFeatured"
-                    :options="[
-                      { label: '不置顶', value: 0 },
-                      { label: '置顶', value: 1 },
-                    ]"
-                  />
-                </NFormItem>
-              </NForm>
-            </div>
-
-            <div class="p-4 text-xs text-gray-400 text-center border-t border-gray-100 dark:border-gray-800">
-              {{ authStore.userInfo.nickname || authStore.userInfo.auth.username }}
-            </div>
-          </div>
+          <!-- 右侧设置栏 (桌面端) -->
+          <ArticleSetting
+            v-if="!appStore.isMobile"
+            class="w-80 border-l border-gray-100 dark:border-gray-800 shrink-0"
+            v-model:model="model"
+            :categories="categories"
+            :rules="rules"
+            :handle-upload="handleUpload"
+            @open-create-category="openCreateCategory"
+          />
         </div>
       </NSpin>
     </div>
+
+    <!-- 移动端设置抽屉 -->
+    <NDrawer v-if="appStore.isMobile" v-model:show="showSettings" width="320" placement="right">
+      <NDrawerContent body-content-style="padding: 0">
+        <ArticleSetting
+          class="h-full"
+          v-model:model="model"
+          :categories="categories"
+          :rules="rules"
+          :handle-upload="handleUpload"
+          @open-create-category="openCreateCategory"
+        />
+      </NDrawerContent>
+    </NDrawer>
 
     <!-- 创建分类弹窗 -->
     <NModal
@@ -347,7 +300,6 @@ onMounted(() => {
 /* 编辑器自定义 */
 :deep(.md-editor) {
   --md-bk-color: transparent;
-  height: 100%;
 }
 
 :deep(.md-editor-toolbar-wrapper) {
@@ -362,21 +314,5 @@ onMounted(() => {
 /* 编辑器深色模式调整 */
 .dark :deep(.md-editor-toolbar-wrapper) {
   border-bottom: 1px solid #2d2d30;
-}
-
-/* 侧边栏滚动条样式 */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(144, 147, 153, 0.3);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(144, 147, 153, 0.5);
 }
 </style>

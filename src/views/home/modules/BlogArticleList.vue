@@ -75,8 +75,10 @@ onMounted(() => {
     </div>
     <div v-else class="space-y-16">
       <article v-for="article in articles" :key="article.id" class="group">
-        <div class="flex items-center space-x-3 text-xs font-medium uppercase tracking-widest mb-3">
-          <span :class="[article.category?.colorClass || 'text-indigo-500']">{{ article.category?.name }}</span>
+        <div class="flex items-center space-x-3 text-xs font-medium tracking-widest mb-3">
+          <span :class="article.category?.colorClass || 'text-indigo-500'">
+            {{ article.category?.name }}
+          </span>
           <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
           <span class="text-slate-400">{{ formatDate(article.createdAt) }}</span>
         </div>

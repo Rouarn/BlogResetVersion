@@ -2,10 +2,14 @@
 import GlobalFooter from '@/layouts/modules/global-footer/index.vue'
 import BlogBottomNav from '@/views/home/modules/BlogBottomNav.vue'
 import BlogNavbar from '@/views/home/modules/BlogNavbar.vue'
+import { useAppStore } from '@/stores/modules/app'
 
 defineOptions({
   name: 'BlogLayout',
 })
+
+const appStore = useAppStore()
+const isMobile = computed(() => appStore.isMobile)
 
 const isTop = ref(true)
 const handleBackTop = (_isTop: boolean) => {
@@ -22,7 +26,7 @@ const handleBackTop = (_isTop: boolean) => {
       </Transition>
     </RouterView>
     <GlobalFooter />
-    <NBackTop :right="100" class="z-3" @update:show="handleBackTop" />
+    <NBackTop :right="isMobile ? 20 : ''" :bottom="isMobile ? 85 : ''" class="z-3" @update:show="handleBackTop" />
     <BlogBottomNav />
   </div>
 </template>

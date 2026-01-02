@@ -1,122 +1,112 @@
 import type { RouteRecordRaw } from 'vue-router'
 
 /** Blog路由 */
-export const BLOG_ROUTE: RouteRecordRaw = {
-  name: 'Root',
-  path: '/',
-  component: () => import('@/layouts/blog-layout/index.vue'),
-  redirect: '/home',
-  meta: {
-    title: 'BlogRoot',
+export const BLOG_ROUTE: RouteRecordRaw[] = [
+  {
+    name: 'Root',
+    path: '/',
+    component: () => import('@/layouts/blog-layout/index.vue'),
+    redirect: '/home',
+    meta: {
+      title: '博客',
+    },
+    children: [
+      {
+        name: 'home',
+        path: 'home',
+        component: () => import('@/views/home/index.vue'),
+        meta: {
+          title: '首页',
+          i18nKey: 'route.home',
+          icon: 'heroicons:home',
+          order: 0,
+          hideInMenu: false,
+          isKeepAlive: true,
+          isAuth: false,
+        },
+      },
+      {
+        name: 'article-edit',
+        path: 'article/edit',
+        component: () => import('@/views/article/edit/index.vue'),
+        meta: {
+          title: '创建文章',
+          icon: 'heroicons:document-text',
+          order: 0,
+          hideInMenu: true,
+          isKeepAlive: false,
+          isAuth: true,
+        },
+      },
+      {
+        name: 'article',
+        path: 'article/:id',
+        component: () => import('@/views/article/index.vue'),
+        meta: {
+          title: '文章详情',
+          icon: 'heroicons:document-text',
+          order: 0,
+          hideInMenu: true,
+          isKeepAlive: false,
+          isAuth: false,
+        },
+      },
+      {
+        name: 'archive',
+        path: 'archive',
+        component: () => import('@/views/archive/index.vue'),
+        meta: {
+          title: '归档',
+          icon: 'heroicons:archive-box',
+          order: 0,
+          hideInMenu: false,
+          isKeepAlive: true,
+          isAuth: false,
+        },
+      },
+      {
+        name: 'tags',
+        path: 'tags',
+        component: () => import('@/views/tags/index.vue'),
+        meta: {
+          title: '标签',
+          icon: 'heroicons:tag',
+          order: 0,
+          hideInMenu: false,
+          isKeepAlive: true,
+          isAuth: false,
+        },
+      },
+      {
+        name: 'about',
+        path: 'about',
+        component: () => import('@/views/about/index.vue'),
+        meta: {
+          title: '关于',
+          icon: 'heroicons:user-group',
+          order: 0,
+          hideInMenu: false,
+          isKeepAlive: true,
+          isAuth: false,
+        },
+      },
+      {
+        name: 'user-center',
+        path: '/user-center',
+        component: () => import('@/views/user-center/index.vue'),
+        meta: {
+          title: '用户中心',
+          i18nKey: 'route.user-center',
+          icon: 'heroicons:user-group',
+          order: 2,
+          hideInMenu: true,
+          isKeepAlive: true,
+          isAuth: true,
+        },
+      },
+    ],
   },
-  children: [
-    {
-      name: 'home',
-      path: 'home',
-      component: () => import('@/views/home/index.vue'),
-      meta: {
-        title: 'Home',
-        i18nKey: 'route.home',
-        icon: '',
-        order: 0,
-        hideInMenu: false,
-        isKeepAlive: true,
-        isAuth: false,
-      },
-    },
-    {
-      name: 'article-edit',
-      path: 'article/edit',
-      component: () => import('@/views/article/edit/index.vue'),
-      meta: {
-        title: 'Create Article',
-        icon: '',
-        order: 0,
-        hideInMenu: true,
-        isKeepAlive: false,
-        isAuth: true,
-      },
-    },
-    {
-      name: 'article',
-      path: 'article/:id',
-      component: () => import('@/views/article/index.vue'),
-      meta: {
-        title: 'Article',
-        icon: '',
-        order: 0,
-        hideInMenu: true,
-        isKeepAlive: false,
-        isAuth: false,
-      },
-    },
-    {
-      name: 'archive',
-      path: 'archive',
-      component: () => import('@/views/archive/index.vue'),
-      meta: {
-        title: 'Archive',
-        icon: '',
-        order: 0,
-        hideInMenu: false,
-        isKeepAlive: true,
-        isAuth: false,
-      },
-    },
-    {
-      name: 'tags',
-      path: 'tags',
-      component: () => import('@/views/tags/index.vue'),
-      meta: {
-        title: 'Tags',
-        icon: '',
-        order: 0,
-        hideInMenu: false,
-        isKeepAlive: true,
-        isAuth: false,
-      },
-    },
-    {
-      name: 'about',
-      path: 'about',
-      component: () => import('@/views/about/index.vue'),
-      meta: {
-        title: 'About',
-        icon: '',
-        order: 0,
-        hideInMenu: false,
-        isKeepAlive: true,
-        isAuth: false,
-      },
-    },
-    {
-      name: 'user-center',
-      path: '/user-center',
-      component: () => import('@/views/user-center/index.vue'),
-      meta: {
-        title: 'User Center',
-        i18nKey: 'route.user-center',
-        icon: '',
-        order: 2,
-        hideInMenu: true,
-        isKeepAlive: true,
-        isAuth: true,
-      },
-    },
-  ],
-}
-
-/** System路由 */
-export const SYSTEM_ROUTE: RouteRecordRaw = {
-  name: 'SystemRoot',
-  path: '/system',
-  redirect: '/user-center',
-  component: () => import('@/layouts/base-layout/index.vue'),
-  meta: {
-    title: 'SystemRoot',
-  },
-  children: [],
-}
+]
 
 /** 静态路由 */
 export const STATIC_ROUTER: RouteRecordRaw[] = [
@@ -127,7 +117,7 @@ export const STATIC_ROUTER: RouteRecordRaw[] = [
     meta: {
       title: 'Iframe Url',
       i18nKey: 'route.iframe',
-      icon: '',
+      icon: 'heroicons:document-text',
       order: 2,
       hideInMenu: true,
       isKeepAlive: true,
@@ -141,7 +131,7 @@ export const STATIC_ROUTER: RouteRecordRaw[] = [
     meta: {
       title: 'Login',
       i18nKey: 'route.login',
-      icon: '',
+      icon: 'heroicons:user-group',
       order: 2,
       hideInMenu: true,
       isKeepAlive: true,

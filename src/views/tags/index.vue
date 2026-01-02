@@ -97,9 +97,7 @@ onMounted(() => {
             :key="cat.id"
             class="px-4 border rounded-xl text-sm font-medium cursor-pointer transition-all flex items-center"
             :class="
-              selectedCategoryId === cat.id
-                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md'
-                : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-500 hover:text-indigo-600'
+              selectedCategoryId === cat.id ? 'bg-slate-800 text-white hover:bg-slate-700' : 'bg-white text-slate-600 hover:text-indigo-600'
             "
             @click="setCategory(cat.id)"
           >

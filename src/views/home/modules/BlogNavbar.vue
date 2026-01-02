@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
 import BlogSearchModal from './BlogSearchModal.vue'
 import SvgIcon from '@/components/custom/svg-icon.vue'
+import GlobalMenu from '@/layouts/modules/global-menu/index.vue'
 import { useAuthStore } from '@/stores/modules/auth'
-import { BLOG_NAV_ITEMS } from '@/constants/blog'
 import { useRouterPush } from '@/hooks/common/router'
 
 defineOptions({
@@ -12,19 +11,9 @@ defineOptions({
 })
 
 const { routerPushByKey } = useRouterPush()
-const route = useRoute()
 const authStore = useAuthStore()
 
 const showSearch = ref(false)
-
-const navItems = BLOG_NAV_ITEMS
-
-const isActive = (path: string) => {
-  if (path === '/home') {
-    return route.path === '/home' || route.path === '/'
-  }
-  return route.path.startsWith(path)
-}
 </script>
 
 <template>
@@ -35,15 +24,7 @@ const isActive = (path: string) => {
         <span class="text-xl font-semibold tracking-tight">FocusLog</span>
       </div>
       <div class="hidden md:flex items-center space-x-10 text-sm font-medium text-slate-500">
-        <div
-          v-for="item in navItems"
-          :key="item.key"
-          class="transition-colors cursor-pointer"
-          :class="isActive(item.path) ? 'text-slate-900 font-semibold' : 'hover:text-indigo-600'"
-          @click="routerPushByKey(item.key as any)"
-        >
-          {{ item.label }}
-        </div>
+        <GlobalMenu />
       </div>
       <div class="flex items-center space-x-4">
         <ButtonIcon
