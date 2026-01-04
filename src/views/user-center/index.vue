@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
 import { NAvatar, NCard, NTabPane, NTabs, NTag, NUpload } from 'naive-ui'
+import CategoryManagement from './components/CategoryManagement.vue'
 import MyArticles from './components/MyArticles.vue'
 import UserProfile from './components/UserProfile.vue'
 import UserSecurity from './components/UserSecurity.vue'
@@ -189,6 +190,11 @@ function onCropError(msg: string) {
             <!-- 我的文章标签页 -->
             <NTabPane name="my-articles" tab="我的文章">
               <MyArticles />
+            </NTabPane>
+
+            <!-- 分类管理标签页 -->
+            <NTabPane name="category-management" tab="分类管理">
+              <CategoryManagement />
             </NTabPane>
 
             <!-- 安全设置标签页 -->

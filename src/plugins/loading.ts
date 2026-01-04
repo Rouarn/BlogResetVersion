@@ -1,3 +1,4 @@
+import { useThemeStore } from '@/stores/modules/theme'
 import type { App } from 'vue'
 
 /* ---------------- 类型定义 ---------------- */
@@ -43,9 +44,10 @@ class ModernLoading implements LoadingAPI {
   private startTime = 0
   private options: Required<LoadingOptions>
   private loadingCount = 0
+  private themeStore = useThemeStore()
 
   constructor(options: LoadingOptions = {}) {
-    this.options = { ...DEFAULT_OPTIONS, ...options }
+    this.options = { ...DEFAULT_OPTIONS, ...options, color: this.themeStore.themeColor }
   }
 
   open(): void {
