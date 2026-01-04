@@ -214,7 +214,7 @@ function onCropError(msg: string) {
 }
 
 // 格式化日期
-function formatDate(dateStr?: string) {
+function formatDate(dateStr?: string | Date) {
   if (!dateStr) return '-'
   const d = new Date(dateStr)
   if (Number.isNaN(d.getTime())) return '-'
@@ -256,7 +256,7 @@ function formatDate(dateStr?: string) {
             <!-- 基本信息 -->
             <div class="space-y-2">
               <h3 class="text-xl font-semibold text-gray-800">{{ userForm.nickname }}</h3>
-              <p class="text-gray-600">@{{ authStore.userInfo.username }}</p>
+              <p class="text-gray-600">@{{ authStore.userInfo.auth.username }}</p>
               <NTag :type="statusType" size="small">
                 {{ statusText }}
               </NTag>
@@ -286,15 +286,15 @@ function formatDate(dateStr?: string) {
           <div class="space-y-3">
             <div class="flex justify-between items-center">
               <span class="text-sm text-gray-600">最后登录</span>
-              <span class="text-xs text-gray-500">{{ formatDate(authStore.userInfo.lastLoginAt) }}</span>
+              <span class="text-xs text-gray-500">{{ formatDate(authStore.userInfo.auth.lastLoginAt) }}</span>
             </div>
             <div class="flex justify-between items-center">
               <span class="text-sm text-gray-600">登录IP</span>
-              <span class="text-xs text-gray-500 font-mono">{{ authStore.userInfo.lastLoginIp || '-' }}</span>
+              <span class="text-xs text-gray-500 font-mono">{{ authStore.userInfo.auth.lastLoginIp || '-' }}</span>
             </div>
             <div class="flex justify-between items-center">
               <span class="text-sm text-gray-600">失败次数</span>
-              <span class="text-xs text-gray-500">{{ authStore.userInfo.loginAttempts || 0 }}</span>
+              <span class="text-xs text-gray-500">{{ authStore.userInfo.auth.loginAttempts || 0 }}</span>
             </div>
           </div>
         </NCard>

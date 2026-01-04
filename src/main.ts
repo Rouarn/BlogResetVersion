@@ -23,9 +23,9 @@ async function setupApp(): Promise<void> {
 
   const app = createApp(App)
 
-  setupLoading(app)
-
   setupStore(app)
+
+  setupLoading(app)
 
   await setupRouter(app)
 
