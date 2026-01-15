@@ -1,7 +1,7 @@
 <script setup lang="ts" name="permissionDirect">
 import { computed } from 'vue'
 import { useAuthStore } from '@/stores/modules/auth'
-import { useRole } from '@/hooks/common/use-role'
+import { useRole } from '@/hooks/auth/use-role'
 
 const authStore = useAuthStore()
 const { roleNames, hasRole } = useRole()
@@ -310,7 +310,7 @@ const getPermissionScore = () => {
 
 &lt;!-- 结合 useRole 的逻辑判断 --&gt;
 &lt;script setup lang=&quot;ts&quot;&gt;
-import { useRole } from '@/hooks/common/use-role'
+317→import { useRole } from '@/hooks/auth/use-role'
 
 const { hasRole } = useRole()
 &lt;/script&gt;

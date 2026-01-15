@@ -6,8 +6,8 @@ import { useRouteStore } from '../route'
 import { useThemeStore } from '../theme'
 import { getRefreshToken, getToken } from './shared'
 import { SetupStoreId } from '@/enum'
-import { useRouterPush } from '@/hooks/common/router'
-import useBoolean from '@/hooks/common/use-boolean'
+import { useRouterPush } from '@/hooks/router'
+import useBoolean from '@/hooks/state/use-boolean'
 import { defineStore } from 'pinia'
 
 const initialState = {

@@ -11,7 +11,7 @@ import {
   updateLocaleOfGlobalMenus,
 } from './shared'
 import { SetupStoreId } from '@/enum'
-import useBoolean from '@/hooks/common/use-boolean'
+import useBoolean from '@/hooks/state/use-boolean'
 import { defineStore } from 'pinia'
 import type { RouteComponent, RouteRecordRaw } from 'vue-router'
 

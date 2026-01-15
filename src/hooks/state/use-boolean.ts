@@ -1,8 +1,3 @@
-/**
- * Boolean
- *
- * @param initValue Init value
- */
 export default function useBoolean(initValue = false) {
   const bool = ref(initValue)
 

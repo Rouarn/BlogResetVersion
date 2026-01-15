@@ -3,13 +3,6 @@ import globalRouter from '@/router'
 import { RouteNameEnum } from '@/enum'
 import type { RouteLocationRaw } from 'vue-router'
 
-/**
- * 路由跳转
- *
- * 跳转到指定的路由，可以代替router.push功能
- *
- * @param inSetup 是否在vue脚本设置中
- */
 export function useRouterPush(inSetup = true) {
   const router = inSetup ? useRouter() : globalRouter
   const route = globalRouter.currentRoute
@@ -61,12 +54,6 @@ export function useRouterPush(inSetup = true) {
     return routerPushByKey(RouteNameEnum.ROOT)
   }
 
-  /**
-   * Navigate to login page
-   *
-   * @param loginModule The login module
-   * @param redirectUrl The redirect url, if not specified, it will be the current route fullPath
-   */
   async function toLogin(redirectUrl?: string) {
     const options: App.Global.RouterPushOptions = {}
 
@@ -79,16 +66,10 @@ export function useRouterPush(inSetup = true) {
     return routerPushByKey(RouteNameEnum.LOGIN, options)
   }
 
-  /**
-   * Redirect from login
-   *
-   * @param [needRedirect=true]登录后是否重定向。默认为“true”
-   */
   async function redirectFromLogin(needRedirect = true) {
     const redirect = route.value.query?.redirect as string
 
     if (needRedirect && redirect) {
-      // 替换登录页为重定向页
       await routerPush(redirect)
     } else {
       await toHome()

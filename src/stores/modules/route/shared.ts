@@ -1,4 +1,4 @@
-import { useSvgIcon } from '@/hooks/common/icon'
+import { useSvgIcon } from '@/hooks/icon'
 import { $t, $te } from '@/locales'
 import type { _RouteRecordBase, RouteComponent, RouteRecordRaw } from 'vue-router'
 

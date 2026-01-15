@@ -1,4 +1,4 @@
-import { useRole } from '@/hooks/common/use-role'
+import { useRole } from '@/hooks/auth/use-role'
 import type { Directive, DirectiveBinding } from 'vue'
 
 /**
