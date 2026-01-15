@@ -9,9 +9,9 @@ declare namespace Api {
      * enable status
      *
      * - "1": enabled
-     * - "2": disabled
+     * - "0": disabled
      */
-    type EnableStatus = '1' | '2'
+    type EnableStatus = 0 | 1
 
     /**
      * gender
@@ -48,7 +48,16 @@ declare namespace Api {
       code: string
     }
 
-    type UserRole = 'system_admin' | 'org_admin' | 'dept_admin' | 'project_admin' | 'power_user' | 'user' | 'viewer' | 'guest'
+    type UserRole = 'R_SUPER_ADMIN' | 'R_EDITOR' | 'R_USER'
+
+    interface Role {
+      id: string
+      name: string
+      alias: string
+      description?: string
+      isSystem: boolean
+      tenantId?: string
+    }
 
     interface AuthType {
       createTime: Date
@@ -75,7 +84,7 @@ declare namespace Api {
       birthday?: string
       city?: string
       profession?: string
-      roles?: UserRole
+      roles?: Role[]
       authId?: string
       lastLoginAt?: string
       lastLoginIp?: string

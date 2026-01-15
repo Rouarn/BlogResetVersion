@@ -14,6 +14,7 @@ const initialState = {
   tokenType: 'Bearer',
   refreshToken: '',
   userInfo: {
+    username: '',
     id: '',
     nickname: '',
     avatar: '',
@@ -24,11 +25,10 @@ const initialState = {
     birthday: '',
     city: '',
     profession: '',
-    roles: undefined,
+    roles: [],
     lastLoginAt: '',
     lastLoginIp: '',
     loginAttempts: 0,
-    status: '1',
     auth: {
       createTime: new Date(),
       updateTime: new Date(),
@@ -131,7 +131,6 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     const { data, error } = await fetchLogin(username.trim(), password.trim())
     if (error) return
     setToken(data?.accessToken ?? initialState.token)
-    await getUserInfo()
     setTokenType(data?.tokenType ?? initialState.tokenType)
     setRefreshToken(data?.refreshToken ?? initialState.refreshToken)
 

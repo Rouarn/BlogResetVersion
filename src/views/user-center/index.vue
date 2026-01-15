@@ -52,25 +52,16 @@ const genderOptions = [
   { label: '保密', value: 2 },
 ] as const
 
-// 角色映射
-const roleMap = {
-  system_admin: '系统管理员',
-  org_admin: '组织管理员',
-  dept_admin: '部门管理员',
-  project_admin: '项目管理员',
-  power_user: '高级用户',
-  user: '普通用户',
-  viewer: '查看者',
-  guest: '访客',
-} as const
-
 // 表单验证规则
 const rules: FormRules = {
   nickname: [
     { required: true, message: '请输入昵称', trigger: 'blur' },
     { min: 2, max: 20, message: '昵称长度为 2-20 个字符', trigger: 'blur' },
   ],
-  mobile: [{ pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }],
+  mobile: [
+    { required: true, message: '请输入手机号', trigger: 'blur' },
+    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' },
+  ],
   email: [{ type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }],
   bio: [{ max: 200, message: '个人简介最多 200 个字符', trigger: 'blur' }],
 }
@@ -96,15 +87,20 @@ const passwordRules: FormRules = {
 
 // 计算属性
 const userRoleName = computed(() => {
-  return roleMap[authStore.userInfo.roles || 'user'] || '普通用户'
+  const roles = authStore.userInfo.roles
+  if (Array.isArray(roles) && roles.length > 0) {
+    return roles.map((r) => r.alias).join(' / ')
+  }
+  return '普通用户'
 })
 
 const statusText = computed(() => {
-  return authStore.userInfo.status === '1' ? '正常' : '禁用'
+  console.log(authStore.userInfo)
+  return authStore.userInfo.auth.status === 1 ? '正常' : '禁用'
 })
 
 const statusType = computed(() => {
-  return authStore.userInfo.status === '1' ? 'success' : 'error'
+  return authStore.userInfo.auth.status === 1 ? 'success' : 'error'
 })
 
 // 方法
