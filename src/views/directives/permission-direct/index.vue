@@ -1,58 +1,81 @@
 <script setup lang="ts" name="permissionDirect">
-import { nextTick, ref, watch } from 'vue'
-import { PermissionHelper } from '@/directives/permission'
+import { computed } from 'vue'
+import { useAuthStore } from '@/stores/modules/auth'
+import { useRole } from '@/hooks/common/use-role'
 
-const currentPermissions = ref<string[]>(['user'])
-const userRole = ref('user')
+const authStore = useAuthStore()
+const { roleNames, hasRole } = useRole()
 
-const setPermissions = (permissions: string[]) => {
-  currentPermissions.value = permissions
-  // 同步到权限系统
-  PermissionHelper.setUserPermissions(permissions)
-  // 触发权限更新事件，让所有使用权限指令的元素重新检查权限
-  nextTick(() => {
-    window.dispatchEvent(new CustomEvent('permissionUpdate'))
+const userRole = computed(() => {
+  const list = roleNames.value
+  if (list.includes('R_SUPER_ADMIN')) return 'admin'
+  if (list.includes('R_EDITOR')) return 'editor'
+  if (list.includes('R_USER')) return 'user'
+  return 'guest'
+})
+
+const currentPermissions = computed(() => {
+  const names = roleNames.value
+  const permissions = new Set<string>()
+
+  if (names.includes('R_SUPER_ADMIN')) {
+    permissions.add('admin')
+    permissions.add('editor')
+    permissions.add('user')
+  }
+
+  if (names.includes('R_EDITOR')) {
+    permissions.add('editor')
+    permissions.add('user')
+  }
+
+  if (names.includes('R_USER')) {
+    permissions.add('user')
+  }
+
+  return Array.from(permissions)
+})
+
+const switchRole = (role: string) => {
+  let nextRoles: Api.Auth.Role[] = []
+
+  if (role === 'admin') {
+    nextRoles = [
+      {
+        id: '',
+        name: 'R_SUPER_ADMIN',
+        alias: '超级管理员',
+        isSystem: true,
+      },
+    ]
+  } else if (role === 'editor') {
+    nextRoles = [
+      {
+        id: '',
+        name: 'R_EDITOR',
+        alias: '编辑者',
+        isSystem: true,
+      },
+    ]
+  } else if (role === 'user') {
+    nextRoles = [
+      {
+        id: '',
+        name: 'R_USER',
+        alias: '普通用户',
+        isSystem: true,
+      },
+    ]
+  } else {
+    nextRoles = []
+  }
+
+  authStore.setUserInfo({
+    ...authStore.userInfo,
+    roles: nextRoles,
   })
 }
 
-const switchRole = (role: string) => {
-  userRole.value = role
-  switch (role) {
-    case 'admin':
-      setPermissions(['admin', 'user', 'editor'])
-      break
-    case 'editor':
-      setPermissions(['user', 'editor'])
-      break
-    case 'user':
-      setPermissions(['user'])
-      break
-    default:
-      setPermissions([])
-  }
-}
-
-// 监听权限更新事件，在页面加载时重新检查所有权限指令
-watch(
-  currentPermissions,
-  () => {
-    // 延迟一帧执行，确保 DOM 更新完成
-    nextTick(() => {
-      const elements = document.querySelectorAll('[data-permission]')
-      elements.forEach((el) => {
-        // 触发指令重新检查
-        const event = new CustomEvent('permissionCheck')
-        el.dispatchEvent(event)
-      })
-    })
-  },
-  { deep: true },
-)
-
-// 初始化权限
-setPermissions(['user'])
-
-// 计算权限覆盖率
 const getPermissionScore = () => {
   const allPermissions = ['admin', 'editor', 'user']
   return Math.round((currentPermissions.value.length / allPermissions.length) * 100)
@@ -115,24 +138,24 @@ const getPermissionScore = () => {
       </div>
 
       <div class="demo-section">
-        <div class="demo-title">🔐 单一权限控制</div>
+        <div class="demo-title">🔐 单一角色控制（v-role）</div>
         <div class="demo-content">
-          <p class="demo-desc">只有拥有指定权限的用户才能看到这些元素</p>
+          <p class="demo-desc">只有拥有指定角色的用户才能看到这些元素</p>
           <div class="permission-demo">
-            <NButton v-permission="'admin'" type="error" size="large"> 🗑️ 删除数据 (仅管理员可见) </NButton>
-            <NButton v-permission="'editor'" type="warning" size="large"> ✏️ 编辑内容 (编辑者及以上可见) </NButton>
-            <NButton v-permission="'user'" type="info" size="large"> 👀 查看内容 (所有用户可见) </NButton>
+            <NButton v-role="'R_SUPER_ADMIN'" type="error" size="large"> 🗑️ 删除数据 (仅超级管理员可见) </NButton>
+            <NButton v-role="'R_EDITOR'" type="warning" size="large"> ✏️ 编辑内容 (编辑者可见) </NButton>
+            <NButton v-role="'R_USER'" type="info" size="large"> 👀 查看内容 (普通用户可见) </NButton>
           </div>
         </div>
       </div>
 
       <div class="demo-section">
-        <div class="demo-title">🔒 多权限控制</div>
+        <div class="demo-title">🔒 多角色控制（v-role 多值）</div>
         <div class="demo-content">
-          <p class="demo-desc">需要拥有多个权限中的任意一个才能显示</p>
+          <p class="demo-desc">需要拥有多个角色中的任意一个才能显示</p>
           <div class="permission-demo">
-            <NCard v-permission="['admin', 'editor']" class="permission-card" title="内容管理面板" :bordered="true">
-              <p>这个面板只有管理员和编辑者可以看到</p>
+            <NCard v-role="['R_SUPER_ADMIN', 'R_EDITOR']" class="permission-card" title="内容管理面板" :bordered="true">
+              <p>这个面板只有超级管理员和编辑者可以看到</p>
               <NSpace>
                 <NButton type="primary" size="small">创建内容</NButton>
                 <NButton type="warning" size="small">编辑内容</NButton>
@@ -144,27 +167,27 @@ const getPermissionScore = () => {
       </div>
 
       <div class="demo-section">
-        <div class="demo-title">⚙️ 高级权限配置</div>
+        <div class="demo-title">⚙️ 高级角色配置（v-role 配置对象）</div>
         <div class="demo-content">
-          <p class="demo-desc">使用配置对象进行更精细的权限控制</p>
+          <p class="demo-desc">使用配置对象进行更精细的角色控制</p>
           <div class="permission-demo">
-            <!-- 需要所有权限 -->
+            <!-- 需要所有角色 -->
             <NAlert
-              v-permission="{
-                permissions: ['admin', 'editor'],
+              v-role="{
+                roles: ['R_SUPER_ADMIN', 'R_EDITOR'],
                 mode: 'every',
               }"
               type="info"
               title="超级管理功能"
               class="permission-alert"
             >
-              这个功能需要同时拥有管理员和编辑者权限才能看到
+              这个功能需要同时拥有超级管理员和编辑者角色才能看到
             </NAlert>
 
-            <!-- 权限不足时禁用而不是隐藏 -->
+            <!-- 角色不足时禁用而不是隐藏 -->
             <NButton
-              v-permission="{
-                permissions: ['admin'],
+              v-role="{
+                roles: ['R_SUPER_ADMIN'],
                 fallback: 'disable',
               }"
               type="primary"
@@ -173,27 +196,28 @@ const getPermissionScore = () => {
               系统设置 (无权限时禁用)
             </NButton>
 
-            <!-- 权限不足时显示提示 -->
-            <div
-              v-permission="{
-                permissions: ['admin'],
-                fallback: 'show',
-                fallbackContent: '权限不足，请联系管理员获取访问权限',
-              }"
-              class="permission-content"
-            >
-              <NCard title="敏感数据" :bordered="true">
-                <p>这里是一些敏感数据内容，只有管理员才能查看</p>
-                <NSpace>
-                  <NButton type="warning" size="small">查看用户数据</NButton>
-                  <NButton type="error" size="small">导出报表</NButton>
-                </NSpace>
-              </NCard>
-            </div>
+            <!-- 这里可以通过 hasRole 展示仅对特定角色显示的内容 -->
+            <NCard v-if="hasRole('R_SUPER_ADMIN')" title="敏感数据" :bordered="true">
+              <p>这里是一些敏感数据内容，只有超级管理员才能查看</p>
+              <NSpace>
+                <NButton type="warning" size="small">查看用户数据</NButton>
+                <NButton type="error" size="small">导出报表</NButton>
+              </NSpace>
+            </NCard>
           </div>
         </div>
       </div>
 
+      <div class="demo-section">
+        <div class="demo-title">🎭 角色控制示例（基于后端 RBAC）</div>
+        <div class="demo-content">
+          <p class="demo-desc">使用 v-role 指令基于后端角色标识进行控制</p>
+          <div class="permission-demo">
+            <NButton v-role="'R_SUPER_ADMIN'" type="error" size="large"> 超级管理员专用按钮 (R_SUPER_ADMIN) </NButton>
+            <NButton v-role="['R_SUPER_ADMIN', 'R_EDITOR']" type="primary" size="large"> 管理后台入口 (R_SUPER_ADMIN 或 R_EDITOR) </NButton>
+          </div>
+        </div>
+      </div>
       <div class="demo-section">
         <div class="demo-title">📊 权限统计</div>
         <div class="demo-content">
@@ -202,7 +226,7 @@ const getPermissionScore = () => {
               <div class="stat-icon">👥</div>
               <div class="stat-content">
                 <div class="stat-value">{{ currentPermissions.length }}</div>
-                <div class="stat-label">当前权限数</div>
+                <div class="stat-label">当前权限数（由角色推导）</div>
               </div>
             </div>
             <div class="stat-card">
@@ -256,37 +280,43 @@ const getPermissionScore = () => {
       <div class="code-section">
         <div class="code-title">💻 使用示例</div>
         <div class="code-content">
-          <pre><code>&lt;!-- 单一权限 --&gt;
-&lt;button v-permission="'admin'"&gt;管理员按钮&lt;/button&gt;
+          <pre><code>&lt;!-- 基于 v-role 的单一角色控制 --&gt;
+&lt;button v-role=&quot;'R_SUPER_ADMIN'&quot;&gt;超级管理员按钮&lt;/button&gt;
 
-&lt;!-- 多权限（任意一个） --&gt;
-&lt;div v-permission="['admin', 'editor']"&gt;
-  管理员或编辑者可见
+&lt;!-- 多角色（任意一个） --&gt;
+&lt;div v-role=&quot;['R_SUPER_ADMIN', 'R_EDITOR']&quot;&gt;
+  超级管理员或编辑者可见
 &lt;/div&gt;
 
-&lt;!-- 需要所有权限 --&gt;
-&lt;button v-permission="{
-  permissions: ['admin', 'editor'],
-  mode: 'every'
-}"&gt;
-  需要所有权限
+&lt;!-- 需要所有角色 --&gt;
+&lt;button
+  v-role=&quot;{
+    roles: ['R_SUPER_ADMIN', 'R_EDITOR'],
+    mode: 'every'
+  }&quot;
+&gt;
+  需要同时拥有超级管理员和编辑者角色
 &lt;/button&gt;
 
-&lt;!-- 禁用而不是隐藏 --&gt;
-&lt;button v-permission="{
-  permissions: ['admin'],
-  fallback: 'disable'
-}"&gt;
+&lt;!-- 角色不足时禁用而不是隐藏 --&gt;
+&lt;button
+  v-role=&quot;{
+    roles: ['R_SUPER_ADMIN'],
+    fallback: 'disable'
+  }&quot;
+&gt;
   无权限时禁用
 &lt;/button&gt;
 
-&lt;!-- 权限不足时显示提示 --&gt;
-&lt;div v-permission="{
-  permissions: ['admin'],
-  fallback: 'show',
-  fallbackContent: '权限不足提示'
-}"&gt;
-  受保护的内容
+&lt;!-- 结合 useRole 的逻辑判断 --&gt;
+&lt;script setup lang=&quot;ts&quot;&gt;
+import { useRole } from '@/hooks/common/use-role'
+
+const { hasRole } = useRole()
+&lt;/script&gt;
+
+&lt;div v-if=&quot;hasRole('R_SUPER_ADMIN')&quot;&gt;
+  只有超级管理员可以看到的内容
 &lt;/div&gt;</code></pre>
         </div>
       </div>
