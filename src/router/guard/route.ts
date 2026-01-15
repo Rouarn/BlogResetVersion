@@ -33,7 +33,7 @@ export function createRouteGuard(router: Router) {
       }
     }
 
-    if (to.path.toLocaleLowerCase() !== `/${RouteNameEnum.LOGIN}` && authStore.isLogin) {
+    if (to.path.toLocaleLowerCase() !== `/${RouteNameEnum.LOGIN}` && authStore.isLogin && !authStore.isUserInfoFetched) {
       // 获取用户信息
       const success = await authStore.getUserInfo()
       if (!success) {
@@ -42,6 +42,8 @@ export function createRouteGuard(router: Router) {
         authStore.resetAuthStore()
 
         return next({ path: `/${RouteNameEnum.LOGIN}`, replace: false, query: { redirect: to.fullPath } })
+      } else {
+        authStore.setIsUserInfoFetched(true)
       }
     }
 

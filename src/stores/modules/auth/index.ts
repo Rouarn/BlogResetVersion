@@ -7,6 +7,7 @@ import { useThemeStore } from '../theme'
 import { getRefreshToken, getToken } from './shared'
 import { SetupStoreId } from '@/enum'
 import { useRouterPush } from '@/hooks/common/router'
+import useBoolean from '@/hooks/common/use-boolean'
 import { defineStore } from 'pinia'
 
 const initialState = {
@@ -47,13 +48,12 @@ const initialState = {
 export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   const themeStore = useThemeStore()
   const routeStore = useRouteStore()
-
   const route = useRoute()
-  const { toLogin, redirectFromLogin } = useRouterPush(false)
-
   const token = ref(getToken())
-  const tokenType = ref(localStg.get('tokenType') || initialState.tokenType)
   const refreshToken = ref(getRefreshToken())
+  const tokenType = ref(localStg.get('tokenType') || initialState.tokenType)
+  const { toLogin, redirectFromLogin } = useRouterPush(false)
+  const { bool: isUserInfoFetched, setBool: setIsUserInfoFetched } = useBoolean(false)
 
   // 用户信息
   const userInfo: Api.Auth.UserInfo = reactive(localStg.get('userInfo') ?? initialState.userInfo)
@@ -86,6 +86,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     setUserInfo(initialState.userInfo)
     setToken(initialState.token || '')
     setRefreshToken(initialState.refreshToken || '')
+    isUserInfoFetched.value = false
     themeStore.resetStore()
     routeStore.$reset()
   }
@@ -109,7 +110,6 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   /**
    * 获取用户信息
    */
-  // 获取用户信息
   async function getUserInfo() {
     const { data, error } = await fetchUserInfo()
     if (error) {
@@ -118,6 +118,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
       return false
     }
     setUserInfo(data)
+    isUserInfoFetched.value = true
     return true
   }
 
@@ -149,6 +150,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     refreshToken,
     userInfo,
     isLogin,
+    isUserInfoFetched,
     login,
     setToken,
     setTokenType,
@@ -157,5 +159,6 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     setUserInfo,
     resetStore,
     resetAuthStore,
+    setIsUserInfoFetched,
   }
 })
