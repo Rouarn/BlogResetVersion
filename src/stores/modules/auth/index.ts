@@ -1,5 +1,5 @@
 import { computed, reactive, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import router from '@/router'
 import { fetchLogin, fetchLogout, fetchUserInfo } from '@/service/api/login'
 import { localStg } from '@/utils/storage'
 import { useRouteStore } from '../route'
@@ -9,8 +9,38 @@ import { SetupStoreId } from '@/enum'
 import { useRouterPush } from '@/hooks/router'
 import useBoolean from '@/hooks/state/use-boolean'
 import { defineStore } from 'pinia'
+import type { ComputedRef, Ref } from 'vue'
 
-const initialState = {
+interface AuthInitialState {
+  token: string
+  tokenType: string
+  refreshToken: string
+  userInfo: Api.Auth.UserInfo
+}
+
+interface AuthStoreState {
+  token: Ref<string>
+  tokenType: Ref<string>
+  refreshToken: Ref<string>
+  userInfo: Api.Auth.UserInfo
+  isLogin: ComputedRef<boolean>
+  isUserInfoFetched: Ref<boolean>
+}
+
+interface AuthStoreActions {
+  setToken(value: string): void
+  setTokenType(value: string): void
+  setRefreshToken(value: string): void
+  setUserInfo(value?: Api.Auth.UserInfo): void
+  resetAuthStore(): void
+  resetStore(): Promise<void>
+  login(username: string, password: string, redirect?: boolean): Promise<void>
+  getUserInfo(): Promise<boolean>
+}
+
+export type AuthStore = AuthStoreState & AuthStoreActions
+
+const initialState: AuthInitialState = {
   token: '',
   tokenType: 'Bearer',
   refreshToken: '',
@@ -45,21 +75,19 @@ const initialState = {
   } as Api.Auth.UserInfo,
 }
 
-export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
+export const useAuthStore = defineStore(SetupStoreId.Auth, (): AuthStore => {
   const themeStore = useThemeStore()
   const routeStore = useRouteStore()
-  const route = useRoute()
-  const token = ref(getToken())
-  const refreshToken = ref(getRefreshToken())
-  const tokenType = ref(localStg.get('tokenType') || initialState.tokenType)
   const { toLogin, redirectFromLogin } = useRouterPush(false)
   const { bool: isUserInfoFetched, setBool: setIsUserInfoFetched } = useBoolean(false)
 
-  // 用户信息
+  const token = ref<string>(getToken())
+  const refreshToken = ref<string>(getRefreshToken())
+  const tokenType = ref<string>(localStg.get('tokenType') || initialState.tokenType)
+
   const userInfo: Api.Auth.UserInfo = reactive(localStg.get('userInfo') ?? initialState.userInfo)
 
-  // 是否已登录
-  const isLogin = computed(() => Boolean(token.value))
+  const isLogin = computed<boolean>(() => Boolean(token.value))
 
   const setToken = (value: string) => {
     token.value = value
@@ -67,7 +95,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   }
 
   const setTokenType = (value: string) => {
-    tokenType.value = value || 'Bearer'
+    tokenType.value = value || initialState.tokenType
     localStg.set('tokenType', tokenType.value)
   }
 
@@ -96,13 +124,16 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     try {
       const { error } = await fetchLogout()
       if (error) return
-    } catch {
+    } catch (error) {
+      console.error('[auth.resetStore] logout failed:', error)
       return
     }
 
     resetAuthStore()
 
-    if (route.meta.isAuth) {
+    const currentRoute = router.currentRoute.value
+
+    if (currentRoute?.meta?.isAuth) {
       await toLogin()
     }
   }
@@ -118,7 +149,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
       return false
     }
     setUserInfo(data)
-    isUserInfoFetched.value = true
+    setIsUserInfoFetched(true)
     return true
   }
 
@@ -159,6 +190,5 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     setUserInfo,
     resetStore,
     resetAuthStore,
-    setIsUserInfoFetched,
   }
 })

@@ -42,8 +42,6 @@ export function createRouteGuard(router: Router) {
         authStore.resetAuthStore()
 
         return next({ path: `/${RouteNameEnum.LOGIN}`, replace: false, query: { redirect: to.fullPath } })
-      } else {
-        authStore.setIsUserInfoFetched(true)
       }
     }
 
