@@ -72,7 +72,7 @@ const initialState: AuthInitialState = {
       lockedAt: null,
       passwordChangedAt: new Date(),
     },
-  } as Api.Auth.UserInfo,
+  },
 }
 
 export const useAuthStore = defineStore(SetupStoreId.Auth, (): AuthStore => {
@@ -114,7 +114,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, (): AuthStore => {
     setUserInfo(initialState.userInfo)
     setToken(initialState.token || '')
     setRefreshToken(initialState.refreshToken || '')
-    isUserInfoFetched.value = false
+    setIsUserInfoFetched(false)
     themeStore.resetStore()
     routeStore.$reset()
   }

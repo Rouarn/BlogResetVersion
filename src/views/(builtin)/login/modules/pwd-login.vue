@@ -16,8 +16,8 @@ const authStore = useAuthStore()
 
 const formRef = ref<FormInst | null>(null)
 const model = reactive({
-  userName: 'newuser',
-  password: 'password123',
+  userName: '',
+  password: '',
   captcha: '',
 })
 

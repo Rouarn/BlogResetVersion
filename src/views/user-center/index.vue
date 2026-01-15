@@ -95,7 +95,6 @@ const userRoleName = computed(() => {
 })
 
 const statusText = computed(() => {
-  console.log(authStore.userInfo)
   return authStore.userInfo.auth.status === 1 ? '正常' : '禁用'
 })
 
