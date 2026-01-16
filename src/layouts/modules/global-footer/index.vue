@@ -13,9 +13,9 @@ const currentYear = new Date().getFullYear()
         <NSpace justify="center" size="medium" align="center" class="flex-wrap">
           <NText tag="a" href="#" depth="3" class="text-sm hover:text-primary cursor-pointer"> 版权声明 </NText>
           <NText tag="a" href="https://beian.miit.gov.cn/" target="_blank" depth="3" class="text-sm hover:text-primary cursor-pointer">
-            豫ICP备2024084155号-3
+            豫ICP备2024084155号-4
           </NText>
-          <NText
+          <!-- <NText
             tag="a"
             href="https://beian.mps.gov.cn/#/query/webSearch?code=41172102000259"
             target="_blank"
@@ -24,7 +24,7 @@ const currentYear = new Date().getFullYear()
           >
             <img src="/beian.png" alt="" class="w-4 h-4" />
             <span>豫公网安备41172102000259号</span>
-          </NText>
+          </NText> -->
         </NSpace>
       </NSpace>
     </div>

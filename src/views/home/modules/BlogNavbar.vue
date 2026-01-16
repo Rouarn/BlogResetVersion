@@ -21,7 +21,7 @@ const showSearch = ref(false)
     <div class="max-w-5xl mx-auto px-6 h-20 flex items-center justify-between">
       <div class="flex items-center space-x-2 cursor-pointer" @click="routerPushByKey('home')">
         <SvgIcon icon="ph:feather-duotone" class="text-3xl text-indigo-600" />
-        <span class="text-xl font-semibold tracking-tight">FocusLog</span>
+        <span class="text-xl font-semibold tracking-tight">一袖南烟顾</span>
       </div>
       <div class="hidden md:flex items-center space-x-10 text-sm font-medium text-slate-500">
         <GlobalMenu />

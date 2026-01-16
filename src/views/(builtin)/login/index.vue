@@ -61,7 +61,7 @@ function handleSwitchToLogin() {
       </div>
     </NCard>
 
-    <div class="absolute bottom-6 text-center text-xs text-slate-400">FocusLog &copy; {{ new Date().getFullYear() }}</div>
+    <div class="absolute bottom-6 text-center text-xs text-slate-400">{{ $t('system.title') }} &copy; {{ new Date().getFullYear() }}</div>
   </div>
 </template>
 
