@@ -78,7 +78,7 @@ const authStore = useAuthStore()
           v-if="localModel.cover"
           class="mb-6 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 aspect-video bg-gray-100 dark:bg-gray-800 flex items-center justify-center"
         >
-          <img :src="localModel.cover" class="w-full h-full object-cover" @error="localModel.cover = ''" />
+          <img :src="localModel.cover" class="w-full h-full object-cover" />
         </div>
 
         <NFormItem label="置顶" path="isFeatured">

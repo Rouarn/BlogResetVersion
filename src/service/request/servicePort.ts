@@ -8,13 +8,13 @@
  * - 用户详情：`${servicePort.user}/${userId}`
  */
 const servicePort = {
-  user: '/api/users',
-  auth: '/api/auth',
-  route: '/api/route',
-  files: '/api/files',
-  article: '/api/articles',
-  category: '/api/categories',
-  product: '/api/product',
+  user: '/api/v1/users',
+  auth: '/api/v1/auth',
+  route: '/api/v1/route',
+  files: '/api/v1/files',
+  article: '/api/v1/articles',
+  category: '/api/v1/categories',
+  product: '/api/v1/product',
 } as const
 
 export type ServicePortKey = keyof typeof servicePort

@@ -1,5 +1,5 @@
+import { type App, watch } from 'vue'
 import { useThemeStore } from '@/stores/modules/theme'
-import type { App } from 'vue'
 
 /* ---------------- 类型定义 ---------------- */
 export interface LoadingAPI {
@@ -45,9 +45,21 @@ class ModernLoading implements LoadingAPI {
   private options: Required<LoadingOptions>
   private loadingCount = 0
   private themeStore = useThemeStore()
+  private stopWatch: (() => void) | null = null
 
   constructor(options: LoadingOptions = {}) {
     this.options = { ...DEFAULT_OPTIONS, ...options, color: this.themeStore.themeColor }
+
+    // 监听主题色变化
+    this.stopWatch = watch(
+      () => this.themeStore.themeColor,
+      (newColor) => {
+        this.options.color = newColor
+        if (this.container) {
+          this.container.style.setProperty('--loading-color', newColor)
+        }
+      },
+    )
   }
 
   open(): void {
@@ -90,6 +102,10 @@ class ModernLoading implements LoadingAPI {
   destroy(): void {
     this.hideContainer()
     this.loadingCount = 0
+    if (this.stopWatch) {
+      this.stopWatch()
+      this.stopWatch = null
+    }
   }
 
   private createContainer(): void {
@@ -113,6 +129,7 @@ class ModernLoading implements LoadingAPI {
       backdrop-filter: blur(2px);
       opacity: 0;
       transition: opacity 0.3s ease;
+      --loading-color: ${this.options.color};
     `
 
     // 创建加载动画
@@ -122,7 +139,7 @@ class ModernLoading implements LoadingAPI {
       width: 40px;
       height: 40px;
       border: 3px solid transparent;
-      border-top: 3px solid ${this.options.color};
+      border-top: 3px solid var(--loading-color);
       border-radius: 50%;
       animation: modern-spin 1s linear infinite;
       margin-bottom: 16px;
@@ -138,7 +155,7 @@ class ModernLoading implements LoadingAPI {
       right: 6px;
       bottom: 6px;
       border: 2px solid transparent;
-      border-bottom: 2px solid ${this.options.color};
+      border-bottom: 2px solid var(--loading-color);
       border-radius: 50%;
       animation: modern-spin 0.8s linear infinite reverse;
       opacity: 0.6;
@@ -151,7 +168,7 @@ class ModernLoading implements LoadingAPI {
     text.textContent = this.options.text
     text.style.cssText = `
       font-size: 14px;
-      color: ${this.options.color};
+      color: var(--loading-color);
       font-weight: 500;
       letter-spacing: 0.5px;
     `

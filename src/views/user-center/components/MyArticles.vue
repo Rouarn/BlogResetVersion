@@ -3,7 +3,7 @@ import { h, onMounted, reactive, ref } from 'vue'
 import { NButton, NPopconfirm, NSpace, NTag } from 'naive-ui'
 import { deleteArticle, fetchArticleList } from '@/service/api'
 import { useAuthStore } from '@/stores/modules/auth'
-import { useRouterPush } from '@/hooks/common/router'
+import { useRouterPush } from '@/hooks/router'
 import type { DataTableColumns } from 'naive-ui'
 
 defineOptions({

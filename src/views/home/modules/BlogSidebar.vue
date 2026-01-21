@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { fetchCategoryList } from '@/service/api/category'
 import pkg from '@/../package.json'
-import { useRouterPush } from '@/hooks/common/router'
+import { useRouterPush } from '@/hooks/router'
 
 defineOptions({
   name: 'BlogSidebar',

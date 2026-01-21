@@ -5,7 +5,7 @@ import ArticleShare from './modules/ArticleShare.vue'
 import MarkdownViewer from '@/components/common/markdown-viewer.vue'
 import SvgIcon from '@/components/custom/svg-icon.vue'
 import { fetchArticleDetail, likeArticle } from '@/service/api/article'
-import { useRouterPush } from '@/hooks/common/router'
+import { useRouterPush } from '@/hooks/router'
 import dayjs from 'dayjs'
 
 defineOptions({

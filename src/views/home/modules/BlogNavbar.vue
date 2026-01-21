@@ -4,7 +4,7 @@ import BlogSearchModal from './BlogSearchModal.vue'
 import SvgIcon from '@/components/custom/svg-icon.vue'
 import GlobalMenu from '@/layouts/modules/global-menu/index.vue'
 import { useAuthStore } from '@/stores/modules/auth'
-import { useRouterPush } from '@/hooks/common/router'
+import { useRouterPush } from '@/hooks/router'
 
 defineOptions({
   name: 'BlogNavbar',

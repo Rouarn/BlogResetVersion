@@ -4,7 +4,7 @@ import SearchFooter from '@/layouts/modules/global-search/components/search-foot
 import { fetchArticleList } from '@/service/api/article'
 import { useAppStore } from '@/stores/modules/app'
 import { useThemeStore } from '@/stores/modules/theme'
-import { useRouterPush } from '@/hooks/common/router'
+import { useRouterPush } from '@/hooks/router'
 import { onKeyStroke, useDebounceFn } from '@vueuse/core'
 
 defineOptions({ name: 'BlogSearchModal' })

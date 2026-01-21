@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { fetchArticleArchive } from '@/service/api/article'
-import { useRouterPush } from '@/hooks/common/router'
+import { useRouterPush } from '@/hooks/router'
 import dayjs from 'dayjs'
 
 defineOptions({

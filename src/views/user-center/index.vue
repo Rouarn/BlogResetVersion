@@ -31,7 +31,11 @@ const roleMap = {
 
 // 计算属性
 const userRoleName = computed(() => {
-  return roleMap[authStore.userInfo.roles || 'user'] || '普通用户'
+  const roles = authStore.userInfo.roles
+  if (Array.isArray(roles) && roles.length > 0) {
+    return roles.map((role) => roleMap[role.alias as keyof typeof roleMap] || role.name).join(' / ')
+  }
+  return '普通用户'
 })
 
 const statusText = computed(() => {

@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/modules/auth'
 import { REQUEST_CANCEL_MSG, RequestCanceler } from './axiosCancel'
 import { RequestError, type RequestErrorType } from './requestError'
 import servicePort from './servicePort'
+import { getReasonForError } from './utils'
 import { ResultEnum, RouteNameEnum } from '@/enum'
 import axios, {
   type AxiosError,
@@ -189,8 +190,10 @@ service.interceptors.response.use(
 
     // 处理业务错误
     if (data.code !== ResultEnum.SUCCESS) {
+      // 格式化错误信息
+      const formattedMessage = getReasonForError(data)
       // 构造业务错误
-      const err = new RequestError('business', data.message || '请求失败', data.code, data)
+      const err = new RequestError('business', formattedMessage, data.code, data)
       return Promise.reject(err)
     }
 

@@ -1,5 +1,6 @@
-import { type AxiosError, HttpStatusCode } from 'axios'
+import { getReasonForError } from './utils'
 import axios from 'axios'
+import { type AxiosError, HttpStatusCode } from 'axios'
 
 /**
  * 错误类型枚举
@@ -69,7 +70,12 @@ export class RequestError extends Error {
 
     // 4. HTTP 错误处理
     const data = response?.data as App.Service.Response<unknown>
-    const statusMsg = data?.message || STATUS_TEXT[status] || response?.statusText
+    let statusMsg = STATUS_TEXT[status] || response?.statusText
+
+    // 如果有 data 对象，使用 getReasonForError 格式化错误信息
+    if (data) {
+      statusMsg = getReasonForError(data)
+    }
 
     if (status === HttpStatusCode.Unauthorized) {
       return new RequestError('overdue', data?.message || '登录已过期，请重新登录', status, error)

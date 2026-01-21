@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useRouteStore } from '@/stores/modules/route'
 import { useThemeStore } from '@/stores/modules/theme'
-import { useRouterPush } from '@/hooks/common/router'
+import { useRouterPush } from '@/hooks/router'
 
 defineOptions({
   name: 'BlogBottomNav',

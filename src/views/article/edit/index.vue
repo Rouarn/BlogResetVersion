@@ -21,7 +21,7 @@ import { useAuthStore } from '@/stores/modules/auth'
 import { useThemeStore } from '@/stores/modules/theme'
 import { localStg } from '@/utils/storage'
 import 'md-editor-v3/lib/style.css'
-import { useRouterPush } from '@/hooks/common/router'
+import { useRouterPush } from '@/hooks/router'
 import { MdEditor } from 'md-editor-v3'
 
 defineOptions({
@@ -151,7 +151,7 @@ async function initData() {
         model.summary = articleData.summary
         model.categoryId = articleData.categoryId
         model.status = articleData.status
-        model.cover = articleData.cover
+        model.cover = articleData.cover?.replace(/[`\s]/g, '') || ''
         model.isFeatured = articleData.isFeatured
       }
     } else if (cacheKey.value) {

@@ -3,7 +3,7 @@ import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import SvgIcon from '@/components/custom/svg-icon.vue'
 import { fetchArticleList } from '@/service/api/article'
-import { useRouterPush } from '@/hooks/common/router'
+import { useRouterPush } from '@/hooks/router'
 import dayjs from 'dayjs'
 
 defineOptions({

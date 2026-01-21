@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import SearchModal from './components/search-modal.vue'
-import useBoolean from '@/hooks/common/use-boolean'
+import useBoolean from '@/hooks/state/use-boolean'
 import { $t } from '@/locales'
 
 defineOptions({ name: 'GlobalSearch' })

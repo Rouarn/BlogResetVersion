@@ -2,8 +2,8 @@
 import { computed } from 'vue'
 import { useAuthStore } from '@/stores/modules/auth'
 import { RouteNameEnum } from '@/enum'
-import { useSvgIcon } from '@/hooks/common/icon'
-import { useRouterPush } from '@/hooks/common/router'
+import { useSvgIcon } from '@/hooks/icon'
+import { useRouterPush } from '@/hooks/router'
 import { $t } from '@/locales'
 import type { VNode } from 'vue'
 

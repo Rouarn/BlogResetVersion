@@ -3,7 +3,7 @@ import { useRoute } from 'vue-router'
 import { useAppStore } from '@/stores/modules/app'
 import { useRouteStore } from '@/stores/modules/route'
 import { useThemeStore } from '@/stores/modules/theme'
-import { useRouterPush } from '@/hooks/common/router'
+import { useRouterPush } from '@/hooks/router'
 
 const route = useRoute()
 const appStore = useAppStore()
