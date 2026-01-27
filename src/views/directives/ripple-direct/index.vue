@@ -148,7 +148,7 @@ const resetCounter = () => {
 .directive-container {
   padding: 24px;
   min-height: calc(100vh - 200px);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #ffffff;
 }
 
 .directive-card {
@@ -176,7 +176,7 @@ const resetCounter = () => {
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background-color: #764ba2;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -221,7 +221,7 @@ const resetCounter = () => {
 }
 
 .stat-card {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background-color: #764ba2;
   color: white;
   padding: 16px 24px;
   border-radius: 12px;
@@ -355,17 +355,17 @@ const resetCounter = () => {
 
 .circle-btn {
   border-radius: 50%;
-  background: linear-gradient(135deg, #ff9f43, #ff6b35);
+  background-color: #ff9f43;
 }
 
 .square-btn {
   border-radius: 4px;
-  background: linear-gradient(135deg, #26de81, #20bf6b);
+  background-color: #26de81;
 }
 
 .rounded-btn {
   border-radius: 20px;
-  background: linear-gradient(135deg, #fd79a8, #e84393);
+  background-color: #fd79a8;
 }
 
 .usage-section {

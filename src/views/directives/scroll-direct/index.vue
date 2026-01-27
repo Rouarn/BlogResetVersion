@@ -627,7 +627,7 @@ const resetScroll = () => {
   .header-icon {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, #e3f2fd 0%, #2196f3 100%);
+    background-color: #2196f3;
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -683,7 +683,7 @@ const resetScroll = () => {
   gap: 12px;
   padding: 16px;
   margin-bottom: 16px;
-  background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
+  background-color: #e0f2fe;
   border-radius: 8px;
   border-left: 4px solid #0ea5e9;
 
@@ -712,7 +712,7 @@ const resetScroll = () => {
   gap: 12px;
   padding: 16px;
   margin-bottom: 16px;
-  background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+  background-color: #e8f5e8;
   border-radius: 8px;
   border-left: 4px solid #4caf50;
   animation: pulse 2s infinite;
@@ -1039,7 +1039,7 @@ const resetScroll = () => {
 
           .progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            background-color: #4caf50;
             transition: width 0.3s ease;
           }
         }

@@ -122,7 +122,7 @@ const conditionalValue = ref('')
   .header-icon {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-color: #667eea;
     border-radius: 12px;
     display: flex;
     align-items: center;

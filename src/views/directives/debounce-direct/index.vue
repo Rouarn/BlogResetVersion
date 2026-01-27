@@ -117,7 +117,7 @@ const resetCounters = () => {
 .directive-container {
   padding: 24px;
   min-height: calc(100vh - 200px);
-  background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
+  background-color: #f5f7f9;
 }
 
 .directive-card {
@@ -145,11 +145,11 @@ const resetCounters = () => {
     width: 48px;
     height: 48px;
     border-radius: 12px;
-    background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
+    background-color: #f0f9ff;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: #0288d1;
 
     svg {
       width: 24px;
@@ -201,7 +201,7 @@ const resetCounters = () => {
       transition: all 0.3s ease;
 
       &.click-stat {
-        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        background-color: #fffbeb;
         border: 2px solid #f59e0b;
 
         .stat-number {
@@ -214,7 +214,7 @@ const resetCounters = () => {
       }
 
       &.execute-stat {
-        background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+        background-color: #f0fdf4;
         border: 2px solid #10b981;
 
         .stat-number {
@@ -297,7 +297,7 @@ const resetCounters = () => {
   align-items: flex-start;
   gap: 12px;
   padding: 16px;
-  background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
+  background-color: #f0f9ff;
   border-radius: 12px;
   border-left: 4px solid #0288d1;
 }

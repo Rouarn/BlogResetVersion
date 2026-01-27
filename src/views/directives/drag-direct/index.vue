@@ -94,7 +94,7 @@ const resetCounter = () => {
 .directive-container {
   padding: 24px;
   min-height: calc(100vh - 200px);
-  background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+  background-color: #f5f7f9;
 }
 
 .directive-card {
@@ -122,11 +122,11 @@ const resetCounter = () => {
     width: 48px;
     height: 48px;
     border-radius: 12px;
-    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    background-color: #f5f3ff;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: #7c3aed;
 
     svg {
       width: 24px;
@@ -169,7 +169,7 @@ const resetCounter = () => {
     border: 2px dashed #d1d5db;
     border-radius: 16px;
     padding: 24px;
-    background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+    background-color: #fafafa;
     position: relative;
     min-height: 400px;
 
@@ -221,7 +221,7 @@ const resetCounter = () => {
   width: 120px;
   height: 120px;
   border-radius: 16px;
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  background-color: #8b5cf6;
   color: white;
   cursor: move;
   transition: all 0.3s ease;
@@ -308,7 +308,7 @@ const resetCounter = () => {
   align-items: flex-start;
   gap: 12px;
   padding: 16px;
-  background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+  background-color: #f5f3ff;
   border-radius: 12px;
   border-left: 4px solid #8b5cf6;
   margin-top: 24px;

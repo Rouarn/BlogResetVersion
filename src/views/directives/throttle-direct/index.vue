@@ -154,7 +154,7 @@ const formatTime = (date: Date) => {
 .directive-container {
   padding: 24px;
   min-height: calc(100vh - 200px);
-  background: linear-gradient(135deg, #ddd6fe 0%, #8b5cf6 100%);
+  background-color: #ffffff;
 }
 
 .directive-card {
@@ -183,7 +183,7 @@ const formatTime = (date: Date) => {
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  background-color: #7c3aed;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -237,7 +237,7 @@ const formatTime = (date: Date) => {
   padding: 20px;
   border-radius: 12px;
   text-align: center;
-  background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+  background-color: #ede9fe;
   border: 2px solid #8b5cf6;
   transition: all 0.3s ease;
 
@@ -326,7 +326,7 @@ const formatTime = (date: Date) => {
   transition: all 0.3s ease;
 
   &.active {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    background-color: #fde68a;
     border-color: #f59e0b;
 
     .indicator-dot {
@@ -370,7 +370,7 @@ const formatTime = (date: Date) => {
 .efficiency-display {
   margin-bottom: 24px;
   padding: 20px;
-  background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+  background-color: #ede9fe;
   border-radius: 12px;
   border: 2px solid #8b5cf6;
 }
@@ -417,7 +417,7 @@ const formatTime = (date: Date) => {
   align-items: flex-start;
   gap: 12px;
   padding: 16px;
-  background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+  background-color: #ede9fe;
   border-radius: 12px;
   border-left: 4px solid #8b5cf6;
 }

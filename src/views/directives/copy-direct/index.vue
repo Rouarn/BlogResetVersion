@@ -69,7 +69,7 @@ const handleCopy = () => {
 .directive-container {
   padding: 24px;
   min-height: calc(100vh - 200px);
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background-color: #f5f7f9;
 }
 
 .directive-card {
@@ -98,11 +98,11 @@ const handleCopy = () => {
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #f0f5ff;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: #2080f0;
 
   svg {
     width: 24px;
@@ -183,7 +183,7 @@ const handleCopy = () => {
   align-items: flex-start;
   gap: 12px;
   padding: 16px;
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  background-color: #fffbeb;
   border-radius: 12px;
   border-left: 4px solid #f59e0b;
 

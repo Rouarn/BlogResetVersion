@@ -86,9 +86,6 @@ declare namespace Api {
       profession?: string
       roles?: Role[]
       authId?: string
-      lastLoginAt?: string
-      lastLoginIp?: string
-      loginAttempts?: number
       status?: Common.EnableStatus
       auth: AuthType
     }

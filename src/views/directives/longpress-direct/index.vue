@@ -149,7 +149,6 @@ const resetCounter = () => {
 .directive-container {
   padding: 24px;
   min-height: calc(100vh - 200px);
-  background: linear-gradient(135deg, #fef7cd 0%, #fde047 100%);
 }
 
 .directive-card {
@@ -178,7 +177,7 @@ const resetCounter = () => {
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  background-color: #d97706;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -232,7 +231,7 @@ const resetCounter = () => {
   padding: 20px;
   border-radius: 12px;
   text-align: center;
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  background-color: #fef3c7;
   border: 2px solid #f59e0b;
   transition: all 0.3s ease;
 
@@ -295,7 +294,7 @@ const resetCounter = () => {
       left: 0;
       right: 0;
       bottom: 0;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+      background-color: rgba(255, 255, 255, 0.3);
       animation: ripple 0.6s linear infinite;
     }
   }
@@ -352,7 +351,7 @@ const resetCounter = () => {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+  background-color: #d97706;
   border-radius: 4px;
   transition: width 0.1s ease;
   position: relative;
@@ -364,7 +363,7 @@ const resetCounter = () => {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
+    background-color: transparent;
     animation: shimmer 1.5s infinite;
   }
 }
@@ -395,7 +394,7 @@ const resetCounter = () => {
   align-items: flex-start;
   gap: 12px;
   padding: 16px;
-  background: linear-gradient(135deg, #fef7cd 0%, #fde047 100%);
+  background-color: #fef7cd;
   border-radius: 12px;
   border-left: 4px solid #f59e0b;
 }

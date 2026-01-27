@@ -244,7 +244,7 @@ const isEnabled = ref(true)
 .directive-container {
   padding: 24px;
   min-height: calc(100vh - 200px);
-  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+  background-color: #ffffff;
 }
 
 .directive-card {
@@ -272,7 +272,7 @@ const isEnabled = ref(true)
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #74b9ff, #0984e3);
+  background-color: #0984e3;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -318,7 +318,7 @@ const isEnabled = ref(true)
 }
 
 .stat-card {
-  background: linear-gradient(135deg, #74b9ff, #0984e3);
+  background-color: #0984e3;
   color: white;
   padding: 16px 24px;
   border-radius: 12px;

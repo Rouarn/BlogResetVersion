@@ -221,7 +221,7 @@ const hexToRgb = (hex: string) => {
 .directive-container {
   padding: 24px;
   min-height: calc(100vh - 200px);
-  background: linear-gradient(135deg, #e0f2fe 0%, #0ea5e9 100%);
+  background-color: #f5f7fa;
 }
 
 .directive-card {
@@ -249,12 +249,13 @@ const hexToRgb = (hex: string) => {
 .header-icon {
   width: 48px;
   height: 48px;
+  background-color: #a18cd1;
   border-radius: 12px;
-  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
+  box-shadow: 0 4px 12px rgba(161, 140, 209, 0.3);
 
   svg {
     width: 24px;
@@ -294,11 +295,10 @@ const hexToRgb = (hex: string) => {
 }
 
 .watermark-controls {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border-radius: 12px;
-  padding: 24px;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
   margin-bottom: 24px;
-  border: 2px solid #0ea5e9;
 }
 
 .control-group {
@@ -392,8 +392,9 @@ const hexToRgb = (hex: string) => {
   width: 100%;
   max-width: 600px;
   height: 400px;
+  background-color: white;
   border-radius: 12px;
-  border: 2px solid #0ea5e9;
+  border: 2px dashed #e0e0e0;
   overflow: hidden;
   position: relative;
 }
@@ -470,7 +471,7 @@ const hexToRgb = (hex: string) => {
 }
 
 .content-highlight {
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  background-color: #fef3c7;
   border-left: 4px solid #f59e0b;
   padding: 12px 16px;
   border-radius: 8px;
@@ -486,10 +487,11 @@ const hexToRgb = (hex: string) => {
   display: flex;
   align-items: flex-start;
   gap: 12px;
+  margin-top: 24px;
   padding: 16px;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border-radius: 12px;
-  border-left: 4px solid #0ea5e9;
+  background-color: #fdfbfb;
+  border-radius: 8px;
+  border: 1px solid #eee;
 }
 
 .tip-icon {

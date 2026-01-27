@@ -267,7 +267,7 @@ const onImageLoad = () => {
   .header-icon {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    background-color: #fcb69f;
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -395,7 +395,7 @@ const onImageLoad = () => {
         bottom: 0;
         left: 0;
         right: 0;
-        background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+        background-color: rgba(0, 0, 0, 0.7);
         color: white;
         padding: 16px;
         transform: translateY(100%);

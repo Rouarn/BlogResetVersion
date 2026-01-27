@@ -303,7 +303,7 @@ const animations = [
 .directive-container {
   padding: 24px;
   min-height: calc(100vh - 200px);
-  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  background-color: #f5f7f9;
 }
 
 .directive-card {
@@ -331,11 +331,11 @@ const animations = [
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #a8edea, #fed6e3);
+  background-color: #f0faff;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #333;
+  color: #2080f0;
   box-shadow: 0 4px 12px rgba(168, 237, 234, 0.3);
 }
 
@@ -379,12 +379,12 @@ const animations = [
 }
 
 .stat-card {
-  background: linear-gradient(135deg, #a8edea, #fed6e3);
+  background-color: #fff;
   color: #333;
   padding: 16px 20px;
   border-radius: 12px;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(168, 237, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .stat-number {
@@ -481,7 +481,7 @@ const animations = [
 }
 
 .custom-card {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background-color: #2080f0;
   color: white;
   border-radius: 12px;
   padding: 24px;
@@ -568,8 +568,8 @@ const animations = [
 }
 
 .sequence-item {
-  background: linear-gradient(135deg, #84fab0, #8fd3f4);
-  color: #333;
+  background-color: #e0f2fe;
+  color: #2080f0;
   padding: 16px 20px;
   border-radius: 8px;
   font-weight: 600;

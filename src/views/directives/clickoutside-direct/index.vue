@@ -296,12 +296,12 @@ const toggleDropdown = (event) =&gt; {
   .header-icon {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background-color: #fef2f2;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: #d03050;
   }
 
   .header-content {
@@ -604,7 +604,7 @@ const toggleDropdown = (event) =&gt; {
 .solution-tips {
   margin-top: 24px;
   padding: 20px;
-  background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+  background-color: #f0f9fa;
   border-radius: 12px;
   border-left: 4px solid #00acc1;
 

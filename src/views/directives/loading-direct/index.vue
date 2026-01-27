@@ -249,7 +249,7 @@ const tableColumns = [
   .header-icon {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    background-color: #00f2fe;
     border-radius: 12px;
     display: flex;
     align-items: center;

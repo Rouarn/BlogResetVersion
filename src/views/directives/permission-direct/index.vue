@@ -373,7 +373,7 @@ const { hasRole } = useRole()
 .header-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  background-color: #fed6e3;
   border-radius: 12px;
   display: flex;
   align-items: center;

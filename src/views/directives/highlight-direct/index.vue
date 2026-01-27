@@ -292,7 +292,7 @@ const _searchKeyword = ref('Vue') // 用于模板中的动态高亮
   .header-icon {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, #fff3e0 0%, #ffb74d 100%);
+    background-color: #ffb74d;
     border-radius: 12px;
     display: flex;
     align-items: center;

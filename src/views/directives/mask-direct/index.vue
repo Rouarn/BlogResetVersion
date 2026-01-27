@@ -38,7 +38,7 @@ function handleMaskClose(event: CustomEvent) {
 const customStyleMask = reactive({
   visible: false,
   content: '🎨 自定义样式遮罩',
-  background: 'linear-gradient(45deg, rgba(255, 0, 150, 0.3), rgba(0, 255, 255, 0.3))',
+  background: 'rgba(255, 0, 150, 0.3)',
   contentStyle: {
     fontSize: '24px',
     fontWeight: 'bold',
@@ -221,7 +221,7 @@ function toggleCustomMask() {
   .header-icon {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-color: #764ba2;
     border-radius: 12px;
     display: flex;
     align-items: center;
