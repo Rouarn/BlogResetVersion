@@ -139,8 +139,6 @@ async function handleSave() {
 
     isEditing.value = false
     window.$message?.success('保存成功')
-  } catch (_) {
-    window.$message?.error('保存失败，请重试')
   } finally {
     saving.value = false
   }
