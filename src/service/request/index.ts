@@ -4,10 +4,18 @@ import { RequestError, type RequestErrorType } from './requestError'
 import servicePort from './servicePort'
 import { getReasonForError } from './utils'
 import { ResultEnum, RouteNameEnum } from '@/enum'
-import { createVakaoAxios, type VakaoInstanceConfig } from '@vakao-ui/axios'
-import axios, { type AxiosError, type AxiosRequestConfig, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
+import { type BackendFailError, createVakaoAxios, type FlatRequestInstanceConfig } from '@vakao-ui/axios'
+import axios, { type AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
 
 /* ===================== 类型定义 ===================== */
+
+/**
+ * 扩展 Axios 错误类型，包含自定义属性
+ */
+interface ExtendedAxiosError extends AxiosError {
+  isBackendFail?: BackendFailError['isBackendFail']
+  retryPromise?: Promise<unknown>
+}
 
 export interface OptimizedResponse<T> {
   data: T
@@ -28,7 +36,7 @@ export interface RequestRetryOptions {
 /**
  * 扩展请求配置
  */
-export interface CustomAxiosRequestConfig extends Omit<VakaoInstanceConfig, 'retry'> {
+export interface CustomAxiosRequestConfig extends FlatRequestInstanceConfig {
   /** 是否开启全局 Loading (默认 true) */
   loading?: boolean
   /** 是否开启重复请求取消 (默认 true) */
@@ -43,8 +51,6 @@ export interface CustomAxiosRequestConfig extends Omit<VakaoInstanceConfig, 'ret
   isDownload?: boolean
   /** 内部字段：是否已刷新过 Token */
   __retriedAfterRefresh?: boolean
-  /** 重试配置 */
-  retry?: RequestRetryOptions
 }
 
 /* ===================== Loading 管理 ===================== */
@@ -108,117 +114,93 @@ async function refreshTokenOnce(): Promise<boolean> {
 
 /* ===================== Axios 实例与拦截器 ===================== */
 
-const service = createVakaoAxios({
-  // 接口根地址
-  baseURL: import.meta.env.VITE_SERVICE_BASE_URL,
-  // 请求超时时间（默认 10s）
-  timeout: Number(ResultEnum.TIMEOUT) || 10000,
-  // 跨域携带凭证
-  withCredentials: true,
-  // 默认不重试
-  retry: 0,
-  // 默认开启取消重复请求
-  cancelDuplicateRequest: true,
-
-  interceptors: {
-    requestInterceptor: (config: InternalAxiosRequestConfig) => {
-      const cfg = config as unknown as CustomAxiosRequestConfig
+const service = createVakaoAxios<App.Service.Response<unknown>>(
+  {
+    baseURL: import.meta.env.VITE_SERVICE_BASE_URL,
+    timeout: Number(ResultEnum.TIMEOUT) || 10000,
+    withCredentials: true,
+    cancelDuplicateRequest: true,
+    headers: {
+      'X-Api-Version': 1,
+    },
+  },
+  {
+    onRequest: async (config: InternalAxiosRequestConfig) => {
       const authStore = useAuthStore()
-
-      // 初始化默认配置
-      cfg.loading ??= true
-      cfg.headers ??= {}
-
-      // 映射 cancel 到 cancelDuplicateRequest
-      if (cfg.cancel === false) {
-        cfg.cancelDuplicateRequest = false
+      const token = authStore.token
+      if (token) {
+        config.headers.set('Authorization', `${authStore.tokenType} ${token}`)
       }
 
-      // 全局 Loading
-      if (cfg.loading && !cfg.isUpload) loadingManager.open()
+      const customConfig = config as CustomAxiosRequestConfig
 
-      // 配置 Token
-      if (authStore.token) {
-        cfg.headers.Authorization = `${authStore.tokenType || 'Bearer'} ${authStore.token}`
+      // 处理 cancel
+      if (customConfig.cancel === false) {
+        customConfig.cancelDuplicateRequest = false
       }
 
-      // 配置上传请求头
-      if (cfg.isUpload) {
-        cfg.headers['Content-Type'] = 'multipart/form-data'
+      // 处理 loading
+      if (customConfig.loading && !customConfig.isUpload) {
+        loadingManager.open()
       }
 
-      cfg.headers['X-Api-Version'] = 1
+      // 处理 upload
+      if (customConfig.isUpload) {
+        config.headers.set('Content-Type', 'multipart/form-data')
+      }
 
-      return cfg as InternalAxiosRequestConfig
+      return config
     },
-
-    // 必须返回 AxiosResponse，因此使用 throw 抛出错误
-    responseInterceptor: (response: AxiosResponse): AxiosResponse => {
-      const { config, data } = response
-      const cfg = config as CustomAxiosRequestConfig
-
-      // 关闭 loading
+    isBackendSuccess: (response: AxiosResponse<App.Service.Response<unknown>>) => {
+      return (response.data as App.Service.Response<unknown>).code === ResultEnum.SUCCESS
+    },
+    transformBackendResponse: (response: AxiosResponse<App.Service.Response<unknown>>) => {
+      const cfg = response.config as CustomAxiosRequestConfig
       if (cfg.loading) loadingManager.close()
-
-      // 处理下载请求
-      if (cfg.isDownload) return response
-
-      // 处理业务错误
-      if (data.code !== ResultEnum.SUCCESS) {
-        // 格式化错误信息
-        const formattedMessage = getReasonForError(data)
-        // 构造业务错误
-        const err = new RequestError('business', formattedMessage, data.code, data)
-        throw err
-      }
-
-      return response
+      if (cfg.isDownload) return response.data as unknown
+      return response.data
     },
-
-    responseInterceptorCatch: async (error: AxiosError) => {
-      const config = error.config as CustomAxiosRequestConfig | undefined
-
-      // 关闭 loading
+    onBackendFail: async (response: AxiosResponse<App.Service.Response<unknown>>) => {
+      const cfg = response.config as CustomAxiosRequestConfig
+      if (cfg?.loading) loadingManager.close()
+    },
+    onError: async (error: AxiosError | Error) => {
+      const err = error as ExtendedAxiosError
+      const config = (err.config || err.response?.config) as CustomAxiosRequestConfig | undefined
       if (config?.loading) loadingManager.close()
 
-      // 转换为标准 RequestError
       let reqError: RequestError
-      if (error instanceof RequestError) {
-        reqError = error
-      } else if (axios.isCancel(error) || error.message === 'RequestCanceled') {
+      if (err.isBackendFail && err.response) {
+        const resp = err.response as AxiosResponse<App.Service.Response<unknown>>
+        const formattedMessage = getReasonForError(resp.data)
+        reqError = new RequestError('business', formattedMessage, resp.data?.code, resp.data)
+      } else if (axios.isCancel(error) || err.message === 'RequestCanceled') {
         reqError = new RequestError('cancel', '请求已取消', 'CANCEL', error)
       } else {
         reqError = RequestError.fromAxiosError(error as AxiosError)
       }
 
-      // 如果是取消请求，静默处理（不报错）
       if (reqError.type === 'cancel') {
-        return Promise.reject(reqError)
+        return
       }
 
-      // 401 Token 过期处理
       if (ENABLE_TOKEN_REFRESH && reqError.type === 'overdue' && config && !config.skipAuthRefresh && !config.__retriedAfterRefresh) {
         const success = await refreshTokenOnce()
-        if (success) {
+        if (success && config) {
           config.__retriedAfterRefresh = true
-          // 刷新成功，重试原请求
-          return service.request(config as InternalAxiosRequestConfig)
+          ;(error as ExtendedAxiosError).retryPromise = service.instance.request(config as InternalAxiosRequestConfig)
+          return
         }
-        // 刷新失败，强制退出
         useAuthStore().setToken('')
         await router.replace(`/${RouteNameEnum.LOGIN}`)
-        return Promise.reject(reqError)
       }
 
-      // 全局错误提示
       if (config && !config.skipErrorHandler) {
         window.$message?.error(reqError.message)
       }
-
-      return Promise.reject(reqError)
     },
   },
-})
+)
 
 /* ===================== 请求方法封装 ===================== */
 
@@ -230,32 +212,24 @@ async function sendRequest<T>(
 ): Promise<OptimizedResponse<T>> {
   try {
     const isGet = method === 'GET'
-
-    // 构造符合 vakao-axios 的配置
-    // 分离出 retry 配置，避免类型冲突
-    const { retry, ...rest } = config
-
-    const requestConfig = {
+    const requestConfig: CustomAxiosRequestConfig = {
       url,
       method,
       params: isGet ? data : undefined,
       data: isGet ? undefined : data,
-      loading: true,
-      cancel: true,
-      ...rest,
-    } as AxiosRequestConfig & { retry?: number; retryDelay?: number }
-
-    // 映射 retry 配置
-    if (retry) {
-      requestConfig.retry = retry.count
-      requestConfig.retryDelay = retry.delay
+      loading: config.loading ?? true,
+      cancel: config.cancel ?? true,
+      skipErrorHandler: config.skipErrorHandler ?? false,
+      skipAuthRefresh: config.skipAuthRefresh ?? false,
+      isUpload: config.isUpload ?? false,
+      isDownload: config.isDownload ?? false,
+      responseType: config.responseType,
+      headers: config.headers,
     }
 
     const res = await service.request<App.Service.Response<T>>(requestConfig)
-    const responseData = res.data
 
-    // 直接返回下载结果
-    if (config.isDownload) {
+    if (requestConfig.isDownload) {
       return {
         data: res as unknown as T,
         error: false,
@@ -263,14 +237,49 @@ async function sendRequest<T>(
       }
     }
 
-    const safeData = responseData as { data?: unknown; message?: string }
+    const safeData = res as { data?: unknown; message?: string; msg?: string }
     return {
       data: safeData?.data as T,
       error: false,
-      message: safeData?.message || 'success',
+      message: safeData?.message || safeData?.msg || 'success',
     }
   } catch (err) {
-    const reqError = err as RequestError
+    const retryPromise = (err as ExtendedAxiosError)?.retryPromise
+    if (retryPromise) {
+      try {
+        const rerun = await retryPromise
+        if (config.isDownload) {
+          return {
+            data: rerun as unknown as T,
+            error: false,
+            message: 'success',
+          }
+        }
+        const safeData = rerun as { data?: unknown; message?: string; msg?: string }
+        return {
+          data: safeData?.data as T,
+          error: false,
+          message: safeData?.message || safeData?.msg || 'success',
+        }
+      } catch (retryErr) {
+        err = retryErr
+      }
+    }
+
+    let reqError: RequestError
+    const extendedErr = err as ExtendedAxiosError
+    if (extendedErr?.isBackendFail && extendedErr?.response) {
+      const resp = extendedErr.response as AxiosResponse<App.Service.Response<unknown>>
+      const formattedMessage = getReasonForError(resp.data)
+      reqError = new RequestError('business', formattedMessage, resp.data?.code, resp.data)
+    } else if (axios.isCancel(err) || extendedErr?.message === 'RequestCanceled') {
+      reqError = new RequestError('cancel', '请求已取消', 'CANCEL', err)
+    } else if (err instanceof RequestError) {
+      reqError = err
+    } else {
+      reqError = RequestError.fromAxiosError(err as AxiosError)
+    }
+
     return {
       data: null as T,
       error: true,
