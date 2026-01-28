@@ -1,18 +1,17 @@
 /**
- * 统一 API 前缀
- * - 仅维护资源根路径（不含具体接口路径）
- * - 避免在各 API 文件中硬编码路径前缀
- *
- * 使用示例：
- * - 用户列表：`${servicePort.user}`
- * - 用户详情：`${servicePort.user}/${userId}`
+ * 统一 API 前缀配置
+ * - 配合 @vakao-ui/axios 使用
+ * - 仅维护资源根路径，不包含 baseURL
  */
 const servicePort = {
+  // 用户模块
   user: '/api/users',
+  // 认证模块
   auth: '/api/auth',
+  // 路由/菜单模块
   route: '/api/route',
+  // 文件上传/下载模块
   files: '/api/files',
-  product: '/api/product',
 } as const
 
 export type ServicePortKey = keyof typeof servicePort

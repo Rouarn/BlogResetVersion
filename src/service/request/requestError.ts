@@ -53,8 +53,8 @@ export class RequestError extends Error {
     const { response, message, code } = error
     const status = response?.status
 
-    // 1. 请求被取消
-    if (code === 'ERR_CANCELED' || axios.isCancel(error)) {
+    // 1. 请求被取消 (包括手动取消和 duplicate cancel)
+    if (code === 'ERR_CANCELED' || axios.isCancel(error) || message === 'RequestCanceled') {
       return new RequestError('cancel', '请求已取消', 'CANCEL', error)
     }
 
@@ -63,7 +63,7 @@ export class RequestError extends Error {
       return new RequestError('timeout', '请求超时，请稍后重试', 'TIMEOUT', error)
     }
 
-    // 3. 网络错误 (无 response)
+    // 3. 网络错误 (无 response 且非超时/取消)
     if (!status) {
       return new RequestError('network', '网络连接异常，请检查网络', 'NETWORK', error)
     }
@@ -72,7 +72,7 @@ export class RequestError extends Error {
     const data = response?.data as App.Service.Response<unknown>
     let statusMsg = STATUS_TEXT[status] || response?.statusText
 
-    // 如果有 data 对象，使用 getReasonForError 格式化错误信息
+    // 如果有 data 对象，尝试提取后端返回的详细错误信息
     if (data) {
       statusMsg = getReasonForError(data)
     }
