@@ -3,7 +3,7 @@
  * - 配合 @vakao-ui/axios 使用
  * - 仅维护资源根路径，不包含 baseURL
  */
-const servicePort = {
+const apiPrefixConfig = {
   // 用户模块
   user: '/api/users',
   // 认证模块
@@ -14,5 +14,5 @@ const servicePort = {
   files: '/api/files',
 } as const
 
-export type ServicePortKey = keyof typeof servicePort
-export default servicePort
+export type ApiPrefixKey = keyof typeof apiPrefixConfig
+export default apiPrefixConfig

@@ -1,6 +1,5 @@
-import { getReasonForError } from './utils'
-import axios from 'axios'
-import { type AxiosError, HttpStatusCode } from 'axios'
+import type { BackendFailError } from '@vakao-ui/axios'
+import axios, { type AxiosError, type AxiosResponse, HttpStatusCode } from 'axios'
 
 /**
  * 错误类型枚举
@@ -25,6 +24,43 @@ const STATUS_TEXT: Record<number, string> = {
   502: '网关错误',
   503: '服务不可用',
   504: '网关超时',
+}
+
+/**
+ * 获取错误原因
+ */
+export function getReasonForError(error: App.Service.Response<unknown>): string {
+  if (!error) return ''
+
+  // 提取错误信息
+  const message = error.message || ''
+  const data = error.data || {}
+
+  // 收集所有错误原因
+  const reasons: string[] = []
+
+  // 遍历 data 对象，收集所有数组类型的错误信息
+  Object.values(data).forEach((value) => {
+    if (Array.isArray(value)) {
+      value.forEach((reason) => {
+        if (typeof reason === 'string' && reason.trim()) {
+          reasons.push(reason.trim())
+        }
+      })
+    }
+  })
+
+  // 构建最终错误信息
+  let result = message
+
+  if (reasons.length > 0) {
+    result += '\n原因：'
+    reasons.forEach((reason, index) => {
+      result += `\n${index + 1}.${reason}`
+    })
+  }
+
+  return result
 }
 
 /**
@@ -90,5 +126,25 @@ export class RequestError extends Error {
     }
 
     return new RequestError('unknown', statusMsg || message || '未知请求错误', 'UNKNOWN', error)
+  }
+}
+
+/**
+ * 转换为请求错误对象
+ * @param err 原始错误对象
+ * @returns 格式化后的请求错误对象
+ */
+export function toRequestError(err: unknown): RequestError {
+  const extendedErr = err as BackendFailError
+  if (extendedErr?.isBackendFail && extendedErr?.response) {
+    const resp = extendedErr.response as AxiosResponse<App.Service.Response<unknown>>
+    const formattedMessage = getReasonForError(resp.data)
+    return new RequestError('business', formattedMessage, resp.data?.code, resp.data)
+  } else if (axios.isCancel(err) || extendedErr?.message === 'RequestCanceled') {
+    return new RequestError('cancel', '请求已取消', 'CANCEL', err)
+  } else if (err instanceof RequestError) {
+    return err
+  } else {
+    return RequestError.fromAxiosError(err as AxiosError)
   }
 }

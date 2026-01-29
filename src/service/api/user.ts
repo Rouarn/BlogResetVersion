@@ -1,5 +1,5 @@
 import http from '../request'
-import servicePort from '../request/servicePort'
+import apiPrefix from './prefix'
 
 // ==================== 用户信息管理 ====================
 
@@ -7,7 +7,7 @@ import servicePort from '../request/servicePort'
  * 创建用户
  */
 export function createUser(userData: Api.Auth.UserInfo) {
-  return http.post<Api.Auth.UserInfo>(`${servicePort.user}`, userData)
+  return http.post<Api.Auth.UserInfo>(`${apiPrefix.user}`, userData)
 }
 
 /**
@@ -24,28 +24,28 @@ export function fetchUserList(params?: {
   return http.get<{
     data: Api.Auth.UserInfo[]
     total: number
-  }>(`${servicePort.user}`, { params })
+  }>(`${apiPrefix.user}`, { params })
 }
 
 /**
  * 获取用户详情
  */
 export function fetchUserDetail(userId: string) {
-  return http.get<Api.Auth.UserInfo>(`${servicePort.user}/${userId}`)
+  return http.get<Api.Auth.UserInfo>(`${apiPrefix.user}/${userId}`)
 }
 
 /**
  * 更新用户信息
  */
 export function updateUserInfo(userId: string, userInfo: Partial<Api.Auth.UserInfo>) {
-  return http.patch<Api.Auth.UserInfo>(`${servicePort.user}/${userId}`, userInfo)
+  return http.patch<Api.Auth.UserInfo>(`${apiPrefix.user}/${userId}`, userInfo)
 }
 
 /**
  * 删除用户
  */
 export function deleteUser(userId: string) {
-  return http.delete<{ message: string }>(`${servicePort.user}/${userId}`)
+  return http.delete<{ message: string }>(`${apiPrefix.user}/${userId}`)
 }
 
 /**
@@ -55,7 +55,7 @@ export function batchDeleteUsers(userIds: string[]) {
   return http.post<{
     message: string
     deletedCount: number
-  }>(`${servicePort.user}/batch-delete`, { ids: userIds })
+  }>(`${apiPrefix.user}/batch-delete`, { ids: userIds })
 }
 
 // ==================== 用户状态管理 ====================
@@ -64,28 +64,28 @@ export function batchDeleteUsers(userIds: string[]) {
  * 启用用户
  */
 export function enableUser(userId: string) {
-  return http.patch<Api.Auth.UserInfo>(`${servicePort.user}/${userId}/enable`)
+  return http.patch<Api.Auth.UserInfo>(`${apiPrefix.user}/${userId}/enable`)
 }
 
 /**
  * 禁用用户
  */
 export function disableUser(userId: string) {
-  return http.patch<Api.Auth.UserInfo>(`${servicePort.user}/${userId}/disable`)
+  return http.patch<Api.Auth.UserInfo>(`${apiPrefix.user}/${userId}/disable`)
 }
 
 /**
  * 切换用户状态
  */
 export function toggleUserStatus(userId: string, status?: string) {
-  return http.patch<Api.Auth.UserInfo>(`${servicePort.user}/${userId}/toggle-status`, { status })
+  return http.patch<Api.Auth.UserInfo>(`${apiPrefix.user}/${userId}/toggle-status`, { status })
 }
 
 /**
  * 检查用户状态
  */
 export function checkUserStatus(userId: string) {
-  return http.get<{ enabled: boolean }>(`${servicePort.user}/${userId}/status`)
+  return http.get<{ enabled: boolean }>(`${apiPrefix.user}/${userId}/status`)
 }
 
 // ==================== 文件上传 ====================
@@ -107,7 +107,7 @@ export function uploadAvatar(file: File) {
     path: string
     hash: string
     downloadUrl: string
-  }>(`${servicePort.files}/upload`, formData)
+  }>(`${apiPrefix.files}/upload`, formData)
 }
 
 // ==================== 认证相关 ====================
@@ -116,7 +116,7 @@ export function uploadAvatar(file: File) {
  * 修改密码
  */
 export function changePassword(data: { oldPassword: string; newPassword: string; confirmPassword: string }) {
-  return http.put<{ success: boolean; message: string }>(`${servicePort.auth}/change-password`, data)
+  return http.put<{ success: boolean; message: string }>(`${apiPrefix.auth}/change-password`, data)
 }
 
 /**
@@ -132,5 +132,5 @@ export function fetchLoginHistory(userId: string, params?: { current?: number; s
       location?: string
     }>
     total: number
-  }>(`${servicePort.auth}/${userId}/login-history`, { params })
+  }>(`${apiPrefix.auth}/${userId}/login-history`, { params })
 }
