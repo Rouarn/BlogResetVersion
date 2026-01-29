@@ -1,5 +1,5 @@
+import apiPrefix from '@/service/api/prefix'
 import http from '@/service/request'
-import servicePort from '@/service/request/servicePort'
 
 /**
  * 上传文件
@@ -15,5 +15,5 @@ export function uploadFile(file: File, description?: string, isPublic: 0 | 1 = 0
   }
   formData.append('isPublic', isPublic.toString())
 
-  return http.upload<Api.File.UploadFileResultDto>(`${servicePort.files}/upload`, formData)
+  return http.upload<Api.File.UploadFileResultDto>(`${apiPrefix.files}/upload`, formData)
 }

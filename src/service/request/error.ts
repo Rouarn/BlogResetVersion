@@ -1,6 +1,5 @@
-import { getReasonForError } from './utils'
-import axios from 'axios'
-import { type AxiosError, HttpStatusCode } from 'axios'
+import type { BackendFailError } from '@vakao-ui/axios'
+import axios, { type AxiosError, type AxiosResponse, HttpStatusCode } from 'axios'
 
 /**
  * 错误类型枚举
@@ -25,6 +24,43 @@ const STATUS_TEXT: Record<number, string> = {
   502: '网关错误',
   503: '服务不可用',
   504: '网关超时',
+}
+
+/**
+ * 获取错误原因
+ */
+export function getReasonForError(error: App.Service.Response<unknown>): string {
+  if (!error) return ''
+
+  // 提取错误信息
+  const message = error.message || ''
+  const data = error.data || {}
+
+  // 收集所有错误原因
+  const reasons: string[] = []
+
+  // 遍历 data 对象，收集所有数组类型的错误信息
+  Object.values(data).forEach((value) => {
+    if (Array.isArray(value)) {
+      value.forEach((reason) => {
+        if (typeof reason === 'string' && reason.trim()) {
+          reasons.push(reason.trim())
+        }
+      })
+    }
+  })
+
+  // 构建最终错误信息
+  let result = message
+
+  if (reasons.length > 0) {
+    result += '\n原因：'
+    reasons.forEach((reason, index) => {
+      result += `\n${index + 1}.${reason}`
+    })
+  }
+
+  return result
 }
 
 /**
@@ -53,8 +89,8 @@ export class RequestError extends Error {
     const { response, message, code } = error
     const status = response?.status
 
-    // 1. 请求被取消
-    if (code === 'ERR_CANCELED' || axios.isCancel(error)) {
+    // 1. 请求被取消 (包括手动取消和 duplicate cancel)
+    if (code === 'ERR_CANCELED' || axios.isCancel(error) || message === 'RequestCanceled') {
       return new RequestError('cancel', '请求已取消', 'CANCEL', error)
     }
 
@@ -63,7 +99,7 @@ export class RequestError extends Error {
       return new RequestError('timeout', '请求超时，请稍后重试', 'TIMEOUT', error)
     }
 
-    // 3. 网络错误 (无 response)
+    // 3. 网络错误 (无 response 且非超时/取消)
     if (!status) {
       return new RequestError('network', '网络连接异常，请检查网络', 'NETWORK', error)
     }
@@ -72,7 +108,7 @@ export class RequestError extends Error {
     const data = response?.data as App.Service.Response<unknown>
     let statusMsg = STATUS_TEXT[status] || response?.statusText
 
-    // 如果有 data 对象，使用 getReasonForError 格式化错误信息
+    // 如果有 data 对象，尝试提取后端返回的详细错误信息
     if (data) {
       statusMsg = getReasonForError(data)
     }
@@ -90,5 +126,25 @@ export class RequestError extends Error {
     }
 
     return new RequestError('unknown', statusMsg || message || '未知请求错误', 'UNKNOWN', error)
+  }
+}
+
+/**
+ * 转换为请求错误对象
+ * @param err 原始错误对象
+ * @returns 格式化后的请求错误对象
+ */
+export function toRequestError(err: unknown): RequestError {
+  const extendedErr = err as BackendFailError
+  if (extendedErr?.isBackendFail && extendedErr?.response) {
+    const resp = extendedErr.response as AxiosResponse<App.Service.Response<unknown>>
+    const formattedMessage = getReasonForError(resp.data)
+    return new RequestError('business', formattedMessage, resp.data?.code, resp.data)
+  } else if (axios.isCancel(err) || extendedErr?.message === 'RequestCanceled') {
+    return new RequestError('cancel', '请求已取消', 'CANCEL', err)
+  } else if (err instanceof RequestError) {
+    return err
+  } else {
+    return RequestError.fromAxiosError(err as AxiosError)
   }
 }

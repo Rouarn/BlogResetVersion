@@ -56,9 +56,6 @@ const initialState: AuthInitialState = {
     city: '',
     profession: '',
     roles: [],
-    lastLoginAt: '',
-    lastLoginIp: '',
-    loginAttempts: 0,
     auth: {
       createTime: new Date(),
       updateTime: new Date(),

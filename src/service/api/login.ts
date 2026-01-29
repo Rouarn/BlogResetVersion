@@ -1,9 +1,9 @@
+import apiPrefix from '@/service/api/prefix'
 import { request } from '@/service/request'
-import servicePort from '@/service/request/servicePort'
 
 /** 用户登录 */
 export function fetchLogin(username: string, password: string) {
-  return request.post<Api.Auth.LoginToken>(`${servicePort.auth}/login`, {
+  return request.post<Api.Auth.LoginToken>(`${apiPrefix.auth}/login`, {
     username,
     password,
   })
@@ -11,22 +11,22 @@ export function fetchLogin(username: string, password: string) {
 
 /** 获取用户信息 */
 export function fetchUserInfo() {
-  return request.get<Api.Auth.UserInfo>(`${servicePort.auth}/getUserInfo`)
+  return request.get<Api.Auth.UserInfo>(`${apiPrefix.auth}/getUserInfo`)
 }
 
 /** 注册用户 */
 export function fetchRegister(user: Api.Auth.RegisterUser) {
-  return request.post<Api.Auth.LoginToken>(`${servicePort.auth}/register`, user)
+  return request.post<Api.Auth.LoginToken>(`${apiPrefix.auth}/register`, user)
 }
 
 /** 生成验证码 */
 export function fetchCaptcha() {
-  return request.get<Api.Auth.Captcha>(`${servicePort.auth}/captcha`, {}, { loading: false })
+  return request.get<Api.Auth.Captcha>(`${apiPrefix.auth}/captcha`, {}, { loading: false })
 }
 
 /** 验证码校验 */
 export function fetchCaptchaCheck({ token, code }: Api.Auth.CaptchaVerify) {
-  return request.post<Api.Auth.LoginToken>(`${servicePort.auth}/captcha/verify`, {
+  return request.post<Api.Auth.LoginToken>(`${apiPrefix.auth}/captcha/verify`, {
     token,
     code,
   })
@@ -34,7 +34,7 @@ export function fetchCaptchaCheck({ token, code }: Api.Auth.CaptchaVerify) {
 
 /** 退出登录 */
 export function fetchLogout() {
-  return request.post(`${servicePort.auth}/logout`)
+  return request.post(`${apiPrefix.auth}/logout`)
 }
 
 /** 刷新令牌 集成在请求拦截器中 */
