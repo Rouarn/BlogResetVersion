@@ -19,14 +19,10 @@ export async function refreshTokenOnce(axiosInstance: AxiosInstance): Promise<bo
 
   refreshPromise = (async () => {
     try {
-      const response = await axiosInstance.post<App.Service.Response<Api.Auth.LoginToken>>(
-        `${apiPrefix.auth}/refresh`,
-        { refreshToken: authStore.refreshToken },
-        { baseURL: import.meta.env.VITE_SERVICE_BASE_URL },
-      )
+      const response = await axiosInstance.post(`${apiPrefix.auth}/refresh`, { refreshToken: authStore.refreshToken })
 
-      const { data } = response.data
-      if (response.data.code !== ResultEnum.SUCCESS || !data?.accessToken) {
+      const { code, data } = response as unknown as App.Service.Response<Api.Auth.LoginToken>
+      if (code !== ResultEnum.SUCCESS || !data?.accessToken) {
         return false
       }
 
