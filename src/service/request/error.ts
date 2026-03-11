@@ -1,5 +1,4 @@
-import type { BackendFailError } from '@vakao-ui/axios'
-import axios, { type AxiosError, type AxiosResponse, HttpStatusCode } from 'axios'
+import axios, { type AxiosError, HttpStatusCode } from 'axios'
 
 /**
  * 错误类型枚举
@@ -47,6 +46,14 @@ export function getReasonForError(error: App.Service.Response<unknown>): string 
           reasons.push(reason.trim())
         }
       })
+    } else if (typeof value === 'string' && value.trim()) {
+      reasons.push(value.trim())
+    } else if (typeof value === 'object' && value !== null) {
+      // 递归处理嵌套对象
+      const nestedReason = getReasonForError(value as App.Service.Response<unknown>)
+      if (nestedReason) {
+        reasons.push(nestedReason)
+      }
     }
   })
 
@@ -114,18 +121,18 @@ export class RequestError extends Error {
     }
 
     if (status === HttpStatusCode.Unauthorized) {
-      return new RequestError('overdue', data?.message || '登录已过期，请重新登录', status, error)
+      return new RequestError('overdue', data?.message, status, error)
     }
 
     if (status >= HttpStatusCode.InternalServerError) {
-      return new RequestError('server', statusMsg || '服务器内部错误', status, error)
+      return new RequestError('server', statusMsg, status, error)
     }
 
     if (status >= HttpStatusCode.BadRequest) {
-      return new RequestError('client', statusMsg || '客户端请求错误', status, error)
+      return new RequestError('client', statusMsg, status, error)
     }
 
-    return new RequestError('unknown', statusMsg || message || '未知请求错误', 'UNKNOWN', error)
+    return new RequestError('unknown', statusMsg || message, 'UNKNOWN', error)
   }
 }
 
@@ -135,16 +142,5 @@ export class RequestError extends Error {
  * @returns 格式化后的请求错误对象
  */
 export function toRequestError(err: unknown): RequestError {
-  const extendedErr = err as BackendFailError
-  if (extendedErr?.isBackendFail && extendedErr?.response) {
-    const resp = extendedErr.response as AxiosResponse<App.Service.Response<unknown>>
-    const formattedMessage = getReasonForError(resp.data)
-    return new RequestError('business', formattedMessage, resp.data?.code, resp.data)
-  } else if (axios.isCancel(err) || extendedErr?.message === 'RequestCanceled') {
-    return new RequestError('cancel', '请求已取消', 'CANCEL', err)
-  } else if (err instanceof RequestError) {
-    return err
-  } else {
-    return RequestError.fromAxiosError(err as AxiosError)
-  }
+  return RequestError.fromAxiosError(err as AxiosError)
 }

@@ -1,14 +1,5 @@
 import type { RequestError, RequestErrorType } from './error'
-import type { BackendFailError, FlatRequestInstanceConfig } from '@vakao-ui/axios'
-import type { AxiosError } from 'axios'
-
-/**
- * 扩展 Axios 错误类型，包含自定义属性
- */
-export interface ExtendedAxiosError extends AxiosError {
-  isBackendFail?: BackendFailError['isBackendFail']
-  retryPromise?: Promise<unknown>
-}
+import type { FlatRequestInstanceConfig } from '@vakao-ui/axios'
 
 export interface OptimizedResponse<T> {
   /** 响应数据 */

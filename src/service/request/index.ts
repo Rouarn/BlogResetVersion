@@ -3,13 +3,14 @@ import { useAuthStore } from '@/stores/modules/auth'
 import { toRequestError } from './error'
 import { loadingManager } from './loading'
 import { ENABLE_TOKEN_REFRESH, refreshTokenOnce } from './refresh'
-import type { CustomAxiosRequestConfig, ExtendedAxiosError, OptimizedResponse } from './types'
+import type { CustomAxiosRequestConfig, OptimizedResponse } from './types'
 import { buildSuccessResponse } from './utils'
 import { ResultEnum, RouteNameEnum } from '@/enum'
 import { createVakaoAxios } from '@vakao-ui/axios'
-import { type AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
+import { type AxiosError, AxiosHeaders, type AxiosResponse, HttpStatusCode, type InternalAxiosRequestConfig } from 'axios'
 
 /* ===================== Axios 实例与拦截器 ===================== */
+const AUTHORIZATION_HEADER = 'Authorization' // 授权头名称
 
 /** 创建 Axios 实例 */
 const service = createVakaoAxios<App.Service.Response<unknown>>(
@@ -28,7 +29,7 @@ const service = createVakaoAxios<App.Service.Response<unknown>>(
       const authStore = useAuthStore()
       const token = authStore.token
       if (token) {
-        config.headers.set('Authorization', `${authStore.tokenType} ${token}`)
+        config.headers[AUTHORIZATION_HEADER] = `${authStore.tokenType} ${token}`
       }
 
       const customConfig = config as CustomAxiosRequestConfig
@@ -50,7 +51,7 @@ const service = createVakaoAxios<App.Service.Response<unknown>>(
       return (response.data as App.Service.Response<unknown>).code === ResultEnum.SUCCESS
     },
     /** 转换后端响应数据 */
-    transformBackendResponse: (response: AxiosResponse<App.Service.Response<unknown>>) => {
+    transform: (response: AxiosResponse<App.Service.Response<unknown>>) => {
       const cfg = response.config as CustomAxiosRequestConfig
       if (cfg.loading) loadingManager.close()
       if (cfg.isDownload) return response.data as unknown
@@ -62,8 +63,8 @@ const service = createVakaoAxios<App.Service.Response<unknown>>(
       if (cfg?.loading) loadingManager.close()
     },
     /** 请求错误处理 (Network Error, Timeout, etc.) */
-    onError: async (error: AxiosError | Error) => {
-      const err = error as ExtendedAxiosError
+    onError: async (error: AxiosError | Error): Promise<void> => {
+      const err = error as AxiosError
       const config = (err.config || err.response?.config) as CustomAxiosRequestConfig | undefined
       if (config?.loading) loadingManager.close()
 
@@ -73,21 +74,52 @@ const service = createVakaoAxios<App.Service.Response<unknown>>(
         return
       }
 
-      if (ENABLE_TOKEN_REFRESH && reqError.type === 'overdue' && config && !config.skipAuthRefresh && !config.__retriedAfterRefresh) {
-        const success = await refreshTokenOnce(service.instance)
-        if (success && config) {
-          config.__retriedAfterRefresh = true
-          ;(error as ExtendedAxiosError).retryPromise = service.instance.request(config as InternalAxiosRequestConfig)
-          return
-        }
-        useAuthStore().setToken('')
-        await router.replace(`/${RouteNameEnum.LOGIN}`)
-      }
-
       if (config && !config.skipErrorHandler) {
         window.$message?.error(reqError.message)
       }
     },
+  },
+)
+
+/* ===================== 原生 Axios 拦截器 (用于 Token 刷新) ===================== */
+
+/**
+ * 为原生 Axios 实例注册响应拦截器
+ * 拦截器执行顺序：Axios 实例原生拦截器 -> createVakaoAxios 封装的钩子
+ * 在此处处理 401 刷新 token，可以实现对上层“透明”的重试逻辑
+ */
+service.instance.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError) => {
+    const config = error.config as CustomAxiosRequestConfig
+    if (!config || config.skipAuthRefresh || config.__retriedAfterRefresh) {
+      return Promise.reject(error)
+    }
+
+    // 处理 401 错误
+    if (error.response?.status === HttpStatusCode.Unauthorized) {
+      // 开启了 Token 刷新则尝试刷新
+      if (ENABLE_TOKEN_REFRESH) {
+        const success = await refreshTokenOnce(service.instance)
+        if (success) {
+          config.__retriedAfterRefresh = true
+          // 更新 Token 到配置中
+          const authStore = useAuthStore()
+          if (!config.headers) config.headers = new AxiosHeaders()
+          config.headers[AUTHORIZATION_HEADER] = `${authStore.tokenType} ${authStore.token}`
+          // 返回重试请求的 Promise，这样上层 service.request 就能拿到重试后的结果
+          return service.instance.request(config)
+        }
+      }
+
+      // 刷新失败或未开启刷新，清理 Token 并跳转登录
+      const authStore = useAuthStore()
+      authStore.setToken('')
+      authStore.setRefreshToken('')
+      await router.replace(`/${RouteNameEnum.LOGIN}`)
+    }
+
+    return Promise.reject(error)
   },
 )
 
@@ -106,46 +138,24 @@ async function sendRequest<T>(
   data?: unknown,
   config: Partial<CustomAxiosRequestConfig> = {},
 ): Promise<OptimizedResponse<T>> {
-  try {
-    const isGet = method === 'GET'
-    const requestConfig: CustomAxiosRequestConfig = {
-      url,
-      method,
-      params: isGet ? data : undefined,
-      data: isGet ? undefined : data,
-      loading: config.loading ?? true,
-      cancelDuplicateRequest: config.cancelDuplicateRequest ?? true,
-      skipErrorHandler: config.skipErrorHandler ?? false,
-      skipAuthRefresh: config.skipAuthRefresh ?? false,
-      isUpload: config.isUpload ?? false,
-      isDownload: config.isDownload ?? false,
-      responseType: config.responseType,
-      headers: config.headers,
-    }
-
-    const res = await service.request<App.Service.Response<T>>(requestConfig)
-    return buildSuccessResponse<T>(res, !!requestConfig.isDownload)
-  } catch (err) {
-    const retryPromise = (err as ExtendedAxiosError)?.retryPromise
-    if (retryPromise) {
-      try {
-        const rerun = await retryPromise
-        return buildSuccessResponse<T>(rerun, !!config.isDownload)
-      } catch (retryErr) {
-        err = retryErr
-      }
-    }
-
-    const reqError = toRequestError(err)
-
-    return {
-      data: null as T,
-      error: true,
-      message: reqError.message,
-      errorType: reqError.type,
-      rawError: reqError,
-    }
+  const isGet = method === 'GET'
+  const requestConfig: CustomAxiosRequestConfig = {
+    url,
+    method,
+    params: isGet ? data : undefined,
+    data: isGet ? undefined : data,
+    loading: config.loading ?? true,
+    cancelDuplicateRequest: config.cancelDuplicateRequest ?? true,
+    skipErrorHandler: config.skipErrorHandler ?? false,
+    skipAuthRefresh: config.skipAuthRefresh ?? false,
+    isUpload: config.isUpload ?? false,
+    isDownload: config.isDownload ?? false,
+    responseType: config.responseType,
+    headers: config.headers,
   }
+
+  const res = await service.request<App.Service.Response<T>>(requestConfig)
+  return buildSuccessResponse<T>(res, !!requestConfig.isDownload)
 }
 
 export const request = {

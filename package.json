@@ -33,7 +33,7 @@
     "dayjs": "^1.11.19",
     "defu": "^6.1.4",
     "localforage": "^1.10.0",
-    "md-editor-v3": "^6.3.0",
+    "md-editor-v3": "^6.3.1",
     "naive-ui": "^2.43.2",
     "nprogress": "^0.2.0",
     "pinia": "^3.0.4",
@@ -47,7 +47,7 @@
   "devDependencies": {
     "@commitlint/cli": "^20.3.1",
     "@commitlint/config-conventional": "^20.3.1",
-    "@iconify/json": "^2.2.432",
+    "@iconify/json": "^2.2.433",
     "@iconify/utils": "^3.1.0",
     "@tsconfig/node22": "^22.0.5",
     "@types/node": "^25.1.0",

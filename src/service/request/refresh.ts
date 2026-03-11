@@ -1,5 +1,6 @@
 import apiPrefix from '@/service/api/prefix'
 import { useAuthStore } from '@/stores/modules/auth'
+import type { CustomAxiosRequestConfig } from './types'
 import { ResultEnum } from '@/enum'
 import type { AxiosInstance } from 'axios'
 
@@ -19,7 +20,9 @@ export async function refreshTokenOnce(axiosInstance: AxiosInstance): Promise<bo
 
   refreshPromise = (async () => {
     try {
-      const response = await axiosInstance.post(`${apiPrefix.auth}/refresh`, { refreshToken: authStore.refreshToken })
+      const response = await axiosInstance.post(`${apiPrefix.auth}/refresh`, { refreshToken: authStore.refreshToken }, {
+        skipAuthRefresh: true,
+      } as CustomAxiosRequestConfig)
 
       const { code, data } = response as unknown as App.Service.Response<Api.Auth.LoginToken>
       if (code !== ResultEnum.SUCCESS || !data?.accessToken) {
