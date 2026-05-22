@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import GridDistortion from '@/components/custom/grid-distortion.vue'
 import UserAvatar from '@/layouts/modules/global-header/components/user-avatar.vue'
 import pkg from '@/../package.json'
 
@@ -32,16 +33,11 @@ const profile = ref<Api.Blog.Profile>({ ...defaultProfile })
   <div class="min-h-screen bg-slate-50 font-sans text-slate-800">
     <main class="animate-fade-in">
       <!-- Profile Header -->
-      <div class="h-64 md:h-80 bg-slate-900 relative group">
-        <div
-          class="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/20 backdrop-blur-sm rounded-full"
-        >
-          <!-- 用户头像 -->
-          <UserAvatar custom-class="text-#ffffff hover:#ffffff!" />
-        </div>
+      <div class="h-80 md:h-80 bg-slate-900 relative group">
+        <GridDistortion :image-src="pkg.author.fulitu" :grid="30" :mouse="0.1" :strength="0.15" :relaxation="0.9"> </GridDistortion>
 
-        <img v-if="profile.cover" :src="profile.cover" alt="Cover" class="w-full h-full object-cover opacity-40" />
-        <div v-else class="w-full h-full bg-slate-800 opacity-40"></div>
+        <!-- 用户头像 -->
+        <UserAvatar custom-class="text-#ffffff hover:#ffffff! absolute top-5 right-0" />
 
         <div class="absolute -bottom-12 left-6 md:left-1/2 md:-translate-x-1/2 md:flex md:flex-col md:items-center">
           <div class="w-24 h-24 md:w-32 md:h-32 rounded-3xl border-4 border-white overflow-hidden bg-white shadow-xl">
