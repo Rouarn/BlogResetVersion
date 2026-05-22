@@ -167,6 +167,7 @@ onMounted(() => {
     </div>
 
     <NDataTable
+      class="overflow-x-auto"
       :columns="articleColumns"
       :data="articleList"
       :loading="loadingArticles"

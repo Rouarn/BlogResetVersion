@@ -39,7 +39,7 @@ const profile = ref<Api.Blog.Profile>({ ...defaultProfile })
         <!-- 用户头像 -->
         <UserAvatar custom-class="fixed top-5 right-0" color-class="text-#ffffff hover:#ffffff" />
 
-        <div class="absolute -bottom-12 left-6 md:left-1/2 md:-translate-x-1/2 md:flex md:flex-col md:items-center">
+        <div class="absolute -bottom-12 left-1/2 -translate-x-1/2 md:left-1/2 md:-translate-x-1/2 md:flex md:flex-col md:items-center">
           <div class="w-24 h-24 md:w-32 md:h-32 rounded-3xl border-4 border-white overflow-hidden bg-white shadow-xl">
             <img v-if="profile.avatar" :src="profile.avatar" alt="Avatar" class="w-full h-full object-cover" />
             <div v-else class="w-full h-full bg-slate-200 flex items-center justify-center text-slate-400">
