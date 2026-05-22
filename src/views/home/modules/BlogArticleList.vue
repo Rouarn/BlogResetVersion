@@ -3,6 +3,7 @@ import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import SvgIcon from '@/components/custom/svg-icon.vue'
 import { fetchArticleList } from '@/service/api/article'
+import pkg from '@/../package.json'
 import { useRouterPush } from '@/hooks/router'
 import dayjs from 'dayjs'
 
@@ -94,7 +95,7 @@ onMounted(() => {
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-3">
             <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
-              <NAvatar :src="article.author?.avatar ?? 'https://picsum.photos/200/200'" :lazy="true" object-fit="cover" round />
+              <NAvatar :src="article.author?.avatar ?? pkg.author.avatar" :lazy="true" object-fit="cover" round />
             </div>
             <span class="text-sm font-medium text-slate-700">{{ article.author?.nickname || 'Unknown' }}</span>
           </div>

@@ -58,13 +58,7 @@ onMounted(() => {
       @click.self="routerPushByKey('about')"
     >
       <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 overflow-hidden">
-        <NImage
-          v-if="profile.avatar"
-          :src="profile.avatar"
-          object-fit="cover"
-          :alt="profile.nickname"
-          :fallback-src="'https://picsum.photos/200/200'"
-        />
+        <NImage v-if="profile.avatar" :src="profile.avatar" object-fit="cover" :alt="profile.nickname" :fallback-src="pkg.author.avatar" />
         <SvgIcon v-else icon="ph:user-circle-duotone" class="text-4xl text-indigo-600" />
       </div>
       <h3 class="text-lg font-bold mb-2">关于博主</h3>
