@@ -14,6 +14,8 @@ defineOptions({
 interface Props {
   // 自定义样式
   customClass?: string
+  // 自定义颜色样式
+  colorClass?: string
 }
 
 withDefaults(defineProps<Props>(), {
@@ -93,9 +95,9 @@ function handleError() {
     {{ $t('page.login.common.loginOrRegister') }}
   </NButton>
   <NDropdown v-else placement="bottom" trigger="click" :options="options" @select="handleDropdown">
-    <div>
+    <div :class="customClass">
       <ButtonIcon>
-        <SvgIcon icon="ph:user-circle" :class="['text-lg', customClass]" v-if="!authStore.userInfo.avatar" />
+        <SvgIcon icon="ph:user-circle" :class="['text-lg', colorClass]" v-if="!authStore.userInfo.avatar" />
         <NImage
           :src="authStore.userInfo.avatar"
           class="w-20px h-20px rounded-full"
@@ -104,7 +106,7 @@ function handleError() {
           @error="handleError"
           preview-disabled
         />
-        <span :class="['text-16px font-medium', customClass]">{{ authStore.userInfo.nickname }}</span>
+        <span :class="['text-16px font-medium', colorClass]">{{ authStore.userInfo.nickname }}</span>
       </ButtonIcon>
     </div>
   </NDropdown>

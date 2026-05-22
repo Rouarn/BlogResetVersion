@@ -37,7 +37,7 @@ const profile = ref<Api.Blog.Profile>({ ...defaultProfile })
         <GridDistortion :image-src="pkg.author.fulitu" :grid="30" :mouse="0.1" :strength="0.15" :relaxation="0.9"> </GridDistortion>
 
         <!-- 用户头像 -->
-        <UserAvatar custom-class="text-#ffffff hover:#ffffff! absolute top-5 right-0" />
+        <UserAvatar custom-class="fixed top-5 right-0" color-class="text-#ffffff hover:#ffffff" />
 
         <div class="absolute -bottom-12 left-6 md:left-1/2 md:-translate-x-1/2 md:flex md:flex-col md:items-center">
           <div class="w-24 h-24 md:w-32 md:h-32 rounded-3xl border-4 border-white overflow-hidden bg-white shadow-xl">
