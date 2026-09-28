@@ -115,9 +115,9 @@
     "title": "分享技术与生活",
     "email": "woyuxiaji@foxmail.com",
     "bio": "一个前端开发人员，喜欢分享知识。",
-    "avatar": "https://static.shixian.xyz/api/photo/default/PrettyGirlAvatar",
-    "cover": "https://static.shixian.xyz/api/photo/storage/heisi",
-    "fulitu": "https://static.shixian.xyz/api/photo/storage/fulitu-cc",
+    "avatar": "https://static.shixian.xyz/static/photo?r=default&c=PrettyGirlAvatar",
+    "cover": "https://static.shixian.xyz/static/photo?r=storage&c=heisi",
+    "fulitu": "https://static.shixian.xyz/static/photo?r=fulitu&c=fulitu-cc",
     "currentStatus": "Coding...",
     "socialLinks": {
       "github": "https://github.com/Rouarn",
