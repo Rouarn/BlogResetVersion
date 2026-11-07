@@ -1,6 +1,6 @@
 /**
  * 统一 API 前缀配置
- * - 配合 @vakao-ui/axios 使用
+ * - 配合 @vakao/axios 使用
  * - 仅维护资源根路径，不包含 baseURL
  */
 const apiPrefixConfig = {

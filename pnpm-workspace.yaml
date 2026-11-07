@@ -8,3 +8,6 @@ allowBuilds:
 ignoredBuiltDependencies:
   - '@parcel/watcher'
   - esbuild
+
+minimumReleaseAgeExclude:
+  - '@vakao/axios@0.0.1 || 0.0.2'

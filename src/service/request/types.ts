@@ -1,5 +1,5 @@
 import type { RequestError, RequestErrorType } from './error'
-import type { FlatRequestInstanceConfig } from '@vakao-ui/axios'
+import type { FlatRequestInstanceConfig } from '@vakao/axios'
 
 export interface OptimizedResponse<T> {
   /** 响应数据 */

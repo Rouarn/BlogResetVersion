@@ -6,7 +6,7 @@ import { ENABLE_TOKEN_REFRESH, refreshTokenOnce } from './refresh'
 import type { CustomAxiosRequestConfig, OptimizedResponse } from './types'
 import { buildSuccessResponse } from './utils'
 import { ResultEnum, RouteNameEnum } from '@/enum'
-import { createVakaoAxios } from '@vakao-ui/axios'
+import { createVakaoAxios } from '@vakao/axios'
 import { type AxiosError, AxiosHeaders, type AxiosResponse, HttpStatusCode, type InternalAxiosRequestConfig } from 'axios'
 
 /* ===================== Axios 实例与拦截器 ===================== */

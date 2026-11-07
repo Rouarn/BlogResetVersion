@@ -31,7 +31,7 @@
 ### 🛠️ 工程化特性
 
 - **国际化**：集成 `vue-i18n`，支持中英文动态切换。
-- **HTTP 封装**：基于 `axios` 和 `@vakao-ui/axios` 的高度封装，支持自动 Loading、Token 刷新和类型提示。
+- **HTTP 封装**：基于 `axios` 和 `@vakao/axios` 的高度封装，支持自动 Loading、Token 刷新和类型提示。
 - **路由守卫**：完善的权限校验和加载进度条。
 - **代码规范**：ESLint + Prettier + Husky + Commitlint，保证代码质量和提交规范。
 
