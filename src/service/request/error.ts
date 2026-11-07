@@ -1,4 +1,5 @@
-import axios, { type AxiosError, HttpStatusCode } from 'axios'
+import { RequestError as ClientRequestError } from '@vakao/axios'
+import { HttpStatusCode } from 'axios'
 
 /**
  * 错误类型枚举
@@ -88,59 +89,31 @@ export class RequestError extends Error {
     this.code = code
     this.originalError = originalError
   }
-
-  /**
-   * 从 AxiosError 创建 RequestError
-   */
-  static fromAxiosError(error: AxiosError): RequestError {
-    const { response, message, code } = error
-    const status = response?.status
-
-    // 1. 请求被取消 (包括手动取消和 duplicate cancel)
-    if (code === 'ERR_CANCELED' || axios.isCancel(error) || message === 'RequestCanceled') {
-      return new RequestError('cancel', '请求已取消', 'CANCEL', error)
-    }
-
-    // 2. 超时
-    if (code === 'ECONNABORTED' || message.includes('timeout')) {
-      return new RequestError('timeout', '请求超时，请稍后重试', 'TIMEOUT', error)
-    }
-
-    // 3. 网络错误 (无 response 且非超时/取消)
-    if (!status) {
-      return new RequestError('network', '网络连接异常，请检查网络', 'NETWORK', error)
-    }
-
-    // 4. HTTP 错误处理
-    const data = response?.data as App.Service.Response<unknown>
-    let statusMsg = STATUS_TEXT[status] || response?.statusText
-
-    // 如果有 data 对象，尝试提取后端返回的详细错误信息
-    if (data) {
-      statusMsg = getReasonForError(data)
-    }
-
-    if (status === HttpStatusCode.Unauthorized) {
-      return new RequestError('overdue', data?.message, status, error)
-    }
-
-    if (status >= HttpStatusCode.InternalServerError) {
-      return new RequestError('server', statusMsg, status, error)
-    }
-
-    if (status >= HttpStatusCode.BadRequest) {
-      return new RequestError('client', statusMsg, status, error)
-    }
-
-    return new RequestError('unknown', statusMsg || message, 'UNKNOWN', error)
-  }
 }
 
 /**
  * 转换为请求错误对象
- * @param err 原始错误对象
+ * @param err 库抛出的 RequestError
  * @returns 格式化后的请求错误对象
  */
 export function toRequestError(err: unknown): RequestError {
-  return RequestError.fromAxiosError(err as AxiosError)
+  if (err instanceof ClientRequestError) {
+    const { type, code, data, response } = err
+    const body = (response?.data ?? (data ? { message: '', data } : undefined)) as App.Service.Response<unknown> | undefined
+    const reason = body ? getReasonForError(body) : ''
+
+    if (type === 'cancel') return new RequestError('cancel', '请求已取消', 'CANCEL', err)
+    if (type === 'timeout') return new RequestError('timeout', '请求超时，请稍后重试', 'TIMEOUT', err)
+    if (type === 'network') return new RequestError('network', '网络连接异常，请检查网络', 'NETWORK', err)
+    if (type === 'business') return new RequestError('business', reason, code, err)
+
+    const statusMsg = reason || STATUS_TEXT[code] || '请求失败'
+    if (code === HttpStatusCode.Unauthorized) return new RequestError('overdue', statusMsg, code, err)
+    if (code >= HttpStatusCode.InternalServerError) return new RequestError('server', statusMsg, code, err)
+    if (code >= HttpStatusCode.BadRequest) return new RequestError('client', statusMsg, code, err)
+    return new RequestError('unknown', statusMsg, code, err)
+  }
+
+  const message = err instanceof Error ? err.message : String(err)
+  return new RequestError('unknown', message, 'UNKNOWN', err)
 }

@@ -18,8 +18,8 @@ importers:
         specifier: workspace:*
         version: link:packages/utils
       '@vakao/axios':
-        specifier: ^0.0.1
-        version: 0.0.1(axios@1.13.4(debug@4.4.3(supports-color@8.1.1)))
+        specifier: ^0.0.2
+        version: 0.0.2(axios@1.13.4(debug@4.4.3(supports-color@8.1.1)))
       '@vueuse/core':
         specifier: ^14.1.0
         version: 14.1.0(vue@3.5.27(typescript@5.9.3))
@@ -1785,8 +1785,8 @@ packages:
     peerDependencies:
       vite: ^2.9.0 || ^3.0.0-0 || ^4.0.0 || ^5.0.0-0 || ^6.0.0-0 || ^7.0.0-0 || ^8.0.0-0
 
-  '@vakao/axios@0.0.1':
-    resolution: {integrity: sha512-7zP7fWazZssCf8fYVff7Lxhx0SFUq4XxfZtr+y5PAfyg5R2JRgW2w4RdFXaAPEiicQu2P3Tr9I1wyWEXmDSRdA==, tarball: https://packages.aliyun.com/676d377c721f4dc7be6ca65a/npm/npm-registry/@vakao/axios/-/@vakao/axios-0.0.1.tgz}
+  '@vakao/axios@0.0.2':
+    resolution: {integrity: sha512-LSy3oB4JoyiPjmyzNwX7cdEPUcdg41fNyW8AGVoj0fhBoXJFxCqHKEsQUmUm8ne94sXtw+L9rm9EbG4yU8LTGw==, tarball: https://packages.aliyun.com/676d377c721f4dc7be6ca65a/npm/npm-registry/@vakao/axios/-/@vakao/axios-0.0.2.tgz}
     peerDependencies:
       axios: '>=1.0.0'
 
@@ -7117,7 +7117,7 @@ snapshots:
       unplugin-utils: 0.3.1
       vite: 7.3.1(@types/node@25.1.0)(jiti@2.6.1)(sass-embedded@1.97.3)(sass@1.97.3)(terser@5.46.0)(yaml@2.8.2)
 
-  '@vakao/axios@0.0.1(axios@1.13.4(debug@4.4.3(supports-color@8.1.1)))':
+  '@vakao/axios@0.0.2(axios@1.13.4(debug@4.4.3(supports-color@8.1.1)))':
     dependencies:
       axios: 1.13.4(debug@4.4.3(supports-color@8.1.1))
 

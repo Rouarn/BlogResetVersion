@@ -10,4 +10,4 @@ ignoredBuiltDependencies:
   - esbuild
 
 minimumReleaseAgeExclude:
-  - '@vakao/axios@0.0.1 || 0.0.2'
+  - '@vakao/axios@0.0.2'
